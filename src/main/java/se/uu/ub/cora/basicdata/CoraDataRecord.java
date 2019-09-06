@@ -26,6 +26,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 
 public final class CoraDataRecord implements DataRecord, Data {
@@ -33,12 +34,12 @@ public final class CoraDataRecord implements DataRecord, Data {
 	private CoraDataGroup dataGroup;
 	private List<Action> actions = new ArrayList<>();
 
-	public static CoraDataRecord withDataGroup(CoraDataGroup dataGroup) {
+	public static CoraDataRecord withDataGroup(DataGroup dataGroup) {
 		return new CoraDataRecord(dataGroup);
 	}
 
-	private CoraDataRecord(CoraDataGroup dataGroup) {
-		this.dataGroup = dataGroup;
+	private CoraDataRecord(DataGroup dataGroup) {
+		this.dataGroup = (CoraDataGroup) dataGroup;
 	}
 
 	public void addKey(String key) {
@@ -58,6 +59,7 @@ public final class CoraDataRecord implements DataRecord, Data {
 
 	}
 
+	@Override
 	public CoraDataGroup getDataGroup() {
 		return dataGroup;
 	}

@@ -18,13 +18,15 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 
-public class CoraDataAtomicFactory implements DataAtomicFactory {
+public class CoraDataRecordFactory implements DataRecordFactory {
 
 	@Override
-	public DataAtomic factorUsingNameInDataAndValue(String nameInData, String value) {
-		return CoraDataAtomic.withNameInDataAndValue(nameInData, value);
+	public DataRecord factorUsingDataGroup(DataGroup dataGroup) {
+
+		return CoraDataRecord.withDataGroup(dataGroup);
 	}
 
 }

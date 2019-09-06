@@ -18,13 +18,22 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import se.uu.ub.cora.data.DataAtomic;
+import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
 
-public class CoraDataAtomicFactory implements DataAtomicFactory {
+import org.testng.annotations.Test;
 
-	@Override
-	public DataAtomic factorUsingNameInDataAndValue(String nameInData, String value) {
-		return CoraDataAtomic.withNameInDataAndValue(nameInData, value);
+import se.uu.ub.cora.data.DataRecord;
+
+public class CoraDataRecordFactoryTest {
+
+	@Test
+	public void testFactorWithDataGroup() {
+		DataRecordFactory factory = new CoraDataRecordFactory();
+		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("someNameInData");
+		DataRecord dataRecord = factory.factorUsingDataGroup(dataGroup);
+		assertTrue(dataRecord instanceof CoraDataRecord);
+		assertSame(dataRecord.getDataGroup(), dataGroup);
 	}
 
 }
