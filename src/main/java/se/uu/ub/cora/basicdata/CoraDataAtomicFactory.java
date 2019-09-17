@@ -19,6 +19,7 @@
 package se.uu.ub.cora.basicdata;
 
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicFactory;
 
 public class CoraDataAtomicFactory implements DataAtomicFactory {
 

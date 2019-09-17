@@ -24,6 +24,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordFactory;
 
 public class CoraDataRecordFactoryTest {
 

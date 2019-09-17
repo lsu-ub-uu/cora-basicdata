@@ -24,6 +24,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupFactory;
 
 public class CoraDataGroupFactoryTest {
 	String nameInData = "someNameInData";
