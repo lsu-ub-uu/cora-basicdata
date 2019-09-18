@@ -6,6 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataAtomicFactory;
+import se.uu.ub.cora.data.DataFactoryProvider;
 import se.uu.ub.cora.data.DataGroupFactory;
 import se.uu.ub.cora.data.DataRecordFactory;
 import se.uu.ub.cora.data.DataRecordLinkFactory;
