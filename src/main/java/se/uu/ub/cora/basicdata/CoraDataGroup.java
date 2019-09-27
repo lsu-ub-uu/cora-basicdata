@@ -60,6 +60,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return dataGroup;
 	}
 
+	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
 		return getChildrenStream().anyMatch(filterByNameInData(nameInData));
 	}
@@ -76,6 +77,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return dataElement.getNameInData().equals(childNameInData);
 	}
 
+	@Override
 	public String getFirstAtomicValueWithNameInData(String childNameInData) {
 		Optional<CoraDataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
 				.findFirst();
@@ -128,6 +130,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return getChildrenStream().filter(isDataGroup);
 	}
 
+	@Override
 	public DataElement getFirstChildWithNameInData(String childNameInData) {
 		Optional<DataElement> optionalFirst = possiblyFindFirstChildWithNameInData(childNameInData);
 		if (optionalFirst.isPresent()) {
@@ -145,10 +148,12 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		children.remove(firstChildWithNameInData);
 	}
 
-	public List<CoraDataGroup> getAllGroupsWithNameInData(String childNameInData) {
+	@Override
+	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
 		return getGroupChildrenWithNameInDataStream(childNameInData).collect(Collectors.toList());
 	}
 
+	@Override
 	public void addAttributeByIdWithValue(String nameInData, String value) {
 		attributes.put(nameInData, value);
 	}
@@ -181,14 +186,17 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return attributes;
 	}
 
+	@Override
 	public List<DataElement> getChildren() {
 		return children;
 	}
 
+	@Override
 	public void addChild(DataElement dataElement) {
 		children.add(dataElement);
 	}
 
+	@Override
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
 	}
