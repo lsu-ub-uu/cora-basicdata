@@ -267,6 +267,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 				.equals(dataAttribute.getValue());
 	}
 
+	@Override
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
 	}
