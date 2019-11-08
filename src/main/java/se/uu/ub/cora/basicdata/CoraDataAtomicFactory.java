@@ -25,8 +25,13 @@ public class CoraDataAtomicFactory implements DataAtomicFactory {
 
 	@Override
 	public DataAtomic factorUsingNameInDataAndValue(String nameInData, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		return CoraDataAtomic.withNameInDataAndValue(nameInData, value);
+	}
+
+	@Override
+	public DataAtomic factorUsingNameInDataAndValueAndRepeatId(String nameInData, String value,
+			String repeatId) {
+		return CoraDataAtomic.withNameInDataAndValueAndRepeatId(nameInData, value, repeatId);
 	}
 
 }

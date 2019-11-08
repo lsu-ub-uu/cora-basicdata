@@ -25,15 +25,13 @@ public class CoraDataGroupFactory implements DataGroupFactory {
 
 	@Override
 	public DataGroup factorUsingNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return null;
+		return CoraDataGroup.withNameInData(nameInData);
 	}
 
 	@Override
 	public DataGroup factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
 			String recordId) {
-		// TODO Auto-generated method stub
-		return null;
+		return CoraDataGroup.asLinkWithNameInDataAndTypeAndId(nameInData, recordType, recordId);
 	}
 
 }

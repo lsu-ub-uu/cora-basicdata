@@ -18,14 +18,41 @@
  */
 package se.uu.ub.cora.basicdata;
 
+import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroupFactory;
 
 public class CoraDataGroupFactoryTest {
 
+	private DataGroupFactory dataGroupFactory;
+	private String nameInData = "someDataGroupNameInData";
+	private String recordType = "someRecordType";
+	private String recordId = "someRecordId";
+
+	@BeforeMethod
+	public void setUp() {
+		dataGroupFactory = new CoraDataGroupFactory();
+	}
+
 	@Test
-	public void init() {
-		DataGroupFactory dataGroupFactory = new CoraDataGroupFactory();
+	public void testFactorUsingNameInData() {
+		CoraDataGroup factoredDataGroup = (CoraDataGroup) dataGroupFactory
+				.factorUsingNameInData(nameInData);
+		assertEquals(factoredDataGroup.getNameInData(), nameInData);
+	}
+
+	@Test
+	public void testFactorAsLink() {
+		CoraDataGroup factoredDataGroup = (CoraDataGroup) dataGroupFactory
+				.factorAsLinkWithNameInDataTypeAndId(nameInData, recordType, recordId);
+		assertEquals(factoredDataGroup.getNameInData(), nameInData);
+		assertEquals(factoredDataGroup.getChildren().size(), 2);
+		assertEquals(factoredDataGroup.getFirstAtomicValueWithNameInData("linkedRecordType"),
+				recordType);
+		assertEquals(factoredDataGroup.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				recordId);
 	}
 }
