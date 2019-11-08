@@ -54,10 +54,12 @@ public final class CoraDataAtomic implements DataAtomic, DataElement, DataPart {
 		return nameInData;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}
 
+	@Override
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
 	}

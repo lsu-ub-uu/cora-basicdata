@@ -60,6 +60,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return dataGroup;
 	}
 
+	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
 		return getChildrenStream().anyMatch(filterByNameInData(nameInData));
 	}
@@ -76,6 +77,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return dataElement.getNameInData().equals(childNameInData);
 	}
 
+	@Override
 	public String getFirstAtomicValueWithNameInData(String childNameInData) {
 		Optional<CoraDataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
 				.findFirst();
@@ -110,8 +112,8 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	}
 
 	@Override
-	public CoraDataGroup getFirstGroupWithNameInData(String childNameInData) {
-		Optional<CoraDataGroup> findFirst = getGroupChildrenWithNameInDataStream(childNameInData)
+	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
+		Optional<DataGroup> findFirst = getGroupChildrenWithNameInDataStream(childNameInData)
 				.findFirst();
 		if (findFirst.isPresent()) {
 			return findFirst.get();
@@ -119,7 +121,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
 	}
 
-	private Stream<CoraDataGroup> getGroupChildrenWithNameInDataStream(String childNameInData) {
+	private Stream<DataGroup> getGroupChildrenWithNameInDataStream(String childNameInData) {
 		return getGroupChildrenStream().filter(filterByNameInData(childNameInData))
 				.map(CoraDataGroup.class::cast);
 	}
@@ -128,6 +130,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return getChildrenStream().filter(isDataGroup);
 	}
 
+	@Override
 	public DataElement getFirstChildWithNameInData(String childNameInData) {
 		Optional<DataElement> optionalFirst = possiblyFindFirstChildWithNameInData(childNameInData);
 		if (optionalFirst.isPresent()) {
@@ -145,10 +148,12 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		children.remove(firstChildWithNameInData);
 	}
 
-	public List<CoraDataGroup> getAllGroupsWithNameInData(String childNameInData) {
+	@Override
+	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
 		return getGroupChildrenWithNameInDataStream(childNameInData).collect(Collectors.toList());
 	}
 
+	@Override
 	public void addAttributeByIdWithValue(String nameInData, String value) {
 		attributes.put(nameInData, value);
 	}
@@ -181,14 +186,17 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return attributes;
 	}
 
+	@Override
 	public List<DataElement> getChildren() {
 		return children;
 	}
 
+	@Override
 	public void addChild(DataElement dataElement) {
 		children.add(dataElement);
 	}
 
+	@Override
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
 	}
@@ -198,15 +206,15 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return repeatId;
 	}
 
-	public Collection<CoraDataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
+	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
 			CoraDataAttribute... childAttributes) {
 		return getGroupChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
 				.collect(Collectors.toList());
 
 	}
 
-	private Stream<CoraDataGroup> getGroupChildrenWithNameInDataAndAttributes(
-			String childNameInData, CoraDataAttribute... childAttributes) {
+	private Stream<DataGroup> getGroupChildrenWithNameInDataAndAttributes(String childNameInData,
+			CoraDataAttribute... childAttributes) {
 		return getGroupChildrenWithNameInDataStream(childNameInData)
 				.filter(filterByAttributes(childAttributes));
 	}
@@ -259,6 +267,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 				.equals(dataAttribute.getValue());
 	}
 
+	@Override
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
 	}

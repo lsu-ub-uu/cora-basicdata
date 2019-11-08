@@ -25,15 +25,15 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataLink;
 
-public final class DataResourceLink extends CoraDataGroup implements DataLink {
+public final class CoraDataResourceLink extends CoraDataGroup implements DataLink {
 
 	private List<Action> actions = new ArrayList<>();
 
-	private DataResourceLink(String nameInData) {
+	private CoraDataResourceLink(String nameInData) {
 		super(nameInData);
 	}
 
-	public DataResourceLink(CoraDataGroup dataGroup) {
+	public CoraDataResourceLink(CoraDataGroup dataGroup) {
 		super(dataGroup.getNameInData());
 		addResourceLinkChildren(dataGroup);
 		setRepeatId(dataGroup.getRepeatId());
@@ -50,8 +50,8 @@ public final class DataResourceLink extends CoraDataGroup implements DataLink {
 		addChild(mimeType);
 	}
 
-	public static DataResourceLink withNameInData(String nameInData) {
-		return new DataResourceLink(nameInData);
+	public static CoraDataResourceLink withNameInData(String nameInData) {
+		return new CoraDataResourceLink(nameInData);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public final class DataResourceLink extends CoraDataGroup implements DataLink {
 		return actions;
 	}
 
-	public static DataResourceLink fromDataGroup(CoraDataGroup dataGroup) {
-		return new DataResourceLink(dataGroup);
+	public static CoraDataResourceLink fromDataGroup(CoraDataGroup dataGroup) {
+		return new CoraDataResourceLink(dataGroup);
 	}
 }

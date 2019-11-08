@@ -33,6 +33,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataGroupTest {
 	@Test
@@ -225,7 +226,7 @@ public class CoraDataGroupTest {
 				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 		addTwoGroupChildrenWithSameNameInData(dataGroup);
 
-		List<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInData("childNameInData");
+		List<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInData("childNameInData");
 		assertEquals(groupsFound.size(), 2);
 	}
 
@@ -246,7 +247,7 @@ public class CoraDataGroupTest {
 		dataGroup
 				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
-		List<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInData("childNameInData");
+		List<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInData("childNameInData");
 		assertEquals(groupsFound.size(), 0);
 	}
 
@@ -255,17 +256,17 @@ public class CoraDataGroupTest {
 		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		CoraDataGroup child3 = createTestGroupForAttributesReturnChildGroupWithAttribute(dataGroup);
 
-		Collection<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
+		Collection<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"));
 
 		assertEquals(groupsFound.size(), 1);
 		assertGroupsFoundAre(groupsFound, child3);
 	}
 
-	private void assertGroupsFoundAre(Collection<CoraDataGroup> groupsFound,
+	private void assertGroupsFoundAre(Collection<DataGroup> groupsFound,
 			CoraDataGroup... assertedGroups) {
 		int i = 0;
-		for (CoraDataGroup groupFound : groupsFound) {
+		for (DataGroup groupFound : groupsFound) {
 			assertEquals(groupFound, assertedGroups[i]);
 			i++;
 		}
@@ -305,7 +306,7 @@ public class CoraDataGroupTest {
 		CoraDataGroup child4 = addAndReturnDataGroupChildWithNameInDataAndAttributes(dataGroup,
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"));
 
-		Collection<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
+		Collection<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"));
 
 		assertEquals(groupsFound.size(), 2);
@@ -321,7 +322,7 @@ public class CoraDataGroupTest {
 		addAndReturnDataGroupChildWithNameInDataAndAttributes(dataGroup, "groupId2",
 				CoraDataAttribute.withNameInDataAndValue("nameInData", "value2"));
 
-		Collection<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
+		Collection<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"));
 
 		assertEquals(groupsFound.size(), 2);
@@ -337,7 +338,7 @@ public class CoraDataGroupTest {
 		addAndReturnDataGroupChildWithNameInDataAndAttributes(dataGroup, "groupId2",
 				CoraDataAttribute.withNameInDataAndValue("nameInData2", "value1"));
 
-		Collection<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
+		Collection<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"));
 
 		assertEquals(groupsFound.size(), 2);
@@ -352,7 +353,7 @@ public class CoraDataGroupTest {
 				CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"),
 				CoraDataAttribute.withNameInDataAndValue("nameInData2", "value2"));
 
-		Collection<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
+		Collection<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"),
 				CoraDataAttribute.withNameInDataAndValue("nameInData2", "value1"));
 
@@ -370,7 +371,7 @@ public class CoraDataGroupTest {
 				CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"),
 				CoraDataAttribute.withNameInDataAndValue("nameInData3", "value2"));
 
-		Collection<CoraDataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
+		Collection<DataGroup> groupsFound = dataGroup.getAllGroupsWithNameInDataAndAttributes(
 				"groupId2", CoraDataAttribute.withNameInDataAndValue("nameInData", "value1"),
 				CoraDataAttribute.withNameInDataAndValue("nameInData2", "value2"));
 

@@ -13,11 +13,11 @@ import se.uu.ub.cora.data.Action;
 
 public class CoraDataResourceLinkTest {
 
-	DataResourceLink resourceLink;
+	CoraDataResourceLink resourceLink;
 
 	@BeforeMethod
 	public void setUp() {
-		resourceLink = DataResourceLink.withNameInData("nameInData");
+		resourceLink = CoraDataResourceLink.withNameInData("nameInData");
 
 		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "myStreamId");
 		resourceLink.addChild(streamId);
@@ -53,7 +53,7 @@ public class CoraDataResourceLinkTest {
 	public void testFromDataGroup() {
 		CoraDataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
 
-		DataResourceLink dataResourceLink = DataResourceLink.fromDataGroup(dataGroupResourceLink);
+		CoraDataResourceLink dataResourceLink = CoraDataResourceLink.fromDataGroup(dataGroupResourceLink);
 
 		assertCorrectFromDataResourceLink(dataResourceLink);
 		assertNull(dataResourceLink.getRepeatId());
@@ -74,7 +74,7 @@ public class CoraDataResourceLinkTest {
 		return dataGroupRecordLink;
 	}
 
-	private void assertCorrectFromDataResourceLink(DataResourceLink resourceLink) {
+	private void assertCorrectFromDataResourceLink(CoraDataResourceLink resourceLink) {
 		assertEquals(resourceLink.getNameInData(), "nameInData");
 
 		CoraDataAtomic convertedFileName = (CoraDataAtomic) resourceLink
@@ -99,7 +99,7 @@ public class CoraDataResourceLinkTest {
 		CoraDataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
 		dataGroupResourceLink.setRepeatId("2");
 
-		DataResourceLink dataResourceLink = DataResourceLink.fromDataGroup(dataGroupResourceLink);
+		CoraDataResourceLink dataResourceLink = CoraDataResourceLink.fromDataGroup(dataGroupResourceLink);
 
 		assertCorrectFromDataResourceLink(dataResourceLink);
 		assertEquals(dataResourceLink.getRepeatId(), "2");
