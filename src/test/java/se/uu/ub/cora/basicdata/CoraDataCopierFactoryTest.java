@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataCopier;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataCopierFactoryTest {
 
@@ -38,7 +39,7 @@ public class CoraDataCopierFactoryTest {
 
 	@Test
 	public void testFactorDataGroupCopier() {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("aName", "aValue"));
 		DataCopierFactory dataCopierFactoryImp = new DataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataGroup);
@@ -51,7 +52,7 @@ public class CoraDataCopierFactoryTest {
 
 	@Test
 	public void testFactorDataRecordLinkCopier() {
-		CoraDataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId(
+		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId(
 				"someLinkNameInData", "someLinkType", "someLinkValue");
 		CoraDataRecordLink dataRecordLink = CoraDataRecordLink.fromDataGroup(dataGroup);
 

@@ -26,8 +26,8 @@ import java.util.Iterator;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -38,24 +38,24 @@ public class JsonToDataGroupConverterTest {
 	@Test
 	public void testToClass() {
 		String json = "{\"name\":\"groupNameInData\", \"children\":[]}";
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 	}
 
-	private CoraDataGroup createDataGroupForJsonString(String json) {
+	private DataGroup createDataGroupForJsonString(String json) {
 		OrgJsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = JsonToDataGroupConverter
 				.forJsonObject((JsonObject) jsonValue);
 		DataPart dataPart = jsonToDataConverter.toInstance();
-		CoraDataGroup dataGroup = (CoraDataGroup) dataPart;
+		DataGroup dataGroup = (DataGroup) dataPart;
 		return dataGroup;
 	}
 
 	@Test
 	public void testToClassWithRepeatId() {
 		String json = "{\"name\":\"groupNameInData\", \"children\":[],\"repeatId\":\"3\"}";
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 		assertEquals(dataGroup.getRepeatId(), "3");
 	}
@@ -63,7 +63,7 @@ public class JsonToDataGroupConverterTest {
 	@Test
 	public void testToClassWithAttribute() {
 		String json = "{\"name\":\"groupNameInData\",\"attributes\":{\"attributeNameInData\":\"attributeValue\"}, \"children\":[]}";
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 		String attributeValue = dataGroup.getAttributes().get("attributeNameInData");
 		assertEquals(attributeValue, "attributeValue");
@@ -73,7 +73,7 @@ public class JsonToDataGroupConverterTest {
 	public void testToClassWithRepeatIdAndAttribute() {
 		String json = "{\"name\":\"groupNameInData\", \"children\":[],\"repeatId\":\"3\""
 				+ ",\"attributes\":{\"attributeNameInData\":\"attributeValue\"}}";
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 		String attributeValue = dataGroup.getAttributes().get("attributeNameInData");
 		assertEquals(attributeValue, "attributeValue");
@@ -101,7 +101,7 @@ public class JsonToDataGroupConverterTest {
 				+ "\"attributeNameInData\":\"attributeValue\","
 				+ "\"attributeNameInData2\":\"attributeValue2\"" + "},\"children\":[]}";
 
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 		String attributeValue = dataGroup.getAttributes().get("attributeNameInData");
 		assertEquals(attributeValue, "attributeValue");
@@ -114,7 +114,7 @@ public class JsonToDataGroupConverterTest {
 		String json = "{\"name\":\"groupNameInData\","
 				+ "\"children\":[{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}]}";
 
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 		CoraDataAtomic child = (CoraDataAtomic) dataGroup.getChildren().iterator().next();
 		assertEquals(child.getNameInData(), "atomicNameInData");
@@ -132,13 +132,13 @@ public class JsonToDataGroupConverterTest {
 		json += "]";
 		json += "}";
 
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 		Iterator<DataElement> iterator = dataGroup.getChildren().iterator();
 		CoraDataAtomic child = (CoraDataAtomic) iterator.next();
 		assertEquals(child.getNameInData(), "atomicNameInData");
 		assertEquals(child.getValue(), "atomicValue");
-		CoraDataGroup child2 = (CoraDataGroup) iterator.next();
+		DataGroup child2 = (DataGroup) iterator.next();
 		assertEquals(child2.getNameInData(), "groupNameInData2");
 		CoraDataAtomic subChild = (CoraDataAtomic) child2.getChildren().iterator().next();
 		assertEquals(subChild.getNameInData(), "atomicNameInData2");
@@ -159,7 +159,7 @@ public class JsonToDataGroupConverterTest {
 		json += "]";
 		json += "}";
 
-		CoraDataGroup dataGroup = createDataGroupForJsonString(json);
+		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 
 		String attributeValue2 = dataGroup.getAttributes().get("attributeNameInData");
@@ -169,7 +169,7 @@ public class JsonToDataGroupConverterTest {
 		CoraDataAtomic child = (CoraDataAtomic) iterator.next();
 		assertEquals(child.getNameInData(), "atomicNameInData");
 		assertEquals(child.getValue(), "atomicValue");
-		CoraDataGroup child2 = (CoraDataGroup) iterator.next();
+		DataGroup child2 = (DataGroup) iterator.next();
 		assertEquals(child2.getNameInData(), "groupNameInData2");
 		CoraDataAtomic subChild = (CoraDataAtomic) child2.getChildren().iterator().next();
 		assertEquals(subChild.getNameInData(), "atomicNameInData2");

@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.CoraDataGroup;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -130,7 +131,7 @@ public class DataGroupToJsonConverterTest {
 	public void testToJsonGroupWithAtomicChildAndGroupChildWithAtomicChild() {
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
-		CoraDataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
+		DataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
 		dataGroup.addChild(dataGroup2);
 
 		dataGroup2.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
@@ -164,7 +165,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeNameInData2", "attributeValue2");
 
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		DataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
 		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("id", "place:0001"));
 		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("type", "place"));
 		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("createdBy", "userId"));
@@ -172,7 +173,7 @@ public class DataGroupToJsonConverterTest {
 
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
-		CoraDataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
+		DataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
 		dataGroup2.addAttributeByIdWithValue("g2AttributeNameInData", "g2AttributeValue");
 		dataGroup.addChild(dataGroup2);
 
@@ -226,7 +227,7 @@ public class DataGroupToJsonConverterTest {
 	public void testToJsonCompactFormatGroupWithAtomicChildAndGroupChildWithAtomicChild() {
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
-		CoraDataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
+		DataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
 		dataGroup.addChild(dataGroup2);
 
 		dataGroup2.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));

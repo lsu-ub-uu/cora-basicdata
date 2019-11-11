@@ -23,6 +23,7 @@ import java.util.List;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 
 public final class CoraDataRecordLink extends CoraDataGroup implements DataLink {
@@ -33,13 +34,13 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataLink 
 		super(nameInData);
 	}
 
-	private CoraDataRecordLink(CoraDataGroup dataGroup) {
+	private CoraDataRecordLink(DataGroup dataGroup) {
 		super(dataGroup.getNameInData());
 		addLinkedRecordTypeAndId(dataGroup);
 		setRepeatId(dataGroup.getRepeatId());
 	}
 
-	private void addLinkedRecordTypeAndId(CoraDataGroup dataGroup) {
+	private void addLinkedRecordTypeAndId(DataGroup dataGroup) {
 		DataElement linkedRecordType = dataGroup.getFirstChildWithNameInData("linkedRecordType");
 		addChild(linkedRecordType);
 		DataElement linkedRecordId = dataGroup.getFirstChildWithNameInData("linkedRecordId");
@@ -60,7 +61,7 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataLink 
 		return actions;
 	}
 
-	public static CoraDataRecordLink fromDataGroup(CoraDataGroup dataGroup) {
+	public static CoraDataRecordLink fromDataGroup(DataGroup dataGroup) {
 		return new CoraDataRecordLink(dataGroup);
 	}
 }

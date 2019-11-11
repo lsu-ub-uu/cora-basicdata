@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupFactory;
 
 public class CoraDataGroupFactoryTest {
@@ -39,14 +40,14 @@ public class CoraDataGroupFactoryTest {
 
 	@Test
 	public void testFactorUsingNameInData() {
-		CoraDataGroup factoredDataGroup = (CoraDataGroup) dataGroupFactory
+		DataGroup factoredDataGroup = (DataGroup) dataGroupFactory
 				.factorUsingNameInData(nameInData);
 		assertEquals(factoredDataGroup.getNameInData(), nameInData);
 	}
 
 	@Test
 	public void testFactorAsLink() {
-		CoraDataGroup factoredDataGroup = (CoraDataGroup) dataGroupFactory
+		DataGroup factoredDataGroup = (DataGroup) dataGroupFactory
 				.factorAsLinkWithNameInDataTypeAndId(nameInData, recordType, recordId);
 		assertEquals(factoredDataGroup.getNameInData(), nameInData);
 		assertEquals(factoredDataGroup.getChildren().size(), 2);

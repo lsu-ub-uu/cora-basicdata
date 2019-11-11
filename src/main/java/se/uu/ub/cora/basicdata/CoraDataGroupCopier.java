@@ -24,13 +24,14 @@ import java.util.Map.Entry;
 
 import se.uu.ub.cora.data.DataCopier;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataGroupCopier implements DataCopier {
 
 	private DataElement dataElement;
 	private DataCopierFactory copierFactory;
-	private CoraDataGroup originalDataGroup;
-	private CoraDataGroup dataGroupCopy;
+	private DataGroup originalDataGroup;
+	private DataGroup dataGroupCopy;
 
 	private CoraDataGroupCopier(DataElement dataElement, DataCopierFactory copierFactory) {
 		this.dataElement = dataElement;
@@ -43,8 +44,8 @@ public class CoraDataGroupCopier implements DataCopier {
 	}
 
 	@Override
-	public CoraDataGroup copy() {
-		originalDataGroup = (CoraDataGroup) dataElement;
+	public DataGroup copy() {
+		originalDataGroup = (DataGroup) dataElement;
 		dataGroupCopy = CoraDataGroup.withNameInData(originalDataGroup.getNameInData());
 		copyChildren();
 		possiblyCopyRepeatId();

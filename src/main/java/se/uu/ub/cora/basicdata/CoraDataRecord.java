@@ -26,18 +26,19 @@ import java.util.Set;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 
 public final class CoraDataRecord implements DataRecord, Data {
 	private Set<String> keys = new LinkedHashSet<>();
-	private CoraDataGroup dataGroup;
+	private DataGroup dataGroup;
 	private List<Action> actions = new ArrayList<>();
 
-	public static CoraDataRecord withDataGroup(CoraDataGroup dataGroup) {
+	public static CoraDataRecord withDataGroup(DataGroup dataGroup) {
 		return new CoraDataRecord(dataGroup);
 	}
 
-	private CoraDataRecord(CoraDataGroup dataGroup) {
+	private CoraDataRecord(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
@@ -53,12 +54,12 @@ public final class CoraDataRecord implements DataRecord, Data {
 		return keys;
 	}
 
-	public void setDataGroup(CoraDataGroup dataGroup) {
+	public void setDataGroup(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 
 	}
 
-	public CoraDataGroup getDataGroup() {
+	public DataGroup getDataGroup() {
 		return dataGroup;
 	}
 

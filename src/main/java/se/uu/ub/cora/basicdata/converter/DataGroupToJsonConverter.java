@@ -21,8 +21,8 @@ package se.uu.ub.cora.basicdata.converter;
 
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
@@ -30,16 +30,16 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
-	private CoraDataGroup dataGroup;
+	private DataGroup dataGroup;
 	private JsonObjectBuilder dataGroupJsonObjectBuilder;
 	private JsonBuilderFactory jsonBuilderFactory;
 
 	public static DataGroupToJsonConverter usingJsonFactoryForDataGroup(JsonBuilderFactory factory,
-			CoraDataGroup dataGroup) {
+			DataGroup dataGroup) {
 		return new DataGroupToJsonConverter(factory, dataGroup);
 	}
 
-	private DataGroupToJsonConverter(JsonBuilderFactory factory, CoraDataGroup dataGroup) {
+	private DataGroupToJsonConverter(JsonBuilderFactory factory, DataGroup dataGroup) {
 		this.jsonBuilderFactory = factory;
 		this.dataGroup = dataGroup;
 		dataGroupJsonObjectBuilder = factory.createObjectBuilder();

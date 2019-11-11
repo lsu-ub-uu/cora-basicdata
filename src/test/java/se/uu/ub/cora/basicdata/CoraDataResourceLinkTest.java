@@ -10,6 +10,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataResourceLinkTest {
 
@@ -51,7 +52,7 @@ public class CoraDataResourceLinkTest {
 
 	@Test
 	public void testFromDataGroup() {
-		CoraDataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
+		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
 
 		CoraDataResourceLink dataResourceLink = CoraDataResourceLink.fromDataGroup(dataGroupResourceLink);
 
@@ -59,8 +60,8 @@ public class CoraDataResourceLinkTest {
 		assertNull(dataResourceLink.getRepeatId());
 	}
 
-	private CoraDataGroup createResourceLinkAsDataGroup() {
-		CoraDataGroup dataGroupRecordLink = CoraDataGroup.withNameInData("nameInData");
+	private DataGroup createResourceLinkAsDataGroup() {
+		DataGroup dataGroupRecordLink = CoraDataGroup.withNameInData("nameInData");
 
 		CoraDataAtomic fileName = CoraDataAtomic.withNameInDataAndValue("filename", "someFileName");
 		dataGroupRecordLink.addChild(fileName);
@@ -96,7 +97,7 @@ public class CoraDataResourceLinkTest {
 
 	@Test
 	public void testFromDataGroupWithRepeatId() {
-		CoraDataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
+		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
 		dataGroupResourceLink.setRepeatId("2");
 
 		CoraDataResourceLink dataResourceLink = CoraDataResourceLink.fromDataGroup(dataGroupResourceLink);

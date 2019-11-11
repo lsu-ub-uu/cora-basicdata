@@ -30,6 +30,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataRecordLinkTest {
 
@@ -80,7 +81,7 @@ public class CoraDataRecordLinkTest {
 
 	@Test
 	public void testInitWithLinkedPath() {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("linkedPath");
+		DataGroup dataGroup = CoraDataGroup.withNameInData("linkedPath");
 		recordLink.addChild(dataGroup);
 		assertNotNull(recordLink.getFirstChildWithNameInData("linkedPath"));
 	}
@@ -97,7 +98,7 @@ public class CoraDataRecordLinkTest {
 
 	@Test
 	public void testFromDataGroup() {
-		CoraDataGroup dataGroupRecordLink = createRecordLinkAsDataGroup();
+		DataGroup dataGroupRecordLink = createRecordLinkAsDataGroup();
 
 		CoraDataRecordLink dataRecordLink = CoraDataRecordLink.fromDataGroup(dataGroupRecordLink);
 
@@ -105,8 +106,8 @@ public class CoraDataRecordLinkTest {
 		assertNull(dataRecordLink.getRepeatId());
 	}
 
-	private CoraDataGroup createRecordLinkAsDataGroup() {
-		CoraDataGroup dataGroupRecordLink = CoraDataGroup.withNameInData("nameInData");
+	private DataGroup createRecordLinkAsDataGroup() {
+		DataGroup dataGroupRecordLink = CoraDataGroup.withNameInData("nameInData");
 
 		CoraDataAtomic linkedRecordType = CoraDataAtomic.withNameInDataAndValue("linkedRecordType",
 				"someLinkedRecordType");
@@ -132,7 +133,7 @@ public class CoraDataRecordLinkTest {
 
 	@Test
 	public void testFromDataGroupWithRepeatId() {
-		CoraDataGroup dataGroupRecordLink = createRecordLinkAsDataGroup();
+		DataGroup dataGroupRecordLink = createRecordLinkAsDataGroup();
 		dataGroupRecordLink.setRepeatId("1");
 
 		CoraDataRecordLink dataRecordLink = CoraDataRecordLink.fromDataGroup(dataGroupRecordLink);

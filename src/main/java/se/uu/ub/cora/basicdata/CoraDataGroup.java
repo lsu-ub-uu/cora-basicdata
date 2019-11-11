@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
@@ -52,9 +53,9 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		this.nameInData = nameInData;
 	}
 
-	public static CoraDataGroup asLinkWithNameInDataAndTypeAndId(String nameInData, String type,
+	public static DataGroup asLinkWithNameInDataAndTypeAndId(String nameInData, String type,
 			String id) {
-		CoraDataGroup dataGroup = new CoraDataGroup(nameInData);
+		DataGroup dataGroup = new CoraDataGroup(nameInData);
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordType", type));
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordId", id));
 		return dataGroup;
@@ -102,7 +103,8 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return getChildrenStream().filter(isDataAtomic);
 	}
 
-	public List<CoraDataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
+	@Override
+	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
 		return getDataAtomicChildrenWithNameInData(childNameInData).collect(Collectors.toList());
 	}
 
@@ -158,6 +160,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		attributes.put(nameInData, value);
 	}
 
+	@Override
 	public void removeFirstChildWithNameInData(String childNameInData) {
 		boolean childRemoved = tryToRemoveChild(childNameInData);
 		if (!childRemoved) {

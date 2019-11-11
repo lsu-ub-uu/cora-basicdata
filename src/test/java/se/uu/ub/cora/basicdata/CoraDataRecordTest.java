@@ -30,13 +30,14 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataRecordTest {
 	private CoraDataRecord dataRecord;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 	}
 
@@ -78,7 +79,7 @@ public class CoraDataRecordTest {
 
 	@Test
 	public void testDataGroup() {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataRecord.setDataGroup(dataGroup);
 		assertEquals(dataRecord.getDataGroup(), dataGroup);
 	}

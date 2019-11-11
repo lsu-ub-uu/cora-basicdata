@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.basicdata.CoraDataList;
 import se.uu.ub.cora.basicdata.CoraDataRecord;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -33,7 +34,7 @@ public class DataListToJsonConverterTest {
 	@Test
 	public void testToJson() {
 		CoraDataList dataList = CoraDataList.withContainDataOfType("place");
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("groupId");
+		DataGroup dataGroup = CoraDataGroup.withNameInData("groupId");
 		CoraDataRecord dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 		dataList.addData(dataRecord);
 		dataList.setTotalNo("1");

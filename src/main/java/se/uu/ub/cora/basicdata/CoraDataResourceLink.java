@@ -23,6 +23,7 @@ import java.util.List;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 
 public final class CoraDataResourceLink extends CoraDataGroup implements DataLink {
@@ -33,13 +34,13 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataLin
 		super(nameInData);
 	}
 
-	public CoraDataResourceLink(CoraDataGroup dataGroup) {
+	public CoraDataResourceLink(DataGroup dataGroup) {
 		super(dataGroup.getNameInData());
 		addResourceLinkChildren(dataGroup);
 		setRepeatId(dataGroup.getRepeatId());
 	}
 
-	private void addResourceLinkChildren(CoraDataGroup dataGroup) {
+	private void addResourceLinkChildren(DataGroup dataGroup) {
 		DataElement streamId = dataGroup.getFirstChildWithNameInData("streamId");
 		addChild(streamId);
 		DataElement fileName = dataGroup.getFirstChildWithNameInData("filename");
@@ -64,7 +65,7 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataLin
 		return actions;
 	}
 
-	public static CoraDataResourceLink fromDataGroup(CoraDataGroup dataGroup) {
+	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
 		return new CoraDataResourceLink(dataGroup);
 	}
 }
