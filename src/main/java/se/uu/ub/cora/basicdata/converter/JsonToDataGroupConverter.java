@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonArray;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
