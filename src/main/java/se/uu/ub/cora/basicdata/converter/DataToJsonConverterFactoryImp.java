@@ -24,6 +24,7 @@ import se.uu.ub.cora.basicdata.CoraDataAttribute;
 import se.uu.ub.cora.basicdata.CoraDataGroup;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 
