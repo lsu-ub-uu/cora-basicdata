@@ -20,10 +20,11 @@
 package se.uu.ub.cora.basicdata.converter;
 
 import se.uu.ub.cora.basicdata.CoraDataAtomic;
+import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataAtomicToJsonConverter extends DataToJsonConverter {
+public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 
 	private CoraDataAtomic dataAtomic;
 	private JsonBuilderFactory factory;
@@ -39,7 +40,7 @@ public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 	}
 
 	@Override
-	JsonObjectBuilder toJsonObjectBuilder() {
+	public JsonObjectBuilder toJsonObjectBuilder() {
 		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
 
 		jsonObjectBuilder.addKeyString("name", dataAtomic.getNameInData());
@@ -56,5 +57,17 @@ public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 
 	private boolean hasNonEmptyRepeatId() {
 		return dataAtomic.getRepeatId() != null && !dataAtomic.getRepeatId().equals("");
+	}
+
+	@Override
+	public String toJson() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedPrettyString();
+	}
+
+	@Override
+	public String toJsonCompactFormat() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
 	}
 }

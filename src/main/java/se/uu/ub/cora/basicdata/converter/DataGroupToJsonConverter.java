@@ -24,17 +24,19 @@ import java.util.Map.Entry;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataGroupToJsonConverter extends DataToJsonConverter {
+public final class DataGroupToJsonConverter implements DataToJsonConverter {
 
 	private DataGroup dataGroup;
 	private JsonObjectBuilder dataGroupJsonObjectBuilder;
 	private JsonBuilderFactory jsonBuilderFactory;
 
-	public static DataGroupToJsonConverter usingJsonFactoryForDataGroup(JsonBuilderFactory factory,
+	public static DataToJsonConverter usingJsonFactoryForDataGroup(JsonBuilderFactory factory,
 			DataGroup dataGroup) {
 		return new DataGroupToJsonConverter(factory, dataGroup);
 	}
@@ -46,7 +48,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 	}
 
 	@Override
-	JsonObjectBuilder toJsonObjectBuilder() {
+	public JsonObjectBuilder toJsonObjectBuilder() {
 		possiblyAddRepeatId();
 		if (hasAttributes()) {
 			addAttributesToGroup();
@@ -93,5 +95,17 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 					.createForDataElement(jsonBuilderFactory, dataPart).toJsonObjectBuilder());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
+	}
+
+	@Override
+	public String toJson() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedPrettyString();
+	}
+
+	@Override
+	public String toJsonCompactFormat() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
 	}
 }

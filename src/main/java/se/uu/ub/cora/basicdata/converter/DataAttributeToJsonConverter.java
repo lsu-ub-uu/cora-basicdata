@@ -20,10 +20,11 @@
 package se.uu.ub.cora.basicdata.converter;
 
 import se.uu.ub.cora.basicdata.CoraDataAttribute;
+import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataAttributeToJsonConverter extends DataToJsonConverter {
+public final class DataAttributeToJsonConverter implements DataToJsonConverter {
 	private JsonBuilderFactory factory;
 	private CoraDataAttribute dataAttribute;
 
@@ -38,13 +39,21 @@ public final class DataAttributeToJsonConverter extends DataToJsonConverter {
 		this.dataAttribute = dataAttribute;
 	}
 
-	@Override
-	JsonObjectBuilder toJsonObjectBuilder() {
+	public JsonObjectBuilder toJsonObjectBuilder() {
 		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
 
-		jsonObjectBuilder.addKeyString(dataAttribute.getNameInData(),
-				dataAttribute.getValue());
+		jsonObjectBuilder.addKeyString(dataAttribute.getNameInData(), dataAttribute.getValue());
 		return jsonObjectBuilder;
+	}
+
+	public String toJson() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedPrettyString();
+	}
+
+	public String toJsonCompactFormat() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
 	}
 
 }
