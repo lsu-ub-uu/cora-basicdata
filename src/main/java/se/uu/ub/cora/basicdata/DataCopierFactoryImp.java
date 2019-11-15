@@ -19,6 +19,7 @@
 package se.uu.ub.cora.basicdata;
 
 import se.uu.ub.cora.data.DataCopier;
+import se.uu.ub.cora.data.DataCopierFactory;
 import se.uu.ub.cora.data.DataElement;
 
 public class DataCopierFactoryImp implements DataCopierFactory {
