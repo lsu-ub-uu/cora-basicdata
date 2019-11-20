@@ -38,9 +38,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://github.com/lsu-ub-uu/cora-data.git</connection>
-		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-data.git</developerConnection>
-		<url>https://github.com/lsu-ub-uu/cora-data.git</url>
+		<connection>scm:git:https://github.com/lsu-ub-uu/cora-basicdata.git</connection>
+		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-basicdata.git</developerConnection>
+		<url>https://github.com/lsu-ub-uu/cora-basicdata.git</url>
 	  <tag>HEAD</tag>
   </scm>
 
