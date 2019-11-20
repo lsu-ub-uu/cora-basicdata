@@ -19,22 +19,22 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import se.uu.ub.cora.basicdata.CoraDataAtomic;
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 
-	private CoraDataAtomic dataAtomic;
+	private DataAtomic dataAtomic;
 	private JsonBuilderFactory factory;
 
 	public static DataToJsonConverter usingJsonFactoryForDataAtomic(JsonBuilderFactory factory,
-			CoraDataAtomic dataAtomic) {
+			DataAtomic dataAtomic) {
 		return new DataAtomicToJsonConverter(factory, dataAtomic);
 	}
 
-	private DataAtomicToJsonConverter(JsonBuilderFactory factory, CoraDataAtomic dataAtomic) {
+	private DataAtomicToJsonConverter(JsonBuilderFactory factory, DataAtomic dataAtomic) {
 		this.factory = factory;
 		this.dataAtomic = dataAtomic;
 	}

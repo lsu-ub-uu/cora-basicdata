@@ -18,15 +18,16 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import se.uu.ub.cora.data.DataCopier;
-import se.uu.ub.cora.data.DataCopierFactory;
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.copier.DataCopier;
+import se.uu.ub.cora.data.copier.DataCopierFactory;
 
 public class DataCopierFactoryImp implements DataCopierFactory {
 
 	@Override
 	public DataCopier factorForDataElement(DataElement dataElement) {
-		if (dataElement instanceof CoraDataAtomic) {
+		if (dataElement instanceof DataAtomic) {
 			return CoraDataAtomicCopier.usingDataAtomic(dataElement);
 		} else if (dataElement instanceof CoraDataRecordLink) {
 			return new DataRecordLinkCopier(dataElement);

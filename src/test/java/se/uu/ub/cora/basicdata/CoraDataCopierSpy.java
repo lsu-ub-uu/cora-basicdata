@@ -1,7 +1,7 @@
 package se.uu.ub.cora.basicdata;
 
-import se.uu.ub.cora.data.DataCopier;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.copier.DataCopier;
 
 public class CoraDataCopierSpy implements DataCopier {
 

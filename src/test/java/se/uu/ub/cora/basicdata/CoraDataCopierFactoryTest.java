@@ -22,9 +22,10 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.DataCopier;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.copier.DataCopier;
+import se.uu.ub.cora.data.copier.DataCopierFactory;
 
 public class CoraDataCopierFactoryTest {
 

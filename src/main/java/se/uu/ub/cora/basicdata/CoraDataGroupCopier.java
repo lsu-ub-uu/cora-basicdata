@@ -22,10 +22,10 @@ package se.uu.ub.cora.basicdata;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.data.DataCopier;
-import se.uu.ub.cora.data.DataCopierFactory;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.copier.DataCopier;
+import se.uu.ub.cora.data.copier.DataCopierFactory;
 
 public class CoraDataGroupCopier implements DataCopier {
 

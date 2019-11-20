@@ -19,26 +19,26 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import se.uu.ub.cora.basicdata.CoraDataAttribute;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataAttributeToJsonConverter implements DataToJsonConverter {
 	private JsonBuilderFactory factory;
-	private CoraDataAttribute dataAttribute;
+	private DataAttribute dataAttribute;
 
 	public static DataToJsonConverter usingJsonFactoryForDataAttribute(JsonBuilderFactory factory,
-			CoraDataAttribute dataAttribute) {
+			DataAttribute dataAttribute) {
 		return new DataAttributeToJsonConverter(factory, dataAttribute);
 	}
 
-	private DataAttributeToJsonConverter(JsonBuilderFactory factory,
-			CoraDataAttribute dataAttribute) {
+	private DataAttributeToJsonConverter(JsonBuilderFactory factory, DataAttribute dataAttribute) {
 		this.factory = factory;
 		this.dataAttribute = dataAttribute;
 	}
 
+	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
 
@@ -46,11 +46,13 @@ public final class DataAttributeToJsonConverter implements DataToJsonConverter {
 		return jsonObjectBuilder;
 	}
 
+	@Override
 	public String toJson() {
 		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
 		return jsonObjectBuilder.toJsonFormattedPrettyString();
 	}
 
+	@Override
 	public String toJsonCompactFormat() {
 		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
 		return jsonObjectBuilder.toJsonFormattedString();

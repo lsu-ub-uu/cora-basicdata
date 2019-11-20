@@ -19,9 +19,8 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import se.uu.ub.cora.basicdata.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.CoraDataAttribute;
-import se.uu.ub.cora.basicdata.CoraDataGroup;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
@@ -33,15 +32,15 @@ public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory
 	@Override
 	public DataToJsonConverter createForDataElement(JsonBuilderFactory factory, DataPart dataPart) {
 
-		if (dataPart instanceof CoraDataGroup) {
+		if (dataPart instanceof DataGroup) {
 			return DataGroupToJsonConverter.usingJsonFactoryForDataGroup(factory,
 					(DataGroup) dataPart);
 		}
-		if (dataPart instanceof CoraDataAtomic) {
+		if (dataPart instanceof DataAtomic) {
 			return DataAtomicToJsonConverter.usingJsonFactoryForDataAtomic(factory,
-					(CoraDataAtomic) dataPart);
+					(DataAtomic) dataPart);
 		}
 		return DataAttributeToJsonConverter.usingJsonFactoryForDataAttribute(factory,
-				(CoraDataAttribute) dataPart);
+				(DataAttribute) dataPart);
 	}
 }
