@@ -87,4 +87,12 @@ public class DataAtomicToJsonConverterTest {
 		expectedJson += "}";
 		Assert.assertEquals(json, expectedJson);
 	}
+
+	@Test
+	public void testToJsonCompactFormat() {
+		String json = converter.toJsonCompactFormat();
+
+		String expectedJson = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}";
+		Assert.assertEquals(json, expectedJson);
+	}
 }

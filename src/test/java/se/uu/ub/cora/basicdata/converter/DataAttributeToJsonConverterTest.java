@@ -43,8 +43,8 @@ public class DataAttributeToJsonConverterTest {
 
 	@Test
 	public void testToJson() {
-		CoraDataAttribute dataAttribute = CoraDataAttribute.withNameInDataAndValue("attributeNameInData",
-				"attributeValue");
+		CoraDataAttribute dataAttribute = CoraDataAttribute
+				.withNameInDataAndValue("attributeNameInData", "attributeValue");
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForDataElement(factory, dataAttribute);
 		String json = dataToJsonConverter.toJson();
@@ -54,12 +54,23 @@ public class DataAttributeToJsonConverterTest {
 
 	@Test
 	public void testToJsonEmptyValue() {
-		CoraDataAttribute dataAttribute = CoraDataAttribute.withNameInDataAndValue("attributeNameInData",
-				"");
+		CoraDataAttribute dataAttribute = CoraDataAttribute
+				.withNameInDataAndValue("attributeNameInData", "");
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForDataElement(factory, dataAttribute);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"attributeNameInData\": \"\"}");
+	}
+
+	@Test
+	public void testToJsonCompactFormat() {
+		CoraDataAttribute dataAttribute = CoraDataAttribute
+				.withNameInDataAndValue("attributeNameInData", "attributeValue");
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForDataElement(factory, dataAttribute);
+		String json = dataToJsonConverter.toJsonCompactFormat();
+
+		Assert.assertEquals(json, "{\"attributeNameInData\":\"attributeValue\"}");
 	}
 }
