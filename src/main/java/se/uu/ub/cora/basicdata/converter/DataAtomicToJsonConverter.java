@@ -56,7 +56,7 @@ public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 	}
 
 	private boolean hasNonEmptyRepeatId() {
-		return dataAtomic.getRepeatId() != null && !dataAtomic.getRepeatId().equals("");
+		return dataAtomic.getRepeatId() != null && !"".equals(dataAtomic.getRepeatId());
 	}
 
 	@Override

@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import se.uu.ub.cora.basicdata.DataMissingException;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
@@ -266,7 +267,7 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	}
 
 	private boolean requestedAttributeHasDifferentValueAsExisting(
-			Map<String, String> attributesFromElement, CoraDataAttribute dataAttribute) {
+			Map<String, String> attributesFromElement, DataAttribute dataAttribute) {
 		return !attributesFromElement.get(dataAttribute.getNameInData())
 				.equals(dataAttribute.getValue());
 	}

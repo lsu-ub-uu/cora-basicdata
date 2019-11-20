@@ -155,15 +155,14 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	private void addChildrenToGroup() {
 		JsonArray children = jsonObject.getValueAsJsonArray(CHILDREN);
 		for (JsonValue child : children) {
-			addChildToGroup(child);
+			addChildToGroup((JsonObject) child);
 		}
 	}
 
-	private void addChildToGroup(JsonValue child) {
+	private void addChildToGroup(JsonObject child) {
 		JsonToDataConverterFactoryImp jsonToDataConverterFactoryImp = new JsonToDataConverterFactoryImp();
-		JsonObject jsonChildObject = (JsonObject) child;
 		JsonToDataConverter childJsonToDataConverter = jsonToDataConverterFactoryImp
-				.createForJsonObject(jsonChildObject);
+				.createForJsonObject(child);
 		dataGroup.addChild((DataElement) childJsonToDataConverter.toInstance());
 	}
 }

@@ -19,6 +19,7 @@
 package se.uu.ub.cora.basicdata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.copier.DataCopier;
 
@@ -43,7 +44,7 @@ public class CoraDataAtomicCopier implements DataCopier {
 		return dataAtomicCopy;
 	}
 
-	private void possiblySetRepeatId(CoraDataAtomic dataAtomic, CoraDataAtomic dataAtomicCopy) {
+	private void possiblySetRepeatId(DataAtomic dataAtomic, DataAtomic dataAtomicCopy) {
 		if (dataAtomic.getRepeatId() != null) {
 			dataAtomicCopy.setRepeatId(dataAtomic.getRepeatId());
 		}
