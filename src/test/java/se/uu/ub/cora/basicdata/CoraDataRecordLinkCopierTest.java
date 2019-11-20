@@ -47,20 +47,20 @@ public class CoraDataRecordLinkCopierTest {
 
 	@Test
 	public void testCopyDataRecordLinkNotSameObject() {
-		CoraDataRecordLink recordLinkCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink recordLinkCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		assertNotNull(recordLinkCopy);
 		assertNotSame(originalRecordLink, recordLinkCopy);
 	}
 
 	@Test
 	public void testCopyDataRecordLinkSameNameInData() {
-		DataGroup recordLinkCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink recordLinkCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		assertEquals(recordLinkCopy.getNameInData(), originalRecordLink.getNameInData());
 	}
 
 	@Test
 	public void testCopyRecordLinkTypeAndId() {
-		DataGroup recordLinkCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink recordLinkCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		CoraDataAtomic linkedRecordType = (CoraDataAtomic) recordLinkCopy
 				.getFirstChildWithNameInData("linkedRecordType");
 		assertEquals(linkedRecordType.getValue(),
@@ -75,21 +75,21 @@ public class CoraDataRecordLinkCopierTest {
 
 	@Test
 	public void testCopyDataAssertNoRepeatId() {
-		DataGroup dataGroupCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink dataGroupCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		assertNull(dataGroupCopy.getRepeatId());
 	}
 
 	@Test
 	public void testCopyDataGroupWithRepeatId() {
 		originalRecordLink.setRepeatId("1");
-		DataGroup dataGroupCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink dataGroupCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		assertEquals(dataGroupCopy.getRepeatId(), originalRecordLink.getRepeatId());
 	}
 
 	@Test
 	public void testCopyDataGroupWithOneAttribute() {
 		originalRecordLink.addAttributeByIdWithValue("type", "someTypeAttribute");
-		DataGroup dataGroupCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink dataGroupCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		assertEquals(dataGroupCopy.getAttribute("type"), "someTypeAttribute");
 		assertEquals(dataGroupCopy.getAttributes().size(), 1);
 	}
@@ -98,7 +98,7 @@ public class CoraDataRecordLinkCopierTest {
 	public void testCopyDataGroupWithTwoAttributes() {
 		originalRecordLink.addAttributeByIdWithValue("type", "someTypeAttribute");
 		originalRecordLink.addAttributeByIdWithValue("otherAttribute", "someOtherAttribute");
-		DataGroup dataGroupCopy = dataRecordLinkCopier.copy();
+		CoraDataRecordLink dataGroupCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
 		assertEquals(dataGroupCopy.getAttribute("type"), "someTypeAttribute");
 		assertEquals(dataGroupCopy.getAttribute("otherAttribute"), "someOtherAttribute");
 		assertEquals(dataGroupCopy.getAttributes().size(), 2);

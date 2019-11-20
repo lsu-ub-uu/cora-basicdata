@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.copier.DataCopier;
 
 public class DataRecordLinkCopier implements DataCopier {
@@ -36,7 +37,7 @@ public class DataRecordLinkCopier implements DataCopier {
 	}
 
 	@Override
-	public CoraDataRecordLink copy() {
+	public DataLink copy() {
 		orignialDataRecordLink = (CoraDataRecordLink) dataElement;
 		dataRecordLinkCopy = CoraDataRecordLink.withNameInData(dataElement.getNameInData());
 
