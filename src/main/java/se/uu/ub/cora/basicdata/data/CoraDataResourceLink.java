@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2019 Uppsala University Library
+ * Copyright 2015, 2016 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,29 +26,33 @@ import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 
-public final class CoraDataRecordLink extends CoraDataGroup implements DataLink {
+public final class CoraDataResourceLink extends CoraDataGroup implements DataLink {
 
 	private List<Action> actions = new ArrayList<>();
 
-	private CoraDataRecordLink(String nameInData) {
+	private CoraDataResourceLink(String nameInData) {
 		super(nameInData);
 	}
 
-	private CoraDataRecordLink(DataGroup dataGroup) {
+	public CoraDataResourceLink(DataGroup dataGroup) {
 		super(dataGroup.getNameInData());
-		addLinkedRecordTypeAndId(dataGroup);
+		addResourceLinkChildren(dataGroup);
 		setRepeatId(dataGroup.getRepeatId());
 	}
 
-	private void addLinkedRecordTypeAndId(DataGroup dataGroup) {
-		DataElement linkedRecordType = dataGroup.getFirstChildWithNameInData("linkedRecordType");
-		addChild(linkedRecordType);
-		DataElement linkedRecordId = dataGroup.getFirstChildWithNameInData("linkedRecordId");
-		addChild(linkedRecordId);
+	private void addResourceLinkChildren(DataGroup dataGroup) {
+		DataElement streamId = dataGroup.getFirstChildWithNameInData("streamId");
+		addChild(streamId);
+		DataElement fileName = dataGroup.getFirstChildWithNameInData("filename");
+		addChild(fileName);
+		DataElement fileSize = dataGroup.getFirstChildWithNameInData("filesize");
+		addChild(fileSize);
+		DataElement mimeType = dataGroup.getFirstChildWithNameInData("mimeType");
+		addChild(mimeType);
 	}
 
-	public static CoraDataRecordLink withNameInData(String nameInData) {
-		return new CoraDataRecordLink(nameInData);
+	public static CoraDataResourceLink withNameInData(String nameInData) {
+		return new CoraDataResourceLink(nameInData);
 	}
 
 	@Override
@@ -61,7 +65,7 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataLink 
 		return actions;
 	}
 
-	public static CoraDataRecordLink fromDataGroup(DataGroup dataGroup) {
-		return new CoraDataRecordLink(dataGroup);
+	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
+		return new CoraDataResourceLink(dataGroup);
 	}
 }

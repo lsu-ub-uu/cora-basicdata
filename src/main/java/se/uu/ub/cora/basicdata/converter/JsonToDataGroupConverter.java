@@ -21,7 +21,7 @@ package se.uu.ub.cora.basicdata.converter;
 
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.basicdata.CoraDataGroup;
+import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;

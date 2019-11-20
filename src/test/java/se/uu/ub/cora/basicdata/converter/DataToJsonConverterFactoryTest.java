@@ -24,9 +24,9 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.CoraDataAttribute;
-import se.uu.ub.cora.basicdata.CoraDataGroup;
+import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
+import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
+import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;

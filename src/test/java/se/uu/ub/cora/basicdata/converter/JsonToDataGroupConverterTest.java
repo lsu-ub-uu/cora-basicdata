@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.CoraDataAtomic;
+import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;

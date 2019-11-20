@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import se.uu.ub.cora.basicdata.CoraDataList;
-import se.uu.ub.cora.basicdata.CoraDataRecord;
+import se.uu.ub.cora.basicdata.data.CoraDataList;
+import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;

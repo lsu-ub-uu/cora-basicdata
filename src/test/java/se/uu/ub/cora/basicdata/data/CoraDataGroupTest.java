@@ -17,7 +17,7 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.basicdata.DataMissingException;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
@@ -289,8 +290,8 @@ public class CoraDataGroupTest {
 		return child;
 	}
 
-	private DataGroup addAndReturnDataGroupChildWithNameInDataAndAttributes(
-			DataGroup dataGroup, String nameInData, CoraDataAttribute... attributes) {
+	private DataGroup addAndReturnDataGroupChildWithNameInDataAndAttributes(DataGroup dataGroup,
+			String nameInData, CoraDataAttribute... attributes) {
 		DataGroup child = CoraDataGroup.withNameInData(nameInData);
 		dataGroup.addChild(child);
 		for (CoraDataAttribute attribute : attributes) {

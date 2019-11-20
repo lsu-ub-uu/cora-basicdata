@@ -1,4 +1,4 @@
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.copier.DataCopier;

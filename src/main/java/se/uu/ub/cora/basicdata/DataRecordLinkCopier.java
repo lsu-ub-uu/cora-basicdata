@@ -21,6 +21,7 @@ package se.uu.ub.cora.basicdata;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.copier.DataCopier;
 

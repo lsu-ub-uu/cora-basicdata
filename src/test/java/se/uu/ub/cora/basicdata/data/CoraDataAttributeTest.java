@@ -17,11 +17,13 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
 
 public class CoraDataAttributeTest {
 	@Test

@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.basicdata;
 
+import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataAttributeFactory;
 

@@ -24,6 +24,8 @@ import static org.testng.Assert.assertNull;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
+
 public class CoraDataAtomicCopierTest {
 
 	@Test

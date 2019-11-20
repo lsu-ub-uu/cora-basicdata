@@ -23,9 +23,9 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.CoraDataGroup;
-import se.uu.ub.cora.basicdata.CoraDataList;
-import se.uu.ub.cora.basicdata.CoraDataRecord;
+import se.uu.ub.cora.basicdata.data.CoraDataGroup;
+import se.uu.ub.cora.basicdata.data.CoraDataList;
+import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;

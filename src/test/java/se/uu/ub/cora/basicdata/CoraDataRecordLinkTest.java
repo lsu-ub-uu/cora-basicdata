@@ -29,6 +29,9 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
+import se.uu.ub.cora.basicdata.data.CoraDataGroup;
+import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 

@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.basicdata;
 
+import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupFactory;
 
