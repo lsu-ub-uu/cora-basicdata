@@ -211,25 +211,26 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 		return repeatId;
 	}
 
+	@Override
 	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
-			CoraDataAttribute... childAttributes) {
+			DataAttribute... childAttributes) {
 		return getGroupChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
 				.collect(Collectors.toList());
 
 	}
 
 	private Stream<DataGroup> getGroupChildrenWithNameInDataAndAttributes(String childNameInData,
-			CoraDataAttribute... childAttributes) {
+			DataAttribute... childAttributes) {
 		return getGroupChildrenWithNameInDataStream(childNameInData)
 				.filter(filterByAttributes(childAttributes));
 	}
 
-	private Predicate<DataElement> filterByAttributes(CoraDataAttribute... childAttributes) {
+	private Predicate<DataElement> filterByAttributes(DataAttribute... childAttributes) {
 		return dataElement -> dataElementsHasAttributes(dataElement, childAttributes);
 	}
 
 	private boolean dataElementsHasAttributes(DataElement dataElement,
-			CoraDataAttribute[] childAttributes) {
+			DataAttribute[] childAttributes) {
 		Map<String, String> attributesFromElement = dataElement.getAttributes();
 		if (differentNumberOfAttributesInRequestedAndExisting(childAttributes,
 				attributesFromElement)) {
@@ -240,13 +241,13 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	}
 
 	private boolean differentNumberOfAttributesInRequestedAndExisting(
-			CoraDataAttribute[] childAttributes, Map<String, String> attributesFromElement) {
+			DataAttribute[] childAttributes, Map<String, String> attributesFromElement) {
 		return childAttributes.length != attributesFromElement.size();
 	}
 
-	private boolean allRequestedAttributesMatchExistingAttributes(
-			CoraDataAttribute[] childAttributes, Map<String, String> attributesFromElement) {
-		for (CoraDataAttribute dataAttribute : childAttributes) {
+	private boolean allRequestedAttributesMatchExistingAttributes(DataAttribute[] childAttributes,
+			Map<String, String> attributesFromElement) {
+		for (DataAttribute dataAttribute : childAttributes) {
 			if (attributesDoesNotMatch(attributesFromElement, dataAttribute)) {
 				return false;
 			}
@@ -255,14 +256,14 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	}
 
 	private boolean attributesDoesNotMatch(Map<String, String> attributesFromElement,
-			CoraDataAttribute dataAttribute) {
+			DataAttribute dataAttribute) {
 		return requestedAttributeDoesNotExists(attributesFromElement, dataAttribute)
 				|| requestedAttributeHasDifferentValueAsExisting(attributesFromElement,
 						dataAttribute);
 	}
 
 	private boolean requestedAttributeDoesNotExists(Map<String, String> attributesFromElement,
-			CoraDataAttribute dataAttribute) {
+			DataAttribute dataAttribute) {
 		return !attributesFromElement.containsKey(dataAttribute.getNameInData());
 	}
 
