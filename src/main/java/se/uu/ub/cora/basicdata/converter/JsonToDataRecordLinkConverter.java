@@ -18,15 +18,49 @@
  */
 package se.uu.ub.cora.basicdata.converter;
 
+import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
+import se.uu.ub.cora.json.parser.JsonObject;
+import se.uu.ub.cora.json.parser.JsonParseException;
 
-public class JsonToDataRecordLinkConverter implements JsonToDataConverter {
+public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
+		implements JsonToDataConverter {
+
+	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
+		return new JsonToDataRecordLinkConverter(jsonObject);
+	}
+
+	private JsonToDataRecordLinkConverter(JsonObject jsonObject) {
+		super(jsonObject);
+	}
 
 	@Override
 	public DataPart toInstance() {
-		// TODO Auto-generated method stub
-		return null;
+		CoraDataRecordLink recordLink = (CoraDataRecordLink) super.toInstance();
+		throwErrorIfLinkChildrenAreIncorrect(recordLink);
+		return recordLink;
+	}
+
+	private void throwErrorIfLinkChildrenAreIncorrect(CoraDataRecordLink recordLink) {
+		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
+			throw new JsonParseException(
+					"RecordLinkData must and can only contain children with name linkedRecordType and linkedRecordId");
+		}
+	}
+
+	private boolean incorrectNumberOfChildren(CoraDataRecordLink recordLink) {
+		return recordLink.getChildren().size() != 2;
+	}
+
+	private boolean incorrectChildren(CoraDataRecordLink recordLink) {
+		return !recordLink.containsChildWithNameInData("linkedRecordType")
+				|| !recordLink.containsChildWithNameInData("linkedRecordId");
+	}
+
+	@Override
+	protected void createInstanceOfDataElement(String nameInData) {
+		dataGroup = CoraDataRecordLink.withNameInData(nameInData);
 	}
 
 }

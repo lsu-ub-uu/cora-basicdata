@@ -41,20 +41,24 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		jsonObject = (JsonObject) jsonValue;
 
 		if (isGroup()) {
-			List<String> foundNames = extractChildNames();
-			if (isRecordLink(foundNames)) {
-				return new JsonToDataRecordLinkConverter();
-			}
-			if (isResourceLink(foundNames)) {
-				return new JsonToDataResourceLinkConverter();
-			}
-
-			return JsonToDataGroupConverter.forJsonObject(jsonObject);
+			return createConverterForGroupOrLink();
 		}
 		if (isAtomicData()) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
+	}
+
+	private JsonToDataConverter createConverterForGroupOrLink() {
+		List<String> foundNames = extractChildNames();
+		if (isRecordLink(foundNames)) {
+			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
+		}
+		if (isResourceLink(foundNames)) {
+			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
+		}
+
+		return JsonToDataGroupConverter.forJsonObject(jsonObject);
 	}
 
 	private boolean isResourceLink(List<String> foundNames) {

@@ -31,20 +31,20 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonString;
 import se.uu.ub.cora.json.parser.JsonValue;
 
-public final class JsonToDataGroupConverter implements JsonToDataConverter {
+public class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 3;
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
 	private JsonObject jsonObject;
-	private CoraDataGroup dataGroup;
+	protected CoraDataGroup dataGroup;
 
 	static JsonToDataGroupConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataGroupConverter(jsonObject);
 	}
 
-	private JsonToDataGroupConverter(JsonObject jsonObject) {
+	protected JsonToDataGroupConverter(JsonObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
 
@@ -66,7 +66,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		return jsonObject.getValueAsJsonString("name").getStringValue();
 	}
 
-	private void validateOnlyCorrectKeysAtTopLevel() {
+	protected void validateOnlyCorrectKeysAtTopLevel() {
 
 		if (!jsonObject.containsKey("name")) {
 			throw new JsonParseException("Group data must contain key: name");
@@ -112,13 +112,17 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private DataPart createDataGroupInstance() {
 		String nameInData = getNameInDataFromJsonObject();
-		dataGroup = CoraDataGroup.withNameInData(nameInData);
+		createInstanceOfDataElement(nameInData);
 		addRepeatIdToGroup();
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
 		addChildrenToGroup();
 		return dataGroup;
+	}
+
+	protected void createInstanceOfDataElement(String nameInData) {
+		dataGroup = CoraDataGroup.withNameInData(nameInData);
 	}
 
 	private void addRepeatIdToGroup() {
