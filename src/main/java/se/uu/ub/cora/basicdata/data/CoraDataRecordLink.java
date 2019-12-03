@@ -24,9 +24,9 @@ import java.util.List;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataLink;
+import se.uu.ub.cora.data.DataRecordLink;
 
-public final class CoraDataRecordLink extends CoraDataGroup implements DataLink {
+public final class CoraDataRecordLink extends CoraDataGroup implements DataRecordLink {
 
 	private List<Action> actions = new ArrayList<>();
 

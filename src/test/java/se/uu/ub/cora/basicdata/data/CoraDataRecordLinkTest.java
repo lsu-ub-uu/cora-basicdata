@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -29,11 +29,10 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.data.CoraDataGroup;
-import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataLink;
+import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordLinkTest {
 
@@ -51,6 +50,12 @@ public class CoraDataRecordLinkTest {
 				"myLinkedRecordId");
 		recordLink.addChild(linkedRecordId);
 
+	}
+
+	@Test
+	public void testCorrectType() {
+		assertTrue(recordLink instanceof DataLink);
+		assertTrue(recordLink instanceof DataRecordLink);
 	}
 
 	@Test

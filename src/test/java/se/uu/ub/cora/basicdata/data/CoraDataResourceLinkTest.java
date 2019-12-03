@@ -1,4 +1,4 @@
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -9,11 +9,10 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.data.CoraDataGroup;
-import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataLink;
+import se.uu.ub.cora.data.DataResourceLink;
 
 public class CoraDataResourceLinkTest {
 
@@ -26,6 +25,12 @@ public class CoraDataResourceLinkTest {
 		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "myStreamId");
 		resourceLink.addChild(streamId);
 
+	}
+
+	@Test
+	public void testCorrectType() {
+		assertTrue(resourceLink instanceof DataLink);
+		assertTrue(resourceLink instanceof DataResourceLink);
 	}
 
 	@Test
@@ -57,7 +62,8 @@ public class CoraDataResourceLinkTest {
 	public void testFromDataGroup() {
 		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
 
-		CoraDataResourceLink dataResourceLink = CoraDataResourceLink.fromDataGroup(dataGroupResourceLink);
+		CoraDataResourceLink dataResourceLink = CoraDataResourceLink
+				.fromDataGroup(dataGroupResourceLink);
 
 		assertCorrectFromDataResourceLink(dataResourceLink);
 		assertNull(dataResourceLink.getRepeatId());
@@ -103,7 +109,8 @@ public class CoraDataResourceLinkTest {
 		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
 		dataGroupResourceLink.setRepeatId("2");
 
-		CoraDataResourceLink dataResourceLink = CoraDataResourceLink.fromDataGroup(dataGroupResourceLink);
+		CoraDataResourceLink dataResourceLink = CoraDataResourceLink
+				.fromDataGroup(dataGroupResourceLink);
 
 		assertCorrectFromDataResourceLink(dataResourceLink);
 		assertEquals(dataResourceLink.getRepeatId(), "2");
