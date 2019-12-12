@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecord;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
@@ -29,15 +29,15 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 public final class DataRecordToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
-	private CoraDataRecord dataRecord;
+	private DataRecord dataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
 
 	public static DataRecordToJsonConverter usingJsonFactoryForDataRecord(
-			JsonBuilderFactory jsonFactory, CoraDataRecord dataRecord) {
+			JsonBuilderFactory jsonFactory, DataRecord dataRecord) {
 		return new DataRecordToJsonConverter(jsonFactory, dataRecord);
 	}
 
-	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory, CoraDataRecord dataRecord) {
+	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory, DataRecord dataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.dataRecord = dataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();

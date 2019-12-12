@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import se.uu.ub.cora.basicdata.data.CoraDataList;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
@@ -30,16 +30,16 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataListToJsonConverter {
 
+	private JsonBuilderFactory jsonBuilderFactory;
+	private DataList restRecordList;
+	private JsonObjectBuilder recordListJsonObjectBuilder;
+
 	public static DataListToJsonConverter usingJsonFactoryForDataList(
-			JsonBuilderFactory jsonFactory, CoraDataList restRecordList) {
+			JsonBuilderFactory jsonFactory, DataList restRecordList) {
 		return new DataListToJsonConverter(jsonFactory, restRecordList);
 	}
 
-	private JsonBuilderFactory jsonBuilderFactory;
-	private CoraDataList restRecordList;
-	private JsonObjectBuilder recordListJsonObjectBuilder;
-
-	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, CoraDataList restRecordList) {
+	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, DataList restRecordList) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restRecordList = restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
