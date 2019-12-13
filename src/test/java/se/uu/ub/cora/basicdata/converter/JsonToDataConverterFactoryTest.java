@@ -96,6 +96,15 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorOnJsonStringNOTStreamIdFactorsGroupConverter() {
+		String json = "{\"children\":[{\"name\":\"NOTstreamId\",\"value\":\"soundBinary:18269669168741\"},{\"name\":\"NOTfilename\",\"value\":\"adele.png\"},{\"name\":\"NOTfilesize\",\"value\":\"8\"},{\"name\":\"NOTmimeType\",\"value\":\"application/octet-stream\"}],\"name\":\"master\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+	}
+
+	@Test
 	public void testFactorOnlyStreamIdAndFileNameFactorsGroupConverter() {
 		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"soundBinary:18269669168741\"},{\"name\":\"filename\",\"value\":\"adele.png\"},{\"name\":\"NOTfilesize\",\"value\":\"8\"},{\"name\":\"NOTmimeType\",\"value\":\"application/octet-stream\"}],\"name\":\"master\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
