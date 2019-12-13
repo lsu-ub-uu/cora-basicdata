@@ -19,6 +19,7 @@
 package se.uu.ub.cora.basicdata.converter;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
@@ -26,6 +27,8 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 
 public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		implements JsonToDataConverter {
+
+	private static final int NUM_OF_RECORDLINK_CHILDREN = 2;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -49,11 +52,11 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		}
 	}
 
-	private boolean incorrectNumberOfChildren(CoraDataRecordLink recordLink) {
-		return recordLink.getChildren().size() != 2;
+	private boolean incorrectNumberOfChildren(DataGroup recordLink) {
+		return recordLink.getChildren().size() != NUM_OF_RECORDLINK_CHILDREN;
 	}
 
-	private boolean incorrectChildren(CoraDataRecordLink recordLink) {
+	private boolean incorrectChildren(DataGroup recordLink) {
 		return !recordLink.containsChildWithNameInData("linkedRecordType")
 				|| !recordLink.containsChildWithNameInData("linkedRecordId");
 	}
