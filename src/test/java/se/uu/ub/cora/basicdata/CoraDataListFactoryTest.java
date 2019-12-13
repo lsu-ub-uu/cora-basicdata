@@ -18,25 +18,27 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.testng.Assert.assertEquals;
 
-import se.uu.ub.cora.basicdata.data.CoraDataCopierSpy;
-import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.copier.DataCopier;
-import se.uu.ub.cora.data.copier.DataCopierFactory;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-public class CoraDataCopierFactorySpy implements DataCopierFactory {
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataListFactory;
 
-	public List<DataElement> dataElements = new ArrayList<>();
-	public List<DataCopier> factoredDataCopiers = new ArrayList<>();
+public class CoraDataListFactoryTest {
 
-	@Override
-	public DataCopier factorForDataElement(DataElement dataElement) {
-		dataElements.add(dataElement);
-		CoraDataCopierSpy dataCopier = new CoraDataCopierSpy();
-		factoredDataCopiers.add(dataCopier);
-		return dataCopier;
+	private DataListFactory dataListFactory;
+	private String containDataOfType = "someType";
+
+	@BeforeMethod
+	public void setUp() {
+		dataListFactory = new CoraDataListFactory();
 	}
 
+	@Test
+	public void testFactorUsingNameInData() {
+		DataList factoredDataList = dataListFactory.factorWithContainDataOfType(containDataOfType);
+		assertEquals(factoredDataList.getContainDataOfType(), containDataOfType);
+	}
 }

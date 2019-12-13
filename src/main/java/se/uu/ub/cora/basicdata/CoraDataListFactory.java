@@ -18,25 +18,15 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import java.util.ArrayList;
-import java.util.List;
+import se.uu.ub.cora.basicdata.data.CoraDataList;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataListFactory;
 
-import se.uu.ub.cora.basicdata.data.CoraDataCopierSpy;
-import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.copier.DataCopier;
-import se.uu.ub.cora.data.copier.DataCopierFactory;
-
-public class CoraDataCopierFactorySpy implements DataCopierFactory {
-
-	public List<DataElement> dataElements = new ArrayList<>();
-	public List<DataCopier> factoredDataCopiers = new ArrayList<>();
+public class CoraDataListFactory implements DataListFactory {
 
 	@Override
-	public DataCopier factorForDataElement(DataElement dataElement) {
-		dataElements.add(dataElement);
-		CoraDataCopierSpy dataCopier = new CoraDataCopierSpy();
-		factoredDataCopiers.add(dataCopier);
-		return dataCopier;
+	public DataList factorWithContainDataOfType(String containDataOfType) {
+		return CoraDataList.withContainDataOfType(containDataOfType);
 	}
 
 }

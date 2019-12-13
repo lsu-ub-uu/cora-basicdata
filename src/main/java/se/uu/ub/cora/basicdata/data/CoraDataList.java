@@ -41,39 +41,48 @@ public final class CoraDataList implements DataList {
 		return new CoraDataList(containDataOfType);
 	}
 
+	@Override
 	public String getContainDataOfType() {
 		return containDataOfType;
 	}
 
+	@Override
 	public void addData(Data data) {
 		listOfData.add(data);
 
 	}
 
+	@Override
 	public List<Data> getDataList() {
 		return listOfData;
 	}
 
+	@Override
 	public void setTotalNo(String totalNo) {
 		this.totalNo = totalNo;
 	}
 
+	@Override
 	public String getTotalNumberOfTypeInStorage() {
 		return totalNo;
 	}
 
+	@Override
 	public void setFromNo(String fromNo) {
 		this.fromNo = fromNo;
 	}
 
+	@Override
 	public String getFromNo() {
 		return fromNo;
 	}
 
+	@Override
 	public void setToNo(String toNo) {
 		this.toNo = toNo;
 	}
 
+	@Override
 	public String getToNo() {
 		return toNo;
 	}

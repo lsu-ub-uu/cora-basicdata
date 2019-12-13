@@ -124,12 +124,14 @@ public class CoraDataGroupCopierTest {
 
 	private void assertChildReturnedFromCopierIsAddedToGroupUsingIndex(DataGroup dataGroupCopy,
 			int index) {
-		CoraDataCopierSpy factoredCopier = copierFactory.factoredDataCopiers.get(index);
+		CoraDataCopierSpy factoredCopier = (CoraDataCopierSpy) copierFactory.factoredDataCopiers
+				.get(index);
 		assertTrue(factoredCopier.copyWasCalled);
 
 		DataElement firstChildInCopiedGroup = dataGroupCopy.getChildren().get(index);
-		DataElement elementReturnedFromCopier = copierFactory.factoredDataCopiers
-				.get(index).returnedElement;
+		CoraDataCopierSpy dataCopier = (CoraDataCopierSpy) copierFactory.factoredDataCopiers
+				.get(index);
+		DataElement elementReturnedFromCopier = dataCopier.returnedElement;
 
 		assertSame(firstChildInCopiedGroup, elementReturnedFromCopier);
 	}
