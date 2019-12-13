@@ -53,7 +53,7 @@ public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
 		return recordLink.getChildren().size() != NUM_OF_RESOURCELINK_CHILDREN;
 	}
 
-	private boolean incorrectChildren(CoraDataResourceLink recordLink) {
+	private boolean incorrectChildren(DataGroup recordLink) {
 		return !recordLink.containsChildWithNameInData("streamId")
 				|| !recordLink.containsChildWithNameInData("filename")
 				|| !recordLink.containsChildWithNameInData("filesize")

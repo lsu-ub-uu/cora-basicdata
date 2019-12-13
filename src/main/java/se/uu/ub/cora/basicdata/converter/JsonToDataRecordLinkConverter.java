@@ -45,7 +45,7 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		return recordLink;
 	}
 
-	private void throwErrorIfLinkChildrenAreIncorrect(CoraDataRecordLink recordLink) {
+	private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
 		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
 			throw new JsonParseException(
 					"RecordLinkData must and can only contain children with name linkedRecordType and linkedRecordId");
