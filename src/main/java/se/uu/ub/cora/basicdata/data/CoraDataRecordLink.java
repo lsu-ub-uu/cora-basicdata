@@ -51,6 +51,14 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 		return new CoraDataRecordLink(nameInData);
 	}
 
+	public static CoraDataRecordLink asLinkWithNameInDataAndTypeAndId(String nameInData,
+			String type, String id) {
+		CoraDataRecordLink dataRecordLink = new CoraDataRecordLink(nameInData);
+		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordType", type));
+		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordId", id));
+		return dataRecordLink;
+	}
+
 	@Override
 	public void addAction(Action action) {
 		actions.add(action);
