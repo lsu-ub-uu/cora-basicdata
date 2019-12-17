@@ -18,22 +18,15 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
-import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.data.DataRecordLinkFactory;
+import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
+import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.data.DataResourceLinkFactory;
 
-public class CoraDataRecordLinkFactory implements DataRecordLinkFactory {
-
-	@Override
-	public DataRecordLink factorUsingNameInData(String nameInData) {
-		return CoraDataRecordLink.withNameInData(nameInData);
-	}
+public class CoraDataResourceLinkFactory implements DataResourceLinkFactory {
 
 	@Override
-	public DataRecordLink factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
-			String recordId) {
-		return CoraDataRecordLink.asLinkWithNameInDataAndTypeAndId(nameInData, recordType,
-				recordId);
+	public DataResourceLink factorUsingNameInData(String nameInData) {
+		return CoraDataResourceLink.withNameInData(nameInData);
 	}
 
 }

@@ -18,22 +18,28 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
-import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.data.DataRecordLinkFactory;
+import static org.testng.Assert.assertEquals;
 
-public class CoraDataRecordLinkFactory implements DataRecordLinkFactory {
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
-	@Override
-	public DataRecordLink factorUsingNameInData(String nameInData) {
-		return CoraDataRecordLink.withNameInData(nameInData);
+import se.uu.ub.cora.data.DataResourceLink;
+
+public class CoraDataResourceLinkFactoryTest {
+
+	private CoraDataResourceLinkFactory dataResourceLinkFactory;
+	private String nameInData = "someDataResoruceLinkNameInData";
+
+	@BeforeMethod
+	public void setUp() {
+		dataResourceLinkFactory = new CoraDataResourceLinkFactory();
 	}
 
-	@Override
-	public DataRecordLink factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
-			String recordId) {
-		return CoraDataRecordLink.asLinkWithNameInDataAndTypeAndId(nameInData, recordType,
-				recordId);
+	@Test
+	public void testFactorUsingNameInData() {
+		DataResourceLink factoredDataRecordLink = dataResourceLinkFactory
+				.factorUsingNameInData(nameInData);
+		assertEquals(factoredDataRecordLink.getNameInData(), nameInData);
 	}
 
 }
