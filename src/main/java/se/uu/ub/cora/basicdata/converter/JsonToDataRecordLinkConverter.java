@@ -28,7 +28,8 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		implements JsonToDataConverter {
 
-	private static final int NUM_OF_RECORDLINK_CHILDREN = 2;
+	private static final int MIN_NUM_OF_CHILDREN = 2;
+	private static final int MAX_NUM_OF_CHILDREN = 3;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -45,25 +46,33 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		return recordLink;
 	}
 
+	@Override
+	protected void createInstanceOfDataElement(String nameInData) {
+		dataGroup = CoraDataRecordLink.withNameInData(nameInData);
+	}
+
 	private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
-		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
+		if (incorrectNumberOfChildren(recordLink) || missingMandatoryChildren(recordLink)
+				|| maxNumOfChildrenButOptionalChildIsMissing(recordLink)) {
 			throw new JsonParseException(
-					"RecordLinkData must and can only contain children with name linkedRecordType and linkedRecordId");
+					"RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+							+ "and might contain child with name linkedRepeatId");
 		}
 	}
 
 	private boolean incorrectNumberOfChildren(DataGroup recordLink) {
-		return recordLink.getChildren().size() != NUM_OF_RECORDLINK_CHILDREN;
+		int numberOfChildren = recordLink.getChildren().size();
+		return numberOfChildren < MIN_NUM_OF_CHILDREN || numberOfChildren > MAX_NUM_OF_CHILDREN;
 	}
 
-	private boolean incorrectChildren(DataGroup recordLink) {
+	private boolean missingMandatoryChildren(DataGroup recordLink) {
 		return !recordLink.containsChildWithNameInData("linkedRecordType")
 				|| !recordLink.containsChildWithNameInData("linkedRecordId");
 	}
 
-	@Override
-	protected void createInstanceOfDataElement(String nameInData) {
-		dataGroup = CoraDataRecordLink.withNameInData(nameInData);
+	private boolean maxNumOfChildrenButOptionalChildIsMissing(DataGroup recordLink) {
+		return recordLink.getChildren().size() == MAX_NUM_OF_CHILDREN
+				&& !recordLink.containsChildWithNameInData("linkedRepeatId");
 	}
 
 }
