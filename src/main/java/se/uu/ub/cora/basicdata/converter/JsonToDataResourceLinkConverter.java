@@ -44,7 +44,7 @@ public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
 	private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
 		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
 			throw new JsonParseException(
-					"RecordLinkData must and can only contain children with name "
+					"ResourceLinkData must and can only contain children with name "
 							+ "streamId and filename and filesize and mimeType");
 		}
 	}
