@@ -20,10 +20,12 @@
 package se.uu.ub.cora.basicdata.converter;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -51,6 +53,40 @@ public class JsonToDataRecordLinkConverterTest {
 		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRecordId"), "place");
 		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRepeatId"), "one");
 
+	}
+
+	@Test
+	public void testToInstanceWithLinkedPath() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"coraText\"},{\"name\":\"linkedRecordId\",\"value\":\"exampleGroupText\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"from\"}";
+		CoraDataRecordLink dataLink = (CoraDataRecordLink) getConverterdLink(json);
+		assertEquals(dataLink.getNameInData(), "from");
+		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRecordType"), "coraText");
+		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"exampleGroupText");
+		assertTrue(dataLink.containsChildWithNameInData("linkedPath"));
+		assertCorrectDataInLinkedPath(dataLink);
+
+	}
+
+	@Test
+	public void testToInstanceWithLinkedRepeatIdAndLinkedPath() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"coraText\"},{\"name\":\"linkedRecordId\",\"value\":\"exampleGroupText\"},{\"name\":\"linkedRepeatId\",\"value\":\"one\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"from\"}";
+		CoraDataRecordLink dataLink = (CoraDataRecordLink) getConverterdLink(json);
+		assertEquals(dataLink.getNameInData(), "from");
+		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRecordType"), "coraText");
+		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
+				"exampleGroupText");
+		assertEquals(dataLink.getFirstAtomicValueWithNameInData("linkedRepeatId"), "one");
+		assertTrue(dataLink.containsChildWithNameInData("linkedPath"));
+		assertCorrectDataInLinkedPath(dataLink);
+
+	}
+
+	private void assertCorrectDataInLinkedPath(CoraDataRecordLink dataLink) {
+		DataGroup outerLinkedPath = dataLink.getFirstGroupWithNameInData("linkedPath");
+		assertEquals(outerLinkedPath.getFirstAtomicValueWithNameInData("nameInData"), "recordInfo");
+		DataGroup innerLinkedPath = outerLinkedPath.getFirstGroupWithNameInData("linkedPath");
+		assertEquals(innerLinkedPath.getFirstAtomicValueWithNameInData("nameInData"), "type");
 	}
 
 	private DataLink getConverterdLink(String json) {
@@ -108,7 +144,7 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-			+ "and might contain child with name linkedRepeatId")
+			+ "and might contain child with name linkedRepeatId and linkedPath")
 	public void testToClassWithNoLinkedRecordType() {
 		String json = "{\"children\":[{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"someLink\"}";
 		getConverterdLink(json);
@@ -116,7 +152,7 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-			+ "and might contain child with name linkedRepeatId")
+			+ "and might contain child with name linkedRepeatId and linkedPath")
 	public void testToClassWithNoLinkedRecordTypeButOtherChild() {
 		String json = "{\"children\":[{\"name\":\"NOTlinkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"someLink\"}";
 		getConverterdLink(json);
@@ -124,7 +160,7 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-			+ "and might contain child with name linkedRepeatId")
+			+ "and might contain child with name linkedRepeatId and linkedPath")
 	public void testToClassWithNoLinkedRecordId() {
 		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"}],\"name\":\"someLink\"}";
 		getConverterdLink(json);
@@ -132,7 +168,7 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-			+ "and might contain child with name linkedRepeatId")
+			+ "and might contain child with name linkedRepeatId and linkedPath")
 	public void testToClassWithNoLinkedRecordIdButOtherChild() {
 		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"NOTlinkedRecordId\",\"value\":\"place\"}],\"name\":\"someLink\"}";
 		getConverterdLink(json);
@@ -140,17 +176,33 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-			+ "and might contain child with name linkedRepeatId")
+			+ "and might contain child with name linkedRepeatId and linkedPath")
 	public void testToClassWithTooManyChildren() {
-		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"linkedRepeatId\",\"value\":\"one\"},{\"name\":\"someExtra\",\"value\":\"one\"}],\"name\":\"someLink\"}";
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"linkedRepeatId\",\"value\":\"one\"},{\"name\":\"someExtra\",\"value\":\"one\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"someLink\"}";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-			+ "and might contain child with name linkedRepeatId")
+			+ "and might contain child with name linkedRepeatId and linkedPath")
+	public void testToClassWithOkNumberOfChildrenButNoLinkedRepeatIdAndNoLinkedPath() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"coraText\"},{\"name\":\"linkedRecordId\",\"value\":\"exampleGroupText\"},{\"name\":\"someOtherChild\",\"value\":\"one\"}],\"name\":\"from\"}";
+		getConverterdLink(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId and linkedPath")
 	public void testToClassWithMaxNumberOfChildrenButNoLinkedRepeatId() {
-		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"someExtra\",\"value\":\"one\"}],\"name\":\"someLink\"}";
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"someExtra\",\"value\":\"one\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"someLink\"}";
+		getConverterdLink(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId and linkedPath")
+	public void testToClassWithMaxNumberOfChildrenButNoLinkedPath() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"linkedRepeatId\",\"value\":\"one\"},{\"name\":\"someExtra\",\"value\":\"one\"}],\"name\":\"someLink\"}";
 		getConverterdLink(json);
 	}
 }

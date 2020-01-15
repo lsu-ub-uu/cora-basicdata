@@ -29,7 +29,8 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		implements JsonToDataConverter {
 
 	private static final int MIN_NUM_OF_CHILDREN = 2;
-	private static final int MAX_NUM_OF_CHILDREN = 3;
+	// private static final int P = 3;
+	private static final int MAX_NUM_OF_CHILDREN = 4;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -53,10 +54,11 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 
 	private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
 		if (incorrectNumberOfChildren(recordLink) || missingMandatoryChildren(recordLink)
-				|| maxNumOfChildrenButOptionalChildIsMissing(recordLink)) {
+				|| maxNumOfChildrenButOneOptionalChildIsMissing(recordLink)
+				|| okNumOfChildrenButOpitionChildrenMissing(recordLink)) {
 			throw new JsonParseException(
 					"RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
-							+ "and might contain child with name linkedRepeatId");
+							+ "and might contain child with name linkedRepeatId and linkedPath");
 		}
 	}
 
@@ -66,13 +68,23 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 	}
 
 	private boolean missingMandatoryChildren(DataGroup recordLink) {
-		return !recordLink.containsChildWithNameInData("linkedRecordType")
-				|| !recordLink.containsChildWithNameInData("linkedRecordId");
+		return childIsMissing(recordLink, "linkedRecordType")
+				|| childIsMissing(recordLink, "linkedRecordId");
 	}
 
-	private boolean maxNumOfChildrenButOptionalChildIsMissing(DataGroup recordLink) {
+	private boolean childIsMissing(DataGroup recordLink, String nameInData) {
+		return !recordLink.containsChildWithNameInData(nameInData);
+	}
+
+	private boolean maxNumOfChildrenButOneOptionalChildIsMissing(DataGroup recordLink) {
 		return recordLink.getChildren().size() == MAX_NUM_OF_CHILDREN
-				&& !recordLink.containsChildWithNameInData("linkedRepeatId");
+				&& (childIsMissing(recordLink, "linkedRepeatId")
+						|| childIsMissing(recordLink, "linkedPath"));
+	}
+
+	private boolean okNumOfChildrenButOpitionChildrenMissing(DataGroup recordLink) {
+		return recordLink.getChildren().size() == 3 && childIsMissing(recordLink, "linkedRepeatId")
+				&& childIsMissing(recordLink, "linkedPath");
 	}
 
 }
