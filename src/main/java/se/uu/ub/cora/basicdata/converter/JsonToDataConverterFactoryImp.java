@@ -32,6 +32,7 @@ import se.uu.ub.cora.json.parser.JsonValue;
 public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory {
 
 	private static final int NUM_OF_RECORDLINK_CHILDREN = 2;
+	private static final int NUM_OF_RECORDLINK_WITH_PATH_CHILDREN = 3;
 	private static final int NUM_OF_RESOURCELINK_CHILDREN = 4;
 	private JsonObject jsonObject;
 
@@ -70,8 +71,18 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	}
 
 	private boolean isRecordLink(List<String> foundNames) {
+		return correctChildrenForLink(foundNames) || correctChildrenForLinkWithPath(foundNames);
+	}
+
+	private boolean correctChildrenForLink(List<String> foundNames) {
 		return foundNames.size() == NUM_OF_RECORDLINK_CHILDREN
 				&& foundNames.contains("linkedRecordType") && foundNames.contains("linkedRecordId");
+	}
+
+	private boolean correctChildrenForLinkWithPath(List<String> foundNames) {
+		return foundNames.size() == NUM_OF_RECORDLINK_WITH_PATH_CHILDREN
+				&& foundNames.contains("linkedRecordType") && foundNames.contains("linkedRecordId")
+				&& foundNames.contains("linkedPath");
 	}
 
 	private List<String> extractChildNames() {

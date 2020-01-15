@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -78,6 +79,15 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorOnJsonStringWithLinkedPathFactorsDataRecordLink() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"coraText\"},{\"name\":\"linkedRecordId\",\"value\":\"exampleGroupText\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"from\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+	}
+
+	@Test
 	public void testFactorOnJsonStringCompleteSetupFactorsDataRecordLink() {
 		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"type\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
@@ -87,12 +97,43 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorOnJsonStringWithLinkedPathButNotLinkedRecordTypeFactorsDataGroup() {
+		String json = "{\"children\":[{\"name\":\"NOTlinkedRecordType\",\"value\":\"coraText\"},{\"name\":\"linkedRecordId\",\"value\":\"exampleGroupText\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"from\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringWithLinkedPathButNotLinkedRecordIdFactorsDataGroup() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"coraText\"},{\"name\":\"NOTlinkedRecordId\",\"value\":\"exampleGroupText\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"linkedPath\"}],\"name\":\"from\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringWithLinkedPathButNotLinkedPathFactorsDataGroup() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"coraText\"},{\"name\":\"linkedRecordId\",\"value\":\"exampleGroupText\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"recordInfo\"},{\"children\":[{\"name\":\"nameInData\",\"value\":\"type\"}],\"name\":\"linkedPath\"}],\"name\":\"NOTlinkedPath\"}],\"name\":\"from\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+	}
+
+	@Test
 	public void testFactorOnJsonStringOnlyStreamIdFactorsGroupConverter() {
 		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"soundBinary:18269669168741\"},{\"name\":\"NOTfilename\",\"value\":\"adele.png\"},{\"name\":\"NOTfilesize\",\"value\":\"8\"},{\"name\":\"NOTmimeType\",\"value\":\"application/octet-stream\"}],\"name\":\"master\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
 	}
 
 	@Test
@@ -102,6 +143,7 @@ public class JsonToDataConverterFactoryTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
 	}
 
 	@Test
@@ -111,6 +153,7 @@ public class JsonToDataConverterFactoryTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
 	}
 
 	@Test
@@ -120,6 +163,7 @@ public class JsonToDataConverterFactoryTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
 	}
 
 	@Test
