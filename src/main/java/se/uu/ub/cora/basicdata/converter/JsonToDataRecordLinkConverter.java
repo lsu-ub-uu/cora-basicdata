@@ -28,6 +28,7 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		implements JsonToDataConverter {
 
+	private static final int OPTIONAL_NUM_OF_CHILDREN = 3;
 	private static final int MIN_NUM_OF_CHILDREN = 2;
 	private static final int MAX_NUM_OF_CHILDREN = 4;
 
@@ -82,7 +83,8 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 	}
 
 	private boolean okNumOfChildrenButOpitionChildrenMissing(DataGroup recordLink) {
-		return recordLink.getChildren().size() == 3 && childIsMissing(recordLink, "linkedRepeatId")
+		return recordLink.getChildren().size() == OPTIONAL_NUM_OF_CHILDREN
+				&& childIsMissing(recordLink, "linkedRepeatId")
 				&& childIsMissing(recordLink, "linkedPath");
 	}
 
