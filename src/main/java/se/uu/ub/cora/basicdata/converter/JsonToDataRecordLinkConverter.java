@@ -29,7 +29,6 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 		implements JsonToDataConverter {
 
 	private static final int MIN_NUM_OF_CHILDREN = 2;
-	// private static final int P = 3;
 	private static final int MAX_NUM_OF_CHILDREN = 4;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
