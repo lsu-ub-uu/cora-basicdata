@@ -33,7 +33,7 @@ import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataRecordLinkCopierTest {
 
-	private DataRecordLinkCopier dataRecordLinkCopier;
+	private CoraDataRecordLinkCopier dataRecordLinkCopier;
 	private CoraDataRecordLink originalRecordLink;
 
 	@BeforeMethod
@@ -41,7 +41,7 @@ public class CoraDataRecordLinkCopierTest {
 		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId("someLinkNameInData",
 				"someLinkType", "someLinkValue");
 		originalRecordLink = CoraDataRecordLink.fromDataGroup(dataGroup);
-		dataRecordLinkCopier = new DataRecordLinkCopier(originalRecordLink);
+		dataRecordLinkCopier = new CoraDataRecordLinkCopier(originalRecordLink);
 
 	}
 

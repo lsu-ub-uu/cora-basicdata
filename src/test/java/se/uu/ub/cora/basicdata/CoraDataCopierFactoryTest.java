@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
+import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.copier.DataCopier;
@@ -35,7 +36,7 @@ public class CoraDataCopierFactoryTest {
 	@Test
 	public void testFactorDataAtomicCopier() {
 		DataElement dataAtomic = CoraDataAtomic.withNameInDataAndValue("aName", "aValue");
-		DataCopierFactory dataCopierFactoryImp = new DataCopierFactoryImp();
+		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataAtomic);
 		assertTrue(dataCopier instanceof CoraDataAtomicCopier);
 
@@ -45,23 +46,39 @@ public class CoraDataCopierFactoryTest {
 	public void testFactorDataGroupCopier() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("aName", "aValue"));
-		DataCopierFactory dataCopierFactoryImp = new DataCopierFactoryImp();
+		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataGroup);
 		assertTrue(dataCopier instanceof CoraDataGroupCopier);
 
 		CoraDataGroupCopier dataGroupCopier = (CoraDataGroupCopier) dataCopier;
-		assertTrue(dataGroupCopier.getCopierFactory() instanceof DataCopierFactoryImp);
+		assertTrue(dataGroupCopier.getCopierFactory() instanceof CoraDataCopierFactoryImp);
 
 	}
 
 	@Test
 	public void testFactorDataRecordLinkCopier() {
-		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId(
-				"someLinkNameInData", "someLinkType", "someLinkValue");
+		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId("someLinkNameInData",
+				"someLinkType", "someLinkValue");
 		CoraDataRecordLink dataRecordLink = CoraDataRecordLink.fromDataGroup(dataGroup);
 
-		DataCopierFactory dataCopierFactoryImp = new DataCopierFactoryImp();
+		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataRecordLink);
-		assertTrue(dataCopier instanceof DataRecordLinkCopier);
+		assertTrue(dataCopier instanceof CoraDataRecordLinkCopier);
+	}
+
+	@Test
+	public void testFactorDataResourceLinkCopier() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("master");
+		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", "binary:456"));
+		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("filename", "someImage.png"));
+		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("filesize", "44196"));
+		dataGroup.addChild(
+				CoraDataAtomic.withNameInDataAndValue("mimeType", "application/octet-stream"));
+
+		CoraDataResourceLink dataRecordLink = CoraDataResourceLink.fromDataGroup(dataGroup);
+
+		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
+		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataRecordLink);
+		assertTrue(dataCopier instanceof CoraDataResourceLinkCopier);
 	}
 }

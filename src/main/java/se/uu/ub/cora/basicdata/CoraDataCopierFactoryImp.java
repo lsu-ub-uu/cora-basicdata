@@ -19,22 +19,25 @@
 package se.uu.ub.cora.basicdata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
+import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
 
-public class DataCopierFactoryImp implements DataCopierFactory {
+public class CoraDataCopierFactoryImp implements DataCopierFactory {
 
 	@Override
 	public DataCopier factorForDataElement(DataElement dataElement) {
 		if (dataElement instanceof DataAtomic) {
 			return CoraDataAtomicCopier.usingDataAtomic(dataElement);
 		} else if (dataElement instanceof CoraDataRecordLink) {
-			return new DataRecordLinkCopier(dataElement);
+			return new CoraDataRecordLinkCopier(dataElement);
+		} else if (dataElement instanceof CoraDataResourceLink) {
+			return new CoraDataResourceLinkCopier(dataElement);
 		}
 		return CoraDataGroupCopier.usingDataGroupAndCopierFactory(dataElement,
-				new DataCopierFactoryImp());
+				new CoraDataCopierFactoryImp());
 	}
 
 }

@@ -26,13 +26,13 @@ import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.copier.DataCopier;
 
-public class DataRecordLinkCopier implements DataCopier {
+public class CoraDataRecordLinkCopier implements DataCopier {
 
 	private DataElement dataElement;
 	private CoraDataRecordLink orignialDataRecordLink;
 	private CoraDataRecordLink dataRecordLinkCopy;
 
-	public DataRecordLinkCopier(DataElement dataElement) {
+	public CoraDataRecordLinkCopier(DataElement dataElement) {
 		this.dataElement = dataElement;
 	}
 
