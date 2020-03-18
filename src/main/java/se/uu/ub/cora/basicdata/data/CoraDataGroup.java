@@ -23,6 +23,7 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -180,6 +181,29 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
+	public void removeAllChildrenWithNameInData(String childNameInData) {
+		boolean childRemoved = tryToRemoveAllChildren(childNameInData);
+		if (!childRemoved) {
+			throw new DataMissingException(
+					"Element not found for childNameInData: " + childNameInData);
+		}
+	}
+
+	private boolean tryToRemoveAllChildren(String childNameInData) {
+		boolean childRemoved = false;
+		Iterator<DataElement> iterator = getChildren().iterator();
+
+		while (iterator.hasNext()) {
+			DataElement next = iterator.next();
+			if (dataElementsNameInDataIs(next, childNameInData)) {
+				iterator.remove();
+				childRemoved = true;
+			}
+		}
+		return childRemoved;
+	}
+
+	@Override
 	public String getNameInData() {
 		return nameInData;
 	}
@@ -274,11 +298,5 @@ public class CoraDataGroup implements DataGroup {
 	@Override
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
-	}
-
-	@Override
-	public void removeAllChildrenWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-
 	}
 }

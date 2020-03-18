@@ -396,8 +396,51 @@ public class CoraDataGroupTest {
 	}
 
 	private DataElement createAndAddAnAtomicChildToDataGroup(DataGroup dataGroup) {
-		DataElement child = CoraDataAtomic.withNameInDataAndValue("childId", "child value");
+		return createAndAddAnAtomicChildToDataGroupUsingNameInData(dataGroup, "childId");
+	}
+
+	private DataElement createAndAddAnAtomicChildToDataGroupUsingNameInData(DataGroup dataGroup,
+			String nameInData) {
+		DataElement child = CoraDataAtomic.withNameInDataAndValue(nameInData, "child value");
 		dataGroup.addChild(child);
 		return child;
 	}
+
+	@Test
+	public void testRemoveAllChildrenWithNameInData() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "0");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "1");
+		dataGroup.removeAllChildrenWithNameInData("childId");
+		assertFalse(dataGroup.containsChildWithNameInData("childId"));
+	}
+
+	private DataElement createAndAddAnAtomicChildWithRepeatIdToDataGroup(DataGroup dataGroup,
+			String repeatId) {
+		DataElement child = CoraDataAtomic.withNameInDataAndValueAndRepeatId("childId",
+				"child value", repeatId);
+		dataGroup.addChild(child);
+		return child;
+	}
+
+	@Test
+	public void testRemoveAllChildrenWithNameInDataWhenOtherChildrenExist() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "0");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "1");
+		createAndAddAnAtomicChildToDataGroupUsingNameInData(dataGroup, "someOtherChildId");
+
+		dataGroup.removeAllChildrenWithNameInData("childId");
+		assertFalse(dataGroup.containsChildWithNameInData("childId"));
+		assertTrue(dataGroup.containsChildWithNameInData("someOtherChildId"));
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Element not found for childNameInData: childId_NOTFOUND")
+	public void testRemoveAllChildNotFound() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildToDataGroup(dataGroup);
+		dataGroup.removeAllChildrenWithNameInData("childId_NOTFOUND");
+	}
+
 }
