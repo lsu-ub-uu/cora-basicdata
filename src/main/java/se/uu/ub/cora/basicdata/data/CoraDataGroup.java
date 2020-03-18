@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2020 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -23,6 +23,7 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -182,6 +183,29 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	}
 
 	@Override
+	public void removeAllChildrenWithNameInData(String childNameInData) {
+		boolean childRemoved = tryToRemoveAllChildren(childNameInData);
+		if (!childRemoved) {
+			throw new DataMissingException(
+					"Element not found for childNameInData: " + childNameInData);
+		}
+	}
+
+	private boolean tryToRemoveAllChildren(String childNameInData) {
+		boolean childRemoved = false;
+		Iterator<DataElement> iterator = getChildren().iterator();
+
+		while (iterator.hasNext()) {
+			DataElement next = iterator.next();
+			if (dataElementsNameInDataIs(next, childNameInData)) {
+				iterator.remove();
+				childRemoved = true;
+			}
+		}
+		return childRemoved;
+	}
+
+	@Override
 	public String getNameInData() {
 		return nameInData;
 	}
@@ -277,4 +301,5 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
 	}
+
 }
