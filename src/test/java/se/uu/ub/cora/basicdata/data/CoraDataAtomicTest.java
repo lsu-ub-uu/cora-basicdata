@@ -20,26 +20,22 @@
 package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
-
-import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 
 public class CoraDataAtomicTest {
 
 	@Test
 	public void testInit() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData",
-				"value");
+		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData", "value");
 		assertEquals(dataAtomic.getNameInData(), "nameInData");
 		assertEquals(dataAtomic.getValue(), "value");
 	}
 
 	@Test
 	public void testInitWithRepeatId() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic
-				.withNameInDataAndValueAndRepeatId("nameInData", "value", "2");
+		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValueAndRepeatId("nameInData",
+				"value", "2");
 		assertEquals(dataAtomic.getNameInData(), "nameInData");
 		assertEquals(dataAtomic.getValue(), "value");
 		assertEquals(dataAtomic.getRepeatId(), "2");
@@ -47,19 +43,18 @@ public class CoraDataAtomicTest {
 
 	@Test
 	public void testSetRepeatId() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData",
-				"value");
+		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData", "value");
 		dataAtomic.setRepeatId("3");
 		assertEquals(dataAtomic.getNameInData(), "nameInData");
 		assertEquals(dataAtomic.getValue(), "value");
 		assertEquals(dataAtomic.getRepeatId(), "3");
 	}
 
-	@Test
-	public void testGetAttributesInDataElementInterface() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData",
-				"value");
-		assertTrue(dataAtomic.getAttributes().isEmpty());
-
-	}
+	// @Test
+	// public void testGetAttributesInDataElementInterface() {
+	// CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData",
+	// "value");
+	// assertTrue(dataAtomic.getAttributes().isEmpty());
+	//
+	// }
 }

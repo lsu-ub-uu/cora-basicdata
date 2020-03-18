@@ -16,4 +16,10 @@ public class CoraDataElementSpy implements DataElement {
 		return null;
 	}
 
+	@Override
+	public void setRepeatId(String repeatId) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
