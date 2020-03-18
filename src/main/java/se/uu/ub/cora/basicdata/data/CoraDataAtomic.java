@@ -20,10 +20,8 @@
 package se.uu.ub.cora.basicdata.data;
 
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.DataPart;
 
-public final class CoraDataAtomic implements DataAtomic, DataElement, DataPart {
+public final class CoraDataAtomic implements DataAtomic {
 
 	private String nameInData;
 	private String value;

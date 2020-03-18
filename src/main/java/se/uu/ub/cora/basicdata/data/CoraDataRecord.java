@@ -25,11 +25,10 @@ import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 
-public final class CoraDataRecord implements DataRecord, Data {
+public final class CoraDataRecord implements DataRecord {
 	private Set<String> keys = new LinkedHashSet<>();
 	private DataGroup dataGroup;
 	private List<Action> actions = new ArrayList<>();
@@ -42,6 +41,7 @@ public final class CoraDataRecord implements DataRecord, Data {
 		this.dataGroup = dataGroup;
 	}
 
+	@Override
 	public void addKey(String key) {
 		keys.add(key);
 	}
@@ -50,6 +50,7 @@ public final class CoraDataRecord implements DataRecord, Data {
 		return keys.contains(key);
 	}
 
+	@Override
 	public Set<String> getKeys() {
 		return keys;
 	}
@@ -59,14 +60,17 @@ public final class CoraDataRecord implements DataRecord, Data {
 
 	}
 
+	@Override
 	public DataGroup getDataGroup() {
 		return dataGroup;
 	}
 
+	@Override
 	public void addAction(Action action) {
 		actions.add(action);
 	}
 
+	@Override
 	public List<Action> getActions() {
 		return actions;
 	}

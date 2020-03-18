@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2020 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -31,14 +31,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import se.uu.ub.cora.basicdata.DataMissingException;
-import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataPart;
 
-public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
+public class CoraDataGroup implements DataGroup {
 
 	private String nameInData;
 	private Map<String, String> attributes = new HashMap<>();
@@ -276,5 +274,11 @@ public class CoraDataGroup implements DataGroup, DataElement, DataPart, Data {
 	@Override
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
+	}
+
+	@Override
+	public void removeAllChildrenWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+
 	}
 }
