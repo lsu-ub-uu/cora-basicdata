@@ -248,22 +248,18 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private Predicate<DataElement> filterByAttributes(DataAttribute... childAttributes) {
-		return dataElement -> dataElementsIsGroupAndHasAttributes(dataElement, childAttributes);
+		return dataElement -> dataElementsHasAttributes(dataElement, childAttributes);
 	}
 
-	private boolean dataElementsIsGroupAndHasAttributes(DataElement dataElement,
+	private boolean dataElementsHasAttributes(DataElement dataElement,
 			DataAttribute[] childAttributes) {
-		if (dataElement instanceof DataGroup) {
-
-			Map<String, String> attributesFromElement = ((DataGroup) dataElement).getAttributes();
-			if (differentNumberOfAttributesInRequestedAndExisting(childAttributes,
-					attributesFromElement)) {
-				return false;
-			}
-			return allRequestedAttributesMatchExistingAttributes(childAttributes,
-					attributesFromElement);
+		Map<String, String> attributesFromElement = dataElement.getAttributes();
+		if (differentNumberOfAttributesInRequestedAndExisting(childAttributes,
+				attributesFromElement)) {
+			return false;
 		}
-		return false;
+		return allRequestedAttributesMatchExistingAttributes(childAttributes,
+				attributesFromElement);
 	}
 
 	private boolean differentNumberOfAttributesInRequestedAndExisting(

@@ -20,9 +20,8 @@
 package se.uu.ub.cora.basicdata.data;
 
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataPart;
 
-public final class CoraDataAttribute implements DataAttribute, DataPart {
+public final class CoraDataAttribute implements DataAttribute {
 
 	private String nameInData;
 	private String value;
@@ -41,6 +40,7 @@ public final class CoraDataAttribute implements DataAttribute, DataPart {
 		return nameInData;
 	}
 
+	@Override
 	public String getValue() {
 		return value;
 	}
