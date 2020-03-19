@@ -317,4 +317,16 @@ public class CoraDataGroup implements DataGroup {
 		return attributes.get(attributeId);
 	}
 
+	@Override
+	public void addChildren(Collection<DataElement> dataElements) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Collection<DataElement> getAllChildrenWithNameInData(String nameInData) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
