@@ -109,7 +109,7 @@ public class CoraDataGroup implements DataGroup {
 		return getDataAtomicChildrenWithNameInData(childNameInData).collect(Collectors.toList());
 	}
 
-	private Stream<CoraDataAtomic> getDataAtomicChildrenWithNameInData(String childNameInData) {
+	private Stream<DataAtomic> getDataAtomicChildrenWithNameInData(String childNameInData) {
 		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
 				.map(CoraDataAtomic.class::cast);
 	}
@@ -131,6 +131,18 @@ public class CoraDataGroup implements DataGroup {
 
 	private Stream<DataElement> getGroupChildrenStream() {
 		return getChildrenStream().filter(isDataGroup);
+	}
+
+	@Override
+	public DataAtomic getFirstDataAtomicWithNameInData(String childNameInData) {
+		Optional<DataAtomic> findFirst = getDataAtomicChildrenWithNameInData(childNameInData)
+				.findFirst();
+
+		if (findFirst.isPresent()) {
+			return findFirst.get();
+		}
+		throw new DataMissingException(
+				"DataAtomic not found for childNameInData:" + childNameInData);
 	}
 
 	@Override
@@ -304,4 +316,5 @@ public class CoraDataGroup implements DataGroup {
 	public String getAttribute(String attributeId) {
 		return attributes.get(attributeId);
 	}
+
 }

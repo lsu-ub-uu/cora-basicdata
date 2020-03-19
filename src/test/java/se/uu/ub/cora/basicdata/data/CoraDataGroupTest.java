@@ -175,6 +175,21 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
+	public void testGetFirstDataAtomicWithNameInData() {
+		DataGroup book = createDataGroupWithTwoAtomicChildrenAndOneGroupChild();
+		assertEquals(book.getFirstDataAtomicWithNameInData("someChild"), book.getChildren().get(0));
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "DataAtomic not found for childNameInData:childNameInData_NOT_FOUND")
+	public void testGetFirstDataAtomicWithNameInDataNotFound() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataGroup.addChild(
+				CoraDataAtomic.withNameInDataAndValue("someChildNameInData", "atomicValue"));
+		dataGroup.getFirstDataAtomicWithNameInData("childNameInData_NOT_FOUND");
+	}
+
+	@Test
 	public void testGetGroup() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataGroup
