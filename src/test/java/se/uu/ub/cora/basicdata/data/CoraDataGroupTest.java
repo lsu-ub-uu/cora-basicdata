@@ -22,9 +22,12 @@ package se.uu.ub.cora.basicdata.data;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -97,6 +100,64 @@ public class CoraDataGroupTest {
 		List<DataElement> children = dataGroup.getChildren();
 		DataElement childElementOut = children.get(0);
 		assertEquals(childElementOut.getNameInData(), "childNameInData");
+	}
+
+	@Test
+	public void addChildrenEmptyList() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataGroup.addChildren(Collections.emptyList());
+		assertTrue(dataGroup.getChildren().isEmpty());
+
+	}
+
+	@Test
+	public void testAddChildrenAddOneChildNoChildrenBefore() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		List<DataElement> dataElements = createListWithOneChild();
+
+		dataGroup.addChildren(dataElements);
+
+		List<DataElement> children = dataGroup.getChildren();
+		assertEquals(children.size(), 1);
+		assertSame(children.get(0), dataElements.get(0));
+	}
+
+	@Test
+	public void testAddChildrenAddOneChildOneChildBefore() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("someChild", "someValue"));
+		List<DataElement> dataElements = createListWithOneChild();
+
+		dataGroup.addChildren(dataElements);
+
+		List<DataElement> children = dataGroup.getChildren();
+		assertEquals(children.size(), 2);
+		assertSame(children.get(1), dataElements.get(0));
+	}
+
+	@Test
+	public void testAddChildrenAddMultipleChildOneChildBefore() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("someChild", "someValue"));
+		List<DataElement> dataElements = createListWithOneChild();
+		dataElements.add(CoraDataGroup.withNameInData("someGroupChild"));
+		dataElements.add(CoraDataAtomic.withNameInDataAndValue("someOtherAtomicChild", "42"));
+
+		dataGroup.addChildren(dataElements);
+
+		List<DataElement> children = dataGroup.getChildren();
+		assertEquals(children.size(), 4);
+		assertSame(children.get(1), dataElements.get(0));
+		assertSame(children.get(2), dataElements.get(1));
+		assertSame(children.get(3), dataElements.get(2));
+	}
+
+	private List<DataElement> createListWithOneChild() {
+		DataElement dataElement = CoraDataAtomic.withNameInDataAndValue("childNameInData",
+				"childValue");
+		List<DataElement> dataElements = new ArrayList<>();
+		dataElements.add(dataElement);
+		return dataElements;
 	}
 
 	@Test
@@ -456,6 +517,65 @@ public class CoraDataGroupTest {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		createAndAddAnAtomicChildToDataGroup(dataGroup);
 		dataGroup.removeAllChildrenWithNameInData("childId_NOTFOUND");
+	}
+
+	@Test
+	public void testGetAllChildrenWithNameInDataNoChildren() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		List<DataElement> allChildrenWithNameInData = dataGroup
+				.getAllChildrenWithNameInData("someChildNameInData");
+		assertTrue(allChildrenWithNameInData.isEmpty());
+
+	}
+
+	@Test
+	public void testGetAllChildrenWithNameInDataNoMatchingChildren() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAtomicChild(dataGroup, "someChildNameInData", "0");
+		List<DataElement> allChildrenWithNameInData = dataGroup
+				.getAllChildrenWithNameInData("someOtherChildNameInData");
+		assertTrue(allChildrenWithNameInData.isEmpty());
+
+	}
+
+	@Test
+	public void testGetAllChildrenWithNameInDataOneMatchingAtomicChild() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		CoraDataAtomic atomicChild = createAndAddAtomicChild(dataGroup, "someChildNameInData", "0");
+
+		List<DataElement> allChildrenWithNameInData = dataGroup
+				.getAllChildrenWithNameInData("someChildNameInData");
+		assertEquals(allChildrenWithNameInData.size(), 1);
+		assertSame(allChildrenWithNameInData.get(0), atomicChild);
+	}
+
+	private CoraDataAtomic createAndAddAtomicChild(DataGroup dataGroup, String nameInData,
+			String repeatId) {
+		CoraDataAtomic atomicChild = CoraDataAtomic.withNameInDataAndValue(nameInData, "someValue");
+		atomicChild.setRepeatId(repeatId);
+		dataGroup.addChild(atomicChild);
+		return atomicChild;
+	}
+
+	@Test
+	public void testGetAllChildrenWithNameInDataMultipleMatchesDifferentTypes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		CoraDataAtomic atomicChild = createAndAddAtomicChild(dataGroup, "someChildNameInData", "0");
+		CoraDataAtomic atomicChild2 = createAndAddAtomicChild(dataGroup, "someChildNameInData",
+				"1");
+		CoraDataAtomic atomicChild3 = createAndAddAtomicChild(dataGroup, "someNOTChildNameInData",
+				"2");
+
+		DataGroup dataGroupChild = CoraDataGroup.withNameInData("someChildNameInData");
+		dataGroup.addChild(dataGroupChild);
+
+		List<DataElement> allChildrenWithNameInData = dataGroup
+				.getAllChildrenWithNameInData("someChildNameInData");
+		assertEquals(allChildrenWithNameInData.size(), 3);
+		assertSame(allChildrenWithNameInData.get(0), atomicChild);
+		assertSame(allChildrenWithNameInData.get(1), atomicChild2);
+		assertSame(allChildrenWithNameInData.get(2), dataGroupChild);
+		assertFalse(allChildrenWithNameInData.contains(atomicChild3));
 	}
 
 }

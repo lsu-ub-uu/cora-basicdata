@@ -319,14 +319,18 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public void addChildren(Collection<DataElement> dataElements) {
-		// TODO Auto-generated method stub
-
+		children.addAll(dataElements);
 	}
 
 	@Override
-	public Collection<DataElement> getAllChildrenWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<DataElement> getAllChildrenWithNameInData(String childNameInData) {
+		return getChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+
+	}
+
+	private Stream<DataElement> getChildrenWithNameInData(String childNameInData) {
+		return getChildrenStream().filter(filterByNameInData(childNameInData))
+				.map(DataElement.class::cast);
 	}
 
 }
