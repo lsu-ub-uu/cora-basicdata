@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.basicdata;
 
-import java.util.Set;
+import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.data.DataAttribute;
@@ -71,7 +71,7 @@ public class CoraDataGroupCopier implements DataCopier {
 	}
 
 	private void possiblyCopyAttributes() {
-		Set<DataAttribute> attributes = originalDataGroup.getAttributes();
+		Collection<DataAttribute> attributes = originalDataGroup.getAttributes();
 		for (DataAttribute attribute : attributes) {
 			dataGroupCopy.addAttributeByIdWithValue(attribute.getNameInData(),
 					attribute.getValue());

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.testng.annotations.Test;
 
@@ -77,7 +76,7 @@ public class CoraDataGroupTest {
 	public void testAddAttribute() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someGroup");
 		dataGroup.addAttributeByIdWithValue("someAttributeName", "value");
-		Set<DataAttribute> attributes = dataGroup.getAttributes();
+		Collection<DataAttribute> attributes = dataGroup.getAttributes();
 		DataAttribute next = attributes.iterator().next();
 		assertEquals(next.getNameInData(), "someAttributeName");
 		assertEquals(next.getValue(), "value");
@@ -89,7 +88,7 @@ public class CoraDataGroupTest {
 		dataGroup.addAttributeByIdWithValue("someAttributeName", "value");
 		dataGroup.addAttributeByIdWithValue("someAttributeName", "someOtherValue");
 
-		Set<DataAttribute> attributes = dataGroup.getAttributes();
+		Collection<DataAttribute> attributes = dataGroup.getAttributes();
 		assertEquals(attributes.size(), 1);
 		DataAttribute next = attributes.iterator().next();
 		assertEquals(next.getValue(), "someOtherValue");

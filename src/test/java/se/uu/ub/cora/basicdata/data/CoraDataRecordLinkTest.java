@@ -24,7 +24,7 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import java.util.Set;
+import java.util.Collection;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -82,7 +82,7 @@ public class CoraDataRecordLinkTest {
 		recordLink = CoraDataRecordLink.withNameInData("nameInData");
 		recordLink.addAttributeByIdWithValue("someId", "someValue");
 
-		Set<DataAttribute> attributes = recordLink.getAttributes();
+		Collection<DataAttribute> attributes = recordLink.getAttributes();
 		DataAttribute attribute = attributes.iterator().next();
 		assertEquals(attribute.getNameInData(), "someId");
 		assertEquals(attribute.getValue(), "someValue");

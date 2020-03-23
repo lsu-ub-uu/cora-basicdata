@@ -228,9 +228,8 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public Set<DataAttribute> getAttributes() {
+	public Collection<DataAttribute> getAttributes() {
 		return attributes;
-		
 	}
 
 	@Override
@@ -273,7 +272,7 @@ public class CoraDataGroup implements DataGroup {
 
 	private boolean dataElementsHasAttributes(DataElement dataElement,
 			DataAttribute[] childAttributes) {
-		Set<DataAttribute> attributesFromElement = dataElement.getAttributes();
+		Collection<DataAttribute> attributesFromElement = dataElement.getAttributes();
 		if (differentNumberOfAttributesInRequestedAndExisting(childAttributes,
 				attributesFromElement)) {
 			return false;
@@ -283,12 +282,12 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private boolean differentNumberOfAttributesInRequestedAndExisting(
-			DataAttribute[] childAttributes, Set<DataAttribute> attributesFromElement) {
+			DataAttribute[] childAttributes, Collection<DataAttribute> attributesFromElement) {
 		return childAttributes.length != attributesFromElement.size();
 	}
 
 	private boolean allRequestedAttributesMatchExistingAttributes(DataAttribute[] childAttributes,
-			Set<DataAttribute> attributesFromElement) {
+			Collection<DataAttribute> attributesFromElement) {
 		for (DataAttribute dataAttribute : childAttributes) {
 			if (attributesDoesNotMatch(attributesFromElement, dataAttribute)) {
 				return false;
@@ -297,12 +296,12 @@ public class CoraDataGroup implements DataGroup {
 		return true;
 	}
 
-	private boolean attributesDoesNotMatch(Set<DataAttribute> attributesFromElement,
+	private boolean attributesDoesNotMatch(Collection<DataAttribute> attributesFromElement,
 			DataAttribute dataAttribute) {
 		return requestedAttributeDoesNotExists(attributesFromElement, dataAttribute);
 	}
 
-	private boolean requestedAttributeDoesNotExists(Set<DataAttribute> attributesFromElement,
+	private boolean requestedAttributeDoesNotExists(Collection<DataAttribute> attributesFromElement,
 			DataAttribute requestedDataAttribute) {
 		for (DataAttribute dataAttribute : attributesFromElement) {
 			if (sameAttributeNameInData(requestedDataAttribute, dataAttribute)

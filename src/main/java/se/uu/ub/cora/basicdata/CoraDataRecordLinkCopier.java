@@ -18,7 +18,7 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import java.util.Set;
+import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.DataAttribute;
@@ -67,7 +67,7 @@ public class CoraDataRecordLinkCopier implements DataCopier {
 	}
 
 	private void possiblyCopyAttributes() {
-		Set<DataAttribute> attributes = orignialDataRecordLink.getAttributes();
+		Collection<DataAttribute> attributes = orignialDataRecordLink.getAttributes();
 		for (DataAttribute attribute : attributes) {
 			dataRecordLinkCopy.addAttributeByIdWithValue(attribute.getNameInData(),
 					attribute.getValue());

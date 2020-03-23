@@ -18,7 +18,7 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import java.util.Set;
+import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataAttribute;
@@ -63,7 +63,7 @@ public class CoraDataResourceLinkCopier implements DataCopier {
 	}
 
 	private void possiblyCopyAttributes() {
-		Set<DataAttribute> attributes = originalResourceLink.getAttributes();
+		Collection<DataAttribute> attributes = originalResourceLink.getAttributes();
 		for (DataAttribute attribute : attributes) {
 			resourceLinkCopy.addAttributeByIdWithValue(attribute.getNameInData(),
 					attribute.getValue());
