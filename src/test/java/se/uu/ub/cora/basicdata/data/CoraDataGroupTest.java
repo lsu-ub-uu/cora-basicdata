@@ -84,6 +84,18 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
+	public void testAddAttributeWithSameNameInDataOverwrites() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someGroup");
+		dataGroup.addAttributeByIdWithValue("someAttributeName", "value");
+		dataGroup.addAttributeByIdWithValue("someAttributeName", "someOtherValue");
+
+		Set<DataAttribute> attributes = dataGroup.getAttributes();
+		assertEquals(attributes.size(), 1);
+		DataAttribute next = attributes.iterator().next();
+		assertEquals(next.getValue(), "someOtherValue");
+	}
+
+	@Test
 	public void testGetAttribute() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");

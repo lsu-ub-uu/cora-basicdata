@@ -170,7 +170,23 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public void addAttributeByIdWithValue(String nameInData, String value) {
+		possiblyRemovePreviouslyStoredAttribute(nameInData);
 		attributes.add(CoraDataAttribute.withNameInDataAndValue(nameInData, value));
+	}
+
+	private void possiblyRemovePreviouslyStoredAttribute(String nameInData) {
+		Iterator<DataAttribute> iterator = attributes.iterator();
+		while (iterator.hasNext()) {
+			possiblyRemoveAttribute(iterator, nameInData);
+		}
+	}
+
+	private void possiblyRemoveAttribute(Iterator<DataAttribute> iterator,
+			String nameInData) {
+		DataAttribute next = iterator.next();
+		if (next.getNameInData().equals(nameInData)) {
+			iterator.remove();
+		}
 	}
 
 	@Override
