@@ -95,11 +95,18 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
+	public void testHasAttributes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		assertFalse(dataGroup.hasAttributes());
+		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
+		assertTrue(dataGroup.hasAttributes());
+	}
+
+	@Test
 	public void testGetAttribute() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
 		assertEquals(dataGroup.getAttribute("attributeId").getValue(), "attributeValue");
-
 	}
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
@@ -121,11 +128,18 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
+	public void testHasChildren() throws Exception {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		assertFalse(dataGroup.hasChildren());
+		dataGroup.addChild(CoraDataGroup.withNameInData("child"));
+		assertTrue(dataGroup.hasChildren());
+	}
+
+	@Test
 	public void addChildrenEmptyList() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataGroup.addChildren(Collections.emptyList());
 		assertTrue(dataGroup.getChildren().isEmpty());
-
 	}
 
 	@Test

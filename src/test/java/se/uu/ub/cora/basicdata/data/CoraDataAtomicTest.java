@@ -49,12 +49,4 @@ public class CoraDataAtomicTest {
 		assertEquals(dataAtomic.getValue(), "value");
 		assertEquals(dataAtomic.getRepeatId(), "3");
 	}
-
-	// @Test
-	// public void testGetAttributesInDataElementInterface() {
-	// CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData",
-	// "value");
-	// assertTrue(dataAtomic.getAttributes().isEmpty());
-	//
-	// }
 }

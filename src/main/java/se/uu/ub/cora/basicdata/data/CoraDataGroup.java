@@ -63,6 +63,11 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
+	public boolean hasChildren() {
+		return !children.isEmpty();
+	}
+
+	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
 		return getChildrenStream().anyMatch(filterByNameInData(nameInData));
 	}
@@ -161,6 +166,11 @@ public class CoraDataGroup implements DataGroup {
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
 		return getGroupChildrenWithNameInDataStream(childNameInData).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		return !attributes.isEmpty();
 	}
 
 	@Override
