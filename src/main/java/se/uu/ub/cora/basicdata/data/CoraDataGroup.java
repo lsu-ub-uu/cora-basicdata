@@ -174,12 +174,8 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public void removeFirstChildWithNameInData(String childNameInData) {
-		boolean childRemoved = tryToRemoveChild(childNameInData);
-		if (!childRemoved) {
-			throw new DataMissingException(
-					"Element not found for childNameInData:" + childNameInData);
-		}
+	public boolean removeFirstChildWithNameInData(String childNameInData) {
+		return tryToRemoveChild(childNameInData);
 	}
 
 	private boolean tryToRemoveChild(String childNameInData) {
@@ -193,12 +189,8 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public void removeAllChildrenWithNameInData(String childNameInData) {
-		boolean childRemoved = tryToRemoveAllChildren(childNameInData);
-		if (!childRemoved) {
-			throw new DataMissingException(
-					"Element not found for childNameInData: " + childNameInData);
-		}
+	public boolean removeAllChildrenWithNameInData(String childNameInData) {
+		return tryToRemoveAllChildren(childNameInData);
 	}
 
 	private boolean tryToRemoveAllChildren(String childNameInData) {

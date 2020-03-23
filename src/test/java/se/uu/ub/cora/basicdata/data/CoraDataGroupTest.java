@@ -460,15 +460,27 @@ public class CoraDataGroupTest {
 	public void testRemoveChild() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		createAndAddAnAtomicChildToDataGroup(dataGroup);
-		dataGroup.removeFirstChildWithNameInData("childId");
+		boolean childWasRemoved = dataGroup.removeFirstChildWithNameInData("childId");
+		assertTrue(childWasRemoved);
 		assertFalse(dataGroup.containsChildWithNameInData("childId"));
 	}
 
-	@Test(expectedExceptions = DataMissingException.class)
+	@Test
+	public void testRemoveChildMoreThanOneChildExist() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildToDataGroup(dataGroup);
+		createAndAddAnAtomicChildToDataGroup(dataGroup);
+		boolean childWasRemoved = dataGroup.removeFirstChildWithNameInData("childId");
+		assertTrue(childWasRemoved);
+		assertTrue(dataGroup.containsChildWithNameInData("childId"));
+	}
+
+	@Test
 	public void testRemoveChildNotFound() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		createAndAddAnAtomicChildToDataGroup(dataGroup);
-		dataGroup.removeFirstChildWithNameInData("childId_NOTFOUND");
+		boolean childWasRemoved = dataGroup.removeFirstChildWithNameInData("childId_NOTFOUND");
+		assertFalse(childWasRemoved);
 	}
 
 	private DataElement createAndAddAnAtomicChildToDataGroup(DataGroup dataGroup) {
@@ -487,7 +499,8 @@ public class CoraDataGroupTest {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "0");
 		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "1");
-		dataGroup.removeAllChildrenWithNameInData("childId");
+		boolean childWasRemoved = dataGroup.removeAllChildrenWithNameInData("childId");
+		assertTrue(childWasRemoved);
 		assertFalse(dataGroup.containsChildWithNameInData("childId"));
 	}
 
@@ -506,17 +519,17 @@ public class CoraDataGroupTest {
 		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "1");
 		createAndAddAnAtomicChildToDataGroupUsingNameInData(dataGroup, "someOtherChildId");
 
-		dataGroup.removeAllChildrenWithNameInData("childId");
+		boolean childWasRemoved = dataGroup.removeAllChildrenWithNameInData("childId");
+		assertTrue(childWasRemoved);
 		assertFalse(dataGroup.containsChildWithNameInData("childId"));
 		assertTrue(dataGroup.containsChildWithNameInData("someOtherChildId"));
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Element not found for childNameInData: childId_NOTFOUND")
+	@Test
 	public void testRemoveAllChildNotFound() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		createAndAddAnAtomicChildToDataGroup(dataGroup);
-		dataGroup.removeAllChildrenWithNameInData("childId_NOTFOUND");
+		assertFalse(dataGroup.removeAllChildrenWithNameInData("childId_NOTFOUND"));
 	}
 
 	@Test
