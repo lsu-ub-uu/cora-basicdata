@@ -198,22 +198,6 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveChildWithId() {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
-		DataElement child = CoraDataAtomic.withNameInDataAndValue("childId", "child value");
-		dataGroup.addChild(child);
-		dataGroup.removeChild("childId");
-		assertFalse(dataGroup.containsChildWithNameInData("childId"));
-	}
-
-	@Test(expectedExceptions = DataMissingException.class)
-	public void testRemoveChildWithIdNotFound() {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
-		dataGroup.removeChild("childId");
-		assertFalse(dataGroup.containsChildWithNameInData("childId"));
-	}
-
-	@Test
 	public void testGetAtomicValue() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataGroup

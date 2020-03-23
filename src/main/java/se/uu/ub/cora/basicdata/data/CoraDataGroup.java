@@ -158,11 +158,6 @@ public class CoraDataGroup implements DataGroup {
 		return getChildrenStream().filter(filterByNameInData(childNameInData)).findFirst();
 	}
 
-	public void removeChild(String string) {
-		DataElement firstChildWithNameInData = getFirstChildWithNameInData(string);
-		children.remove(firstChildWithNameInData);
-	}
-
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
 		return getGroupChildrenWithNameInDataStream(childNameInData).collect(Collectors.toList());
@@ -181,8 +176,7 @@ public class CoraDataGroup implements DataGroup {
 		}
 	}
 
-	private void possiblyRemoveAttribute(Iterator<DataAttribute> iterator,
-			String nameInData) {
+	private void possiblyRemoveAttribute(Iterator<DataAttribute> iterator, String nameInData) {
 		DataAttribute next = iterator.next();
 		if (next.getNameInData().equals(nameInData)) {
 			iterator.remove();
@@ -236,6 +230,7 @@ public class CoraDataGroup implements DataGroup {
 	@Override
 	public Set<DataAttribute> getAttributes() {
 		return attributes;
+		
 	}
 
 	@Override
