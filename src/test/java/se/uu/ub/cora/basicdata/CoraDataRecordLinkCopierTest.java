@@ -90,7 +90,8 @@ public class CoraDataRecordLinkCopierTest {
 	public void testCopyDataGroupWithOneAttribute() {
 		originalRecordLink.addAttributeByIdWithValue("type", "someTypeAttribute");
 		CoraDataRecordLink dataGroupCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
-		assertEquals(dataGroupCopy.getAttribute("type"), "someTypeAttribute");
+		assertEquals(dataGroupCopy.getAttribute("type").getValue(),
+				originalRecordLink.getAttribute("type").getValue());
 		assertEquals(dataGroupCopy.getAttributes().size(), 1);
 	}
 
@@ -99,8 +100,12 @@ public class CoraDataRecordLinkCopierTest {
 		originalRecordLink.addAttributeByIdWithValue("type", "someTypeAttribute");
 		originalRecordLink.addAttributeByIdWithValue("otherAttribute", "someOtherAttribute");
 		CoraDataRecordLink dataGroupCopy = (CoraDataRecordLink) dataRecordLinkCopier.copy();
-		assertEquals(dataGroupCopy.getAttribute("type"), "someTypeAttribute");
-		assertEquals(dataGroupCopy.getAttribute("otherAttribute"), "someOtherAttribute");
+
+		assertEquals(dataGroupCopy.getAttribute("type").getValue(),
+				originalRecordLink.getAttribute("type").getValue());
+
+		assertEquals(dataGroupCopy.getAttribute("otherAttribute").getValue(),
+				originalRecordLink.getAttribute("otherAttribute").getValue());
 		assertEquals(dataGroupCopy.getAttributes().size(), 2);
 	}
 }

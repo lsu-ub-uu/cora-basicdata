@@ -18,10 +18,10 @@
  */
 package se.uu.ub.cora.basicdata;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.copier.DataCopier;
@@ -67,9 +67,10 @@ public class CoraDataRecordLinkCopier implements DataCopier {
 	}
 
 	private void possiblyCopyAttributes() {
-		Map<String, String> attributes = orignialDataRecordLink.getAttributes();
-		for (Entry<String, String> attribute : attributes.entrySet()) {
-			dataRecordLinkCopy.addAttributeByIdWithValue(attribute.getKey(), attribute.getValue());
+		Set<DataAttribute> attributes = orignialDataRecordLink.getAttributes();
+		for (DataAttribute attribute : attributes) {
+			dataRecordLinkCopy.addAttributeByIdWithValue(attribute.getNameInData(),
+					attribute.getValue());
 		}
 	}
 

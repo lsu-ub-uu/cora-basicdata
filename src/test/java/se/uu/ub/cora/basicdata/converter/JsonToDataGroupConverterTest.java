@@ -66,7 +66,7 @@ public class JsonToDataGroupConverterTest {
 		String json = "{\"name\":\"groupNameInData\",\"attributes\":{\"attributeNameInData\":\"attributeValue\"}, \"children\":[]}";
 		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
-		String attributeValue = dataGroup.getAttributes().get("attributeNameInData");
+		String attributeValue = dataGroup.getAttribute("attributeNameInData").getValue();
 		assertEquals(attributeValue, "attributeValue");
 	}
 
@@ -76,7 +76,7 @@ public class JsonToDataGroupConverterTest {
 				+ ",\"attributes\":{\"attributeNameInData\":\"attributeValue\"}}";
 		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
-		String attributeValue = dataGroup.getAttributes().get("attributeNameInData");
+		String attributeValue = dataGroup.getAttribute("attributeNameInData").getValue();
 		assertEquals(attributeValue, "attributeValue");
 		assertEquals(dataGroup.getRepeatId(), "3");
 	}
@@ -104,9 +104,9 @@ public class JsonToDataGroupConverterTest {
 
 		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
-		String attributeValue = dataGroup.getAttributes().get("attributeNameInData");
+		String attributeValue = dataGroup.getAttribute("attributeNameInData").getValue();
 		assertEquals(attributeValue, "attributeValue");
-		String attributeValue2 = dataGroup.getAttributes().get("attributeNameInData2");
+		String attributeValue2 = dataGroup.getAttribute("attributeNameInData2").getValue();
 		assertEquals(attributeValue2, "attributeValue2");
 	}
 
@@ -163,7 +163,7 @@ public class JsonToDataGroupConverterTest {
 		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
 
-		String attributeValue2 = dataGroup.getAttributes().get("attributeNameInData");
+		String attributeValue2 = dataGroup.getAttribute("attributeNameInData").getValue();
 		assertEquals(attributeValue2, "attributeValue");
 
 		Iterator<DataElement> iterator = dataGroup.getChildren().iterator();
@@ -176,7 +176,7 @@ public class JsonToDataGroupConverterTest {
 		assertEquals(subChild.getNameInData(), "atomicNameInData2");
 		assertEquals(subChild.getValue(), "atomicValue2");
 
-		String attributeValue = child2.getAttributes().get("g2AttributeNameInData");
+		String attributeValue = child2.getAttribute("g2AttributeNameInData").getValue();
 		assertEquals(attributeValue, "g2AttributeValue");
 	}
 

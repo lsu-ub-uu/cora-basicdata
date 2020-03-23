@@ -83,7 +83,8 @@ public class CoraDataGroupCopierTest {
 	public void testCopyDataGroupWithOneAttribute() {
 		originalDataGroup.addAttributeByIdWithValue("type", "someTypeAttribute");
 		DataGroup dataGroupCopy = dataGroupCopier.copy();
-		assertEquals(dataGroupCopy.getAttribute("type"), "someTypeAttribute");
+		assertEquals(dataGroupCopy.getAttribute("type").getValue(),
+				originalDataGroup.getAttribute("type").getValue());
 		assertEquals(dataGroupCopy.getAttributes().size(), 1);
 	}
 
@@ -92,8 +93,12 @@ public class CoraDataGroupCopierTest {
 		originalDataGroup.addAttributeByIdWithValue("type", "someTypeAttribute");
 		originalDataGroup.addAttributeByIdWithValue("otherAttribute", "someOtherAttribute");
 		DataGroup dataGroupCopy = dataGroupCopier.copy();
-		assertEquals(dataGroupCopy.getAttribute("type"), "someTypeAttribute");
-		assertEquals(dataGroupCopy.getAttribute("otherAttribute"), "someOtherAttribute");
+
+		assertEquals(dataGroupCopy.getAttribute("type").getValue(),
+				originalDataGroup.getAttribute("type").getValue());
+
+		assertEquals(dataGroupCopy.getAttribute("otherAttribute").getValue(),
+				originalDataGroup.getAttribute("otherAttribute").getValue());
 		assertEquals(dataGroupCopy.getAttributes().size(), 2);
 	}
 

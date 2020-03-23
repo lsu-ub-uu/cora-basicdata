@@ -67,7 +67,7 @@ public class JsonToDataResourceLinkConverterTest {
 		DataLink dataLink = getConverterdLink(json);
 
 		assertEquals(dataLink.getNameInData(), "someResourceLink");
-		String attributeValue = dataLink.getAttributes().get("type");
+		String attributeValue = dataLink.getAttribute("type").getValue();
 		assertEquals(attributeValue, "someType");
 	}
 
@@ -77,7 +77,7 @@ public class JsonToDataResourceLinkConverterTest {
 		DataLink dataLink = getConverterdLink(json);
 
 		assertEquals(dataLink.getNameInData(), "someResourceLink");
-		String attributeValue = dataLink.getAttributes().get("type");
+		String attributeValue = dataLink.getAttribute("type").getValue();
 		assertEquals(attributeValue, "someType");
 		assertEquals(dataLink.getRepeatId(), "0");
 	}

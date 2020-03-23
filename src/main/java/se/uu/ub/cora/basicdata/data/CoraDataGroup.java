@@ -22,11 +22,11 @@ package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +40,7 @@ import se.uu.ub.cora.data.DataGroup;
 public class CoraDataGroup implements DataGroup {
 
 	private String nameInData;
-	private Map<String, String> attributes = new HashMap<>();
+	private Set<DataAttribute> attributes = new HashSet<>();
 	private List<DataElement> children = new ArrayList<>();
 	private String repeatId;
 	private Predicate<DataElement> isDataAtomic = dataElement -> dataElement instanceof CoraDataAtomic;
@@ -170,7 +170,7 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public void addAttributeByIdWithValue(String nameInData, String value) {
-		attributes.put(nameInData, value);
+		attributes.add(CoraDataAttribute.withNameInDataAndValue(nameInData, value));
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public Map<String, String> getAttributes() {
+	public Set<DataAttribute> getAttributes() {
 		return attributes;
 	}
 
@@ -262,7 +262,7 @@ public class CoraDataGroup implements DataGroup {
 
 	private boolean dataElementsHasAttributes(DataElement dataElement,
 			DataAttribute[] childAttributes) {
-		Map<String, String> attributesFromElement = dataElement.getAttributes();
+		Set<DataAttribute> attributesFromElement = dataElement.getAttributes();
 		if (differentNumberOfAttributesInRequestedAndExisting(childAttributes,
 				attributesFromElement)) {
 			return false;
@@ -272,12 +272,12 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private boolean differentNumberOfAttributesInRequestedAndExisting(
-			DataAttribute[] childAttributes, Map<String, String> attributesFromElement) {
+			DataAttribute[] childAttributes, Set<DataAttribute> attributesFromElement) {
 		return childAttributes.length != attributesFromElement.size();
 	}
 
 	private boolean allRequestedAttributesMatchExistingAttributes(DataAttribute[] childAttributes,
-			Map<String, String> attributesFromElement) {
+			Set<DataAttribute> attributesFromElement) {
 		for (DataAttribute dataAttribute : childAttributes) {
 			if (attributesDoesNotMatch(attributesFromElement, dataAttribute)) {
 				return false;
@@ -286,27 +286,40 @@ public class CoraDataGroup implements DataGroup {
 		return true;
 	}
 
-	private boolean attributesDoesNotMatch(Map<String, String> attributesFromElement,
+	private boolean attributesDoesNotMatch(Set<DataAttribute> attributesFromElement,
 			DataAttribute dataAttribute) {
-		return requestedAttributeDoesNotExists(attributesFromElement, dataAttribute)
-				|| requestedAttributeHasDifferentValueAsExisting(attributesFromElement,
-						dataAttribute);
+		return requestedAttributeDoesNotExists(attributesFromElement, dataAttribute);
 	}
 
-	private boolean requestedAttributeDoesNotExists(Map<String, String> attributesFromElement,
-			DataAttribute dataAttribute) {
-		return !attributesFromElement.containsKey(dataAttribute.getNameInData());
+	private boolean requestedAttributeDoesNotExists(Set<DataAttribute> attributesFromElement,
+			DataAttribute requestedDataAttribute) {
+		for (DataAttribute dataAttribute : attributesFromElement) {
+			if (sameAttributeNameInData(requestedDataAttribute, dataAttribute)
+					&& sameAttributeValue(requestedDataAttribute, dataAttribute)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	private boolean requestedAttributeHasDifferentValueAsExisting(
-			Map<String, String> attributesFromElement, DataAttribute dataAttribute) {
-		return !attributesFromElement.get(dataAttribute.getNameInData())
-				.equals(dataAttribute.getValue());
+	private boolean sameAttributeValue(DataAttribute requestedDataAttribute,
+			DataAttribute dataAttribute) {
+		return dataAttribute.getValue().equals(requestedDataAttribute.getValue());
+	}
+
+	private boolean sameAttributeNameInData(DataAttribute requestedDataAttribute,
+			DataAttribute dataAttribute) {
+		return dataAttribute.getNameInData().equals(requestedDataAttribute.getNameInData());
 	}
 
 	@Override
-	public String getAttribute(String attributeId) {
-		return attributes.get(attributeId);
+	public DataAttribute getAttribute(String attributeId) {
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(attributeId)) {
+				return dataAttribute;
+			}
+		}
+		throw new DataMissingException("Attribute with id " + attributeId + " not found.");
 	}
 
 	@Override

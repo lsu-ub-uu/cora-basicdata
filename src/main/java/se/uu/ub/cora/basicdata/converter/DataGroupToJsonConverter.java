@@ -19,8 +19,7 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-import java.util.Map.Entry;
-
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataPart;
@@ -76,8 +75,8 @@ public final class DataGroupToJsonConverter implements DataToJsonConverter {
 
 	private void addAttributesToGroup() {
 		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
-		for (Entry<String, String> attributeEntry : dataGroup.getAttributes().entrySet()) {
-			attributes.addKeyString(attributeEntry.getKey(), attributeEntry.getValue());
+		for (DataAttribute attribute : dataGroup.getAttributes()) {
+			attributes.addKeyString(attribute.getNameInData(), attribute.getValue());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
 	}
@@ -90,7 +89,7 @@ public final class DataGroupToJsonConverter implements DataToJsonConverter {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (DataElement dataElement : dataGroup.getChildren()) {
-			DataPart dataPart = (DataPart) dataElement;
+			DataPart dataPart = dataElement;
 			childrenArray.addJsonObjectBuilder(dataToJsonConverterFactory
 					.createForDataElement(jsonBuilderFactory, dataPart).toJsonObjectBuilder());
 		}

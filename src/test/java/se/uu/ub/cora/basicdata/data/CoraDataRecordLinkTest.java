@@ -24,12 +24,13 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
-import java.util.Map;
+import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.DataRecordLink;
@@ -81,10 +82,10 @@ public class CoraDataRecordLinkTest {
 		recordLink = CoraDataRecordLink.withNameInData("nameInData");
 		recordLink.addAttributeByIdWithValue("someId", "someValue");
 
-		Map<String, String> attributes = recordLink.getAttributes();
-		Map.Entry<String, String> entry = attributes.entrySet().iterator().next();
-		assertEquals(entry.getKey(), "someId");
-		assertEquals(entry.getValue(), "someValue");
+		Set<DataAttribute> attributes = recordLink.getAttributes();
+		DataAttribute attribute = attributes.iterator().next();
+		assertEquals(attribute.getNameInData(), "someId");
+		assertEquals(attribute.getValue(), "someValue");
 	}
 
 	@Test

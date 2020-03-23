@@ -29,13 +29,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.DataMissingException;
 import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -75,20 +75,27 @@ public class CoraDataGroupTest {
 
 	@Test
 	public void testAddAttribute() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
-		dataGroup.addAttributeByIdWithValue("nameInData", "value");
-		Map<String, String> attributes = dataGroup.getAttributes();
-		Entry<String, String> entry = attributes.entrySet().iterator().next();
-		assertEquals(entry.getKey(), "nameInData");
-		assertEquals(entry.getValue(), "value");
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someGroup");
+		dataGroup.addAttributeByIdWithValue("someAttributeName", "value");
+		Set<DataAttribute> attributes = dataGroup.getAttributes();
+		DataAttribute next = attributes.iterator().next();
+		assertEquals(next.getNameInData(), "someAttributeName");
+		assertEquals(next.getValue(), "value");
 	}
 
 	@Test
 	public void testGetAttribute() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
-		assertEquals(dataGroup.getAttribute("attributeId"), "attributeValue");
+		assertEquals(dataGroup.getAttribute("attributeId").getValue(), "attributeValue");
 
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Attribute with id someAttributeId not found.")
+	public void testGetAttributeDoesNotExist() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataGroup.getAttribute("someAttributeId");
 	}
 
 	@Test

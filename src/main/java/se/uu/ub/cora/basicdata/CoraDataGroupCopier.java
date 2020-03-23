@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.basicdata;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.copier.DataCopier;
@@ -71,9 +71,10 @@ public class CoraDataGroupCopier implements DataCopier {
 	}
 
 	private void possiblyCopyAttributes() {
-		Map<String, String> attributes = originalDataGroup.getAttributes();
-		for (Entry<String, String> attribute : attributes.entrySet()) {
-			dataGroupCopy.addAttributeByIdWithValue(attribute.getKey(), attribute.getValue());
+		Set<DataAttribute> attributes = originalDataGroup.getAttributes();
+		for (DataAttribute attribute : attributes) {
+			dataGroupCopy.addAttributeByIdWithValue(attribute.getNameInData(),
+					attribute.getValue());
 		}
 	}
 
