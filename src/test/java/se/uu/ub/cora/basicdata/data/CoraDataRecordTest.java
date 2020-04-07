@@ -28,8 +28,6 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.CoraDataGroup;
-import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
@@ -85,4 +83,23 @@ public class CoraDataRecordTest {
 		dataRecord.setDataGroup(dataGroup);
 		assertEquals(dataRecord.getDataGroup(), dataGroup);
 	}
+
+	@Test
+	public void testGetReadPermissions() {
+		dataRecord.addReadPermission("rating");
+		dataRecord.addReadPermission("value");
+		Set<String> readPermissions = dataRecord.getReadPermissions();
+		assertTrue(readPermissions.contains("rating"));
+		assertTrue(readPermissions.contains("value"));
+	}
+
+	@Test
+	public void testGetWritePermissions() {
+		dataRecord.addWritePermission("title");
+		dataRecord.addWritePermission("author");
+		Set<String> writePermissions = dataRecord.getWritePermissions();
+		assertTrue(writePermissions.contains("title"));
+		assertTrue(writePermissions.contains("author"));
+	}
+
 }

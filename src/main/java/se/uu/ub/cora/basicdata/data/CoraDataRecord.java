@@ -32,6 +32,8 @@ public final class CoraDataRecord implements DataRecord {
 	private Set<String> keys = new LinkedHashSet<>();
 	private DataGroup dataGroup;
 	private List<Action> actions = new ArrayList<>();
+	private Set<String> readPermissions = new LinkedHashSet<>();
+	private Set<String> writePermissions = new LinkedHashSet<>();
 
 	public static CoraDataRecord withDataGroup(DataGroup dataGroup) {
 		return new CoraDataRecord(dataGroup);
@@ -73,5 +75,26 @@ public final class CoraDataRecord implements DataRecord {
 	@Override
 	public List<Action> getActions() {
 		return actions;
+	}
+
+	@Override
+	public Set<String> getReadPermissions() {
+		return readPermissions;
+	}
+
+	@Override
+	public Set<String> getWritePermissions() {
+		return writePermissions;
+	}
+
+	@Override
+	public void addReadPermission(String readPermission) {
+		readPermissions.add(readPermission);
+
+	}
+
+	@Override
+	public void addWritePermission(String writePermission) {
+		writePermissions.add(writePermission);
 	}
 }
