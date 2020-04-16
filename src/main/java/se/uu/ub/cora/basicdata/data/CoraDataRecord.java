@@ -20,6 +20,7 @@
 package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,19 +45,6 @@ public final class CoraDataRecord implements DataRecord {
 	}
 
 	@Override
-	public void addKey(String key) {
-		keys.add(key);
-	}
-
-	public boolean containsKey(String key) {
-		return keys.contains(key);
-	}
-
-	@Override
-	public Set<String> getKeys() {
-		return keys;
-	}
-
 	public void setDataGroup(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 
@@ -96,5 +84,16 @@ public final class CoraDataRecord implements DataRecord {
 	@Override
 	public void addWritePermission(String writePermission) {
 		writePermissions.add(writePermission);
+	}
+
+	@Override
+	public void addReadPermissions(Collection<String> readPermissions) {
+		this.readPermissions.addAll(readPermissions);
+	}
+
+	@Override
+	public void addWritePermissions(Collection<String> writePermissions) {
+		this.writePermissions.addAll(writePermissions);
+
 	}
 }

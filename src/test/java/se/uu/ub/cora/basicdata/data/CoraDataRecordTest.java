@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
@@ -44,21 +45,6 @@ public class CoraDataRecordTest {
 	@Test
 	public void testRecordIsData() {
 		assertTrue(dataRecord instanceof Data);
-	}
-
-	@Test
-	public void testKeys() {
-		dataRecord.addKey("KEY");
-		assertTrue(dataRecord.containsKey("KEY"));
-	}
-
-	@Test
-	public void testGetKeys() {
-		dataRecord.addKey("KEY1");
-		dataRecord.addKey("KEY2");
-		Set<String> keys = dataRecord.getKeys();
-		assertTrue(keys.contains("KEY1"));
-		assertTrue(keys.contains("KEY2"));
 	}
 
 	@Test
@@ -94,12 +80,67 @@ public class CoraDataRecordTest {
 	}
 
 	@Test
+	public void testAddReadPermissions() {
+		Set<String> readPermissionsToSet = createSetWithValues("rating", "value");
+		dataRecord.addReadPermissions(readPermissionsToSet);
+
+		Set<String> readPermissions = dataRecord.getReadPermissions();
+
+		assertEquals(readPermissions.size(), 2);
+		assertSetContains(readPermissions, "rating", "value");
+
+		Set<String> readPermissionsToSet2 = createSetWithValues("rating2", "value2");
+		dataRecord.addReadPermissions(readPermissionsToSet2);
+
+		readPermissions = dataRecord.getReadPermissions();
+
+		assertEquals(readPermissions.size(), 4);
+		assertSetContains(readPermissions, "rating", "value", "rating2", "value2");
+
+	}
+
+	private Set<String> createSetWithValues(String... values) {
+		Set<String> permissions = new HashSet<>();
+		for (String value : values) {
+			permissions.add(value);
+		}
+
+		return permissions;
+	}
+
+	private void assertSetContains(Set<String> permissions, String... values) {
+		for (String value : values) {
+			assertTrue(permissions.contains(value));
+
+		}
+	}
+
+	@Test
 	public void testGetWritePermissions() {
 		dataRecord.addWritePermission("title");
 		dataRecord.addWritePermission("author");
 		Set<String> writePermissions = dataRecord.getWritePermissions();
 		assertTrue(writePermissions.contains("title"));
 		assertTrue(writePermissions.contains("author"));
+	}
+
+	@Test
+	public void testAddWritePermissions() {
+		Set<String> writePermissionsToSet = createSetWithValues("rating", "value");
+		dataRecord.addWritePermissions(writePermissionsToSet);
+
+		Set<String> writePermissions = dataRecord.getWritePermissions();
+
+		assertEquals(writePermissions.size(), 2);
+		assertSetContains(writePermissions, "rating", "value");
+
+		Set<String> writePermissionsToSet2 = createSetWithValues("rating2", "value2");
+		dataRecord.addWritePermissions(writePermissionsToSet2);
+
+		writePermissions = dataRecord.getWritePermissions();
+
+		assertEquals(writePermissions.size(), 4);
+		assertSetContains(writePermissions, "rating", "value", "rating2", "value2");
 	}
 
 }

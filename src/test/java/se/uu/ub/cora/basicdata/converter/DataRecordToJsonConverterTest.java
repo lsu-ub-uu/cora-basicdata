@@ -21,6 +21,7 @@ package se.uu.ub.cora.basicdata.converter;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
@@ -30,10 +31,18 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataRecordToJsonConverterTest {
+
+	private CoraDataRecord dataRecord;
+
+	@BeforeMethod
+	public void setUp() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+	}
+
 	@Test
 	public void testToJson() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
-		CoraDataRecord dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
@@ -44,35 +53,47 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testToJsonWithKey() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
-		CoraDataRecord dataRecord = CoraDataRecord.withDataGroup(dataGroup);
-		dataRecord.addKey("KEY1");
+	public void testToJsonWithReadPermissions() {
+		dataRecord.addReadPermission("readPermissionOne");
+		dataRecord.addReadPermission("readPermissionTwo");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
 				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
-				+ ",\"keys\":[\"KEY1\"]" + "}}");
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"read\":[\"readPermissionOne\",\"readPermissionTwo\"]}}}");
 	}
 
 	@Test
-	public void testToJsonWithKeys() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
-		CoraDataRecord dataRecord = CoraDataRecord.withDataGroup(dataGroup);
-		dataRecord.addKey("KEY1");
-		dataRecord.addKey("KEY2");
-		dataRecord.addKey("KEY3");
+	public void testToJsonWithWritePermissions() {
+		dataRecord.addWritePermission("writePermissionOne");
+		dataRecord.addWritePermission("writePermissionTwo");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
 				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
-				+ ",\"keys\":[\"KEY1\",\"KEY2\",\"KEY3\"]" + "}}");
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"write\":[\"writePermissionOne\",\"writePermissionTwo\"]}}}");
+	}
+
+	@Test
+	public void testToJsonWithReadAndWritePermissions() {
+		dataRecord.addReadPermission("readPermissionOne");
+		dataRecord.addReadPermission("readPermissionTwo");
+		dataRecord.addWritePermission("writePermissionOne");
+		dataRecord.addWritePermission("writePermissionTwo");
+
+		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
+		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
+		String jsonString = dataRecordToJsonConverter.toJson();
+
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"read\":[\"readPermissionOne\",\"readPermissionTwo\"],\"write\":[\"writePermissionOne\",\"writePermissionTwo\"]}}}");
 	}
 
 }
