@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
+import java.util.Set;
+
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
@@ -49,7 +51,7 @@ public final class DataRecordToJsonConverter {
 
 	JsonObjectBuilder toJsonObjectBuilder() {
 		convertMainDataGroup();
-		convertKeys();
+		possiblyConvertPermissions();
 		return createTopLevelJsonObjectWithRecordAsChild();
 	}
 
@@ -61,22 +63,58 @@ public final class DataRecordToJsonConverter {
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
 	}
 
-	private void convertKeys() {
-		if (recordHasKeys()) {
-			addKeysToRecord();
+	private void possiblyConvertPermissions() {
+		if (recordHasReadPermissions() || recordHasWritePermissions()) {
+			convertPermissions();
 		}
 	}
 
-	private boolean recordHasKeys() {
-		return !dataRecord.getKeys().isEmpty();
+	private boolean recordHasReadPermissions() {
+		return !dataRecord.getReadPermissions().isEmpty();
 	}
 
-	private void addKeysToRecord() {
-		JsonArrayBuilder keyBuilder = jsonBuilderFactory.createArrayBuilder();
-		for (String key : dataRecord.getKeys()) {
-			keyBuilder.addString(key);
+	private boolean recordHasWritePermissions() {
+		return !dataRecord.getWritePermissions().isEmpty();
+	}
+
+	private void convertPermissions() {
+		JsonObjectBuilder permissionsJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		possiblyAddReadPermissions(permissionsJsonObjectBuilder);
+		possiblyAddWritePermissions(permissionsJsonObjectBuilder);
+		recordJsonObjectBuilder.addKeyJsonObjectBuilder("permissions",
+				permissionsJsonObjectBuilder);
+	}
+
+	private void possiblyAddReadPermissions(JsonObjectBuilder permissionsJsonObjectBuilder) {
+		if (recordHasReadPermissions()) {
+			addReadPermissions(permissionsJsonObjectBuilder);
 		}
-		recordJsonObjectBuilder.addKeyJsonArrayBuilder("keys", keyBuilder);
+	}
+
+	private void addReadPermissions(JsonObjectBuilder permissionsJsonObjectBuilder) {
+		JsonArrayBuilder readPermissionsArray = createJsonForPermissions(
+				dataRecord.getReadPermissions());
+		permissionsJsonObjectBuilder.addKeyJsonArrayBuilder("read", readPermissionsArray);
+	}
+
+	private JsonArrayBuilder createJsonForPermissions(Set<String> permissions) {
+		JsonArrayBuilder permissionsBuilder = jsonBuilderFactory.createArrayBuilder();
+		for (String permission : permissions) {
+			permissionsBuilder.addString(permission);
+		}
+		return permissionsBuilder;
+	}
+
+	private void possiblyAddWritePermissions(JsonObjectBuilder permissionsJsonObjectBuilder) {
+		if (recordHasWritePermissions()) {
+			addWritePermissions(permissionsJsonObjectBuilder);
+		}
+	}
+
+	private void addWritePermissions(JsonObjectBuilder permissionsJsonObjectBuilder) {
+		JsonArrayBuilder writePermissionsArray = createJsonForPermissions(
+				dataRecord.getWritePermissions());
+		permissionsJsonObjectBuilder.addKeyJsonArrayBuilder("write", writePermissionsArray);
 	}
 
 	private JsonObjectBuilder createTopLevelJsonObjectWithRecordAsChild() {

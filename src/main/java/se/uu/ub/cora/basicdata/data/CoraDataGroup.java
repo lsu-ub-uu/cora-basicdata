@@ -210,26 +210,9 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public boolean removeAllChildrenWithNameInData(String childNameInData) {
-		return tryToRemoveAllChildren(childNameInData);
-	}
-
-	private boolean tryToRemoveAllChildren(String childNameInData) {
-		boolean atLeastOneChildRemoved = false;
-		Iterator<DataElement> iterator = getChildren().iterator();
-		while (iterator.hasNext()) {
-			boolean childRemoved = possiblyRemoveChild(childNameInData, iterator);
-			atLeastOneChildRemoved = childRemoved ? childRemoved : atLeastOneChildRemoved;
-		}
-		return atLeastOneChildRemoved;
-	}
-
-	private boolean possiblyRemoveChild(String childNameInData, Iterator<DataElement> iterator) {
-		DataElement next = iterator.next();
-		if (dataElementsNameInDataIs(next, childNameInData)) {
-			iterator.remove();
-			return true;
-		}
-		return false;
+		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataIs(element,
+				childNameInData);
+		return getChildren().removeIf(childNameInDataMatches);
 	}
 
 	@Override
