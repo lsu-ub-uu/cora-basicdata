@@ -607,4 +607,55 @@ public class CoraDataGroupTest {
 		assertFalse(allChildrenWithNameInData.contains(atomicChild3));
 	}
 
+	@Test
+	public void testNoMatchRemoveAllChildrenWithNameInDataAndAttributesNoAttributes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "0");
+		boolean childWasRemoved = dataGroup
+				.removeAllChildrenWithNameInDataAndAttributes("NOTchildId");
+		assertFalse(childWasRemoved);
+	}
+
+	@Test
+	public void testNoMatchRemoveAllChildrenWithNameInDataAndAttributesWithAttributes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "0");
+		boolean childWasRemoved = dataGroup.removeAllChildrenWithNameInDataAndAttributes("childId",
+				CoraDataAttribute.withNameInDataAndValue("someName", "someValue"));
+		assertFalse(childWasRemoved);
+	}
+
+	@Test
+	public void testNoMatchRemoveAllChildrenWithNameInDataAndAttributesWithNonMatchingAttributes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		DataGroup childDataGroup = CoraDataGroup.withNameInData("childId");
+		childDataGroup.addAttributeByIdWithValue("someName", "someValue");
+		dataGroup.addChild(childDataGroup);
+
+		boolean childWasRemoved = dataGroup.removeAllChildrenWithNameInDataAndAttributes("childId",
+				CoraDataAttribute.withNameInDataAndValue("someName", "someOtherValue"));
+		assertFalse(childWasRemoved);
+	}
+
+	@Test
+	public void testMatchRemoveAllChildrenWithNameInDataAndAttributesWithAttributes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		boolean childWasRemoved = dataGroup.removeAllChildrenWithNameInDataAndAttributes("childId",
+				CoraDataAttribute.withNameInDataAndValue("someName", "someValue"));
+		assertTrue(childWasRemoved);
+	}
+
+	@Test
+	public void testMatchRemoveAllChildrenWithNameInDataAndAttributesNoAttributes() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
+		createAndAddAnAtomicChildWithRepeatIdToDataGroup(dataGroup, "0");
+		boolean childWasRemoved = dataGroup.removeAllChildrenWithNameInDataAndAttributes("childId");
+		assertTrue(childWasRemoved);
+	}
+
+	// one child with attributes (group), one child without attributes(atomic), same nameInData
+	// one test with no attributes - child with no attributes should be removed
+	// one test with matching attributes - child with attributes should be removed
+	// on test with non matching attributes - no child should be removed
+
 }

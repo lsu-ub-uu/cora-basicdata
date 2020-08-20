@@ -210,9 +210,10 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public boolean removeAllChildrenWithNameInData(String childNameInData) {
-		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataIs(element,
-				childNameInData);
-		return getChildren().removeIf(childNameInDataMatches);
+		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataIs(
+				element, childNameInData);
+		return getChildren().removeIf(filterByNameInData(childNameInData));
+		// return getChildren().removeIf(childNameInDataMatches);
 	}
 
 	@Override
@@ -339,6 +340,29 @@ public class CoraDataGroup implements DataGroup {
 	private Stream<DataElement> getChildrenWithNameInData(String childNameInData) {
 		return getChildrenStream().filter(filterByNameInData(childNameInData))
 				.map(DataElement.class::cast);
+	}
+
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+
+		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
+				element, childNameInData, childAttributes);
+		return getChildren().removeIf(childNameInDataMatches);
+
+	}
+
+	private boolean dataElementsNameInDataAndAttributesMatch(DataElement element,
+			String childNameInData, DataAttribute... childAttributes) {
+		return dataElementsNameInDataIs(element, childNameInData)
+				&& dataElementsHasAttributes(element, childAttributes);
 	}
 
 }
