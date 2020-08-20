@@ -210,10 +210,7 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public boolean removeAllChildrenWithNameInData(String childNameInData) {
-		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataIs(
-				element, childNameInData);
 		return getChildren().removeIf(filterByNameInData(childNameInData));
-		// return getChildren().removeIf(childNameInDataMatches);
 	}
 
 	@Override
