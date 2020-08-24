@@ -340,13 +340,6 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
-			DataAttribute... childAttributes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
 
