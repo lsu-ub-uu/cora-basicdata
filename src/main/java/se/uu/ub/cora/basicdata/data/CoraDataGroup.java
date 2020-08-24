@@ -355,4 +355,12 @@ public class CoraDataGroup implements DataGroup {
 				&& dataElementsHasAttributes(element, childAttributes);
 	}
 
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
+				element, childNameInData, childAttributes);
+		return getChildren().stream().filter(childNameInDataMatches).collect(Collectors.toList());
+	}
+
 }
