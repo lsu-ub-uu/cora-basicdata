@@ -23,8 +23,6 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
-
 public class CoraDataAttributeTest {
 	@Test
 	public void testInit() {

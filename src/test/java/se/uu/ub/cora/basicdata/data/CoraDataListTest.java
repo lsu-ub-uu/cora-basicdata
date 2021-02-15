@@ -25,9 +25,6 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.CoraDataGroup;
-import se.uu.ub.cora.basicdata.data.CoraDataList;
-import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 
