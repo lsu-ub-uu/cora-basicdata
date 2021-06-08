@@ -17,12 +17,13 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata.converter;
+package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.basicdata.converter.datatojson.DataListToJsonConverter;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataList;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;

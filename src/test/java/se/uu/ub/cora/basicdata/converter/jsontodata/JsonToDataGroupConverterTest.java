@@ -17,7 +17,7 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata.converter;
+package se.uu.ub.cora.basicdata.converter.jsontodata;
 
 import static org.testng.Assert.assertEquals;
 
@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataGroupConverter;
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;

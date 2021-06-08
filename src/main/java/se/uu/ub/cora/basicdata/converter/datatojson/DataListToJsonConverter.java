@@ -17,7 +17,7 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata.converter;
+package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.Data;
