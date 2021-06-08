@@ -19,7 +19,14 @@
 
 package se.uu.ub.cora.basicdata.converter;
 
-public class ConverterException extends RuntimeException {
+import se.uu.ub.cora.data.converter.ConversionException;
+
+/**
+ * ConverterException is an implementation of {@link ConversionException} used when conversion
+ * exceptions occure while converting in basicData.
+ *
+ */
+public class ConverterException extends RuntimeException implements ConversionException {
 
 	private static final long serialVersionUID = 6721892121477803630L;
 

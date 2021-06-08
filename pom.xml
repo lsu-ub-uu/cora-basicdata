@@ -34,7 +34,7 @@
 
 	<properties>
 	<json.version>2.3.0</json.version>
-	<coradata.version>4.0.0</coradata.version>
+	<coradata.version>4.1-SNAPSHOT</coradata.version>
 	</properties>
 
 	<scm>

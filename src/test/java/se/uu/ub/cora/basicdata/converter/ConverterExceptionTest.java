@@ -20,10 +20,20 @@
 package se.uu.ub.cora.basicdata.converter;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.converter.ConversionException;
+
 public class ConverterExceptionTest {
+
+	@Test
+	public void testName() throws Exception {
+		ConverterException converterException = new ConverterException("message");
+		assertTrue(converterException instanceof ConversionException);
+	}
+
 	@Test
 	public void testInit() {
 		Exception exception = new RuntimeException("e");
