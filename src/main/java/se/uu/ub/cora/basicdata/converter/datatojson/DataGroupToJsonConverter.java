@@ -29,10 +29,10 @@ import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataGroupToJsonConverter implements DataToJsonConverter {
+public class DataGroupToJsonConverter implements DataToJsonConverter {
 
 	private DataGroup dataGroup;
-	private JsonObjectBuilder dataGroupJsonObjectBuilder;
+	JsonObjectBuilder dataGroupJsonObjectBuilder;
 	private JsonBuilderFactory jsonBuilderFactory;
 
 	public static DataToJsonConverter usingJsonFactoryForDataGroup(JsonBuilderFactory factory,
@@ -40,7 +40,7 @@ public final class DataGroupToJsonConverter implements DataToJsonConverter {
 		return new DataGroupToJsonConverter(factory, dataGroup);
 	}
 
-	private DataGroupToJsonConverter(JsonBuilderFactory factory, DataGroup dataGroup) {
+	DataGroupToJsonConverter(JsonBuilderFactory factory, DataGroup dataGroup) {
 		this.jsonBuilderFactory = factory;
 		this.dataGroup = dataGroup;
 		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
@@ -55,8 +55,13 @@ public final class DataGroupToJsonConverter implements DataToJsonConverter {
 		if (dataGroup.hasChildren()) {
 			addChildrenToGroup();
 		}
+		addExtraStuff();
 		dataGroupJsonObjectBuilder.addKeyString("name", dataGroup.getNameInData());
 		return dataGroupJsonObjectBuilder;
+	}
+
+	void addExtraStuff() {
+		// TODO Auto-generated method stub
 	}
 
 	private void possiblyAddRepeatId() {
@@ -77,7 +82,7 @@ public final class DataGroupToJsonConverter implements DataToJsonConverter {
 		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
 	}
 
-	private void addChildrenToGroup() {
+	void addChildrenToGroup() {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (DataElement dataElement : dataGroup.getChildren()) {
