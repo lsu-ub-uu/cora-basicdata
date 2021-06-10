@@ -30,8 +30,16 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 
 	private List<Action> actions = new ArrayList<>();
 
+	public static CoraDataResourceLink withNameInData(String nameInData) {
+		return new CoraDataResourceLink(nameInData);
+	}
+
 	private CoraDataResourceLink(String nameInData) {
 		super(nameInData);
+	}
+
+	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
+		return new CoraDataResourceLink(dataGroup);
 	}
 
 	public CoraDataResourceLink(DataGroup dataGroup) {
@@ -51,10 +59,6 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 		addChild(mimeType);
 	}
 
-	public static CoraDataResourceLink withNameInData(String nameInData) {
-		return new CoraDataResourceLink(nameInData);
-	}
-
 	@Override
 	public void addAction(Action action) {
 		actions.add(action);
@@ -65,7 +69,4 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 		return actions;
 	}
 
-	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
-		return new CoraDataResourceLink(dataGroup);
-	}
 }

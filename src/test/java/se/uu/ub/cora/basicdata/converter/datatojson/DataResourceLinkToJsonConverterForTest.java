@@ -31,19 +31,24 @@ public class DataResourceLinkToJsonConverterForTest extends DataResourceLinkToJs
 		super(dataResourceLink, recordURL, jsonBuilderFactorySpy);
 	}
 
-	@Override
-	public String toJson() {
-		dataGroupToJsonHasBeenCalled = true;
-		addChildrenToGroup();
-		addExtraStuff();
-		return "fakeJsonFromForTest";
-	}
+	// @Override
+	// public String toJson() {
+	// dataGroupToJsonHasBeenCalled = true;
+	// // super.addChildrenToGroup();
+	// addExtraStuff();
+	// return "fakeJsonFromForTest";
+	// }
 
 	@Override
-	void addChildrenToGroup() {
-		// dataGroupJsonObjectBuilder = new JsonObjectBuilderSpy();
-
-		// addChildrenToGroupHasBeenCalled = true;
-		super.addChildrenToGroup();
+	void hookForSubclassesToImplementExtraConversion() {
+		// TODO Auto-generated method stub
 	}
+
+	// @Override
+	// void addChildrenToGroup() {
+	// // dataGroupJsonObjectBuilder = new JsonObjectBuilderSpy();
+	//
+	// // addChildrenToGroupHasBeenCalled = true;
+	// super.addChildrenToGroup();
+	// }
 }

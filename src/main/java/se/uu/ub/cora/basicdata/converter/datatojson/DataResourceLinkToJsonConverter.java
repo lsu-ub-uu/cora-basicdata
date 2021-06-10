@@ -21,25 +21,55 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 		implements DataToJsonConverter {
 
+	private DataResourceLink dataResourceLink;
+	private String recordURL;
+	private JsonBuilderFactory jsonBuilderFactory;
+	private static final String READ = "read";
+	private static final String GET = "GET";
+
 	public DataResourceLinkToJsonConverter(DataResourceLink dataResourceLink, String recordURL,
-			JsonBuilderFactory jsonBuilderFactorySpy) {
-		super(jsonBuilderFactorySpy, dataResourceLink);
+			JsonBuilderFactory jsonBuilderFactory) {
+
+		super(jsonBuilderFactory, dataResourceLink);
+		this.dataResourceLink = dataResourceLink;
+		this.recordURL = recordURL;
+		this.jsonBuilderFactory = jsonBuilderFactory;
 	}
 
 	@Override
-	void addExtraStuff() {
-		// TODO Auto-generated method stub
-		// super.addExtraStuff();
+	void hookForSubclassesToImplementExtraConversion() {
+		possiblyAddActionLink();
 	}
 
-	@Override
-	void addChildrenToGroup() {
-		super.addChildrenToGroup();
-		// TODO: Add actionsLinks
-
+	private void possiblyAddActionLink() {
+		if (dataResourceLink.hasReadAction()) {
+			createReadActionLink();
+		}
 	}
+
+	private void createReadActionLink() {
+		JsonObjectBuilder actionLinksObject = jsonBuilderFactory.createObjectBuilder();
+
+		JsonObjectBuilder internalLinkBuilder = buildInternalLinkBuilder();
+		actionLinksObject.addKeyJsonObjectBuilder(READ, internalLinkBuilder);
+
+		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+	}
+
+	private JsonObjectBuilder buildInternalLinkBuilder() {
+		String url = recordURL + "/" + dataResourceLink.getNameInData();
+		String mimeType = dataResourceLink.getMimeType();
+		JsonObjectBuilder internalLinkBuilder = jsonBuilderFactory.createObjectBuilder();
+		internalLinkBuilder.addKeyString("rel", READ);
+		internalLinkBuilder.addKeyString("url", url);
+		internalLinkBuilder.addKeyString("requestMethod", GET);
+		internalLinkBuilder.addKeyString("accept", mimeType);
+		return internalLinkBuilder;
+	}
+
 }

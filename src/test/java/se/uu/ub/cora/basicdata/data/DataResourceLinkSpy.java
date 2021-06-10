@@ -21,13 +21,17 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataResourceLink;
 
 public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLink {
 
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+
 	public String nameInData;
 	public List<Action> actions = new ArrayList<>();
+	public boolean hasReadAction = false;
 
 	public DataResourceLinkSpy(String nameInData) {
 		super(nameInData);
@@ -35,18 +39,37 @@ public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLin
 
 	@Override
 	public void addAction(Action action) {
+		MCR.addCall("action", action);
 		actions.add(action);
 
 	}
 
 	@Override
 	public List<Action> getActions() {
+		MCR.addCall();
+		MCR.addReturned(actions);
 		return actions;
 	}
 
 	@Override
 	public String getNameInData() {
+		MCR.addCall();
 		return "fakeDataResourceNameInData";
+	}
+
+	@Override
+	public boolean hasReadAction() {
+		MCR.addCall();
+		MCR.addReturned(hasReadAction);
+		return hasReadAction;
+	}
+
+	@Override
+	public String getMimeType() {
+		MCR.addCall();
+		String mimeType = "somMimeType";
+		MCR.addReturned(mimeType);
+		return mimeType;
 	}
 
 }

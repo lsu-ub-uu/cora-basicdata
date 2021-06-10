@@ -55,12 +55,12 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 		if (dataGroup.hasChildren()) {
 			addChildrenToGroup();
 		}
-		addExtraStuff();
+		hookForSubclassesToImplementExtraConversion();
 		dataGroupJsonObjectBuilder.addKeyString("name", dataGroup.getNameInData());
 		return dataGroupJsonObjectBuilder;
 	}
 
-	void addExtraStuff() {
+	void hookForSubclassesToImplementExtraConversion() {
 		// TODO Auto-generated method stub
 	}
 

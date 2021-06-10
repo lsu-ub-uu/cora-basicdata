@@ -28,10 +28,12 @@ import se.uu.ub.cora.data.converter.DataToJsonConverter;
 
 public class DataResourceLinkToJsonConverterTest {
 
-	DataResourceLinkToJsonConverter converter;
+	DataResourceLinkToJsonConverter resourceLinkToJsonConverter;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
 	String recordURL;
 	private DataResourceLinkToJsonConverterForTest forTest;
+	private DataResourceLinkSpy dataResourceLink;
+
 	// private String childrenJsonString = "\"children\":[" +
 	// "{\"name\":\"streamId\",\"value\":\"aStreamId\"}"
 	// + ",{\"name\":\"filename\",\"value\":\"aFilename\"}"
@@ -40,42 +42,93 @@ public class DataResourceLinkToJsonConverterTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-
-		DataResourceLinkSpy dataResourceLink = new DataResourceLinkSpy("someNameInData");
+		recordURL = "https://somesystem.org/rest/records/someRecordType/someRecordId";
+		dataResourceLink = new DataResourceLinkSpy("someNameInData");
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
 		// jsonBuilderFactorySpy = new OrgJsonBuilderFactoryAdapter();
-
 		// dataResourceLink = new DataResourceLinkSpy("master");
 		// dataResourceLink.addChild(new DataAtomicSpy("streamId", "aStreamId"));
 		// dataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
 
-		converter = new DataResourceLinkToJsonConverter(dataResourceLink, recordURL,
-				jsonBuilderFactorySpy);
+		resourceLinkToJsonConverter = new DataResourceLinkToJsonConverter(dataResourceLink,
+				recordURL, jsonBuilderFactorySpy);
 
-		forTest = new DataResourceLinkToJsonConverterForTest(dataResourceLink, recordURL,
-				jsonBuilderFactorySpy);
+		// forTest = new DataResourceLinkToJsonConverterForTest(dataResourceLink, recordURL,
+		// jsonBuilderFactorySpy);
 
 	}
 
 	@Test
 	public void testResourceLinkConverterExtendsGroupConverter() throws Exception {
-		assertTrue(converter instanceof DataGroupToJsonConverter);
-		assertTrue(converter instanceof DataToJsonConverter);
+		assertTrue(resourceLinkToJsonConverter instanceof DataGroupToJsonConverter);
+		assertTrue(resourceLinkToJsonConverter instanceof DataToJsonConverter);
 	}
 
 	@Test
-	public void testToJsonCallsMethodsInSuperClass() throws Exception {
-		// forTest.toJson();
-		// assertTrue(forTest.dataGroupToJsonHasBeenCalled);
-		//
-		// assertTrue(forTest.addChildrenToGroupHasBeenCalled);
+	public void testNoActions() throws Exception {
+		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
+
+		dataResourceLink.MCR.assertParameters("hasReadAction", 0);
+
+		JsonObjectBuilderSpy jsonObjectBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
+				.getReturnValue("createObjectBuilder", 0);
+
+		jsonObjectBuilderSpy.MCR.assertMethodNotCalled("addKeyJsonObjectBuilder");
+
+		// jsonObjectBuilderSpy.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "actionLinks",
+		// null);
 	}
 
 	@Test
-	public void testInit() throws Exception {
+	public void testActionLinksBuilderAddedToMainBuilder() throws Exception {
+		dataResourceLink.hasReadAction = true;
+
+		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
+
+		dataResourceLink.MCR.assertParameters("hasReadAction", 0);
+
+		JsonObjectBuilderSpy mainBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
+				.getReturnValue("createObjectBuilder", 0);
+		JsonObjectBuilderSpy actionLinksBuilderSpy = getActionsBuilder();
+
+		mainBuilderSpy.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "actionLinks",
+				actionLinksBuilderSpy);
+	}
+
+	@Test
+	public void testActionAddedToActionBuilder() throws Exception {
+		dataResourceLink.hasReadAction = true;
+
+		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
+
+		JsonObjectBuilderSpy actionLinksBuilderSpy = getActionsBuilder();
+		JsonObjectBuilderSpy internalLinkBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
+				.getReturnValue("createObjectBuilder", 2);
+		actionLinksBuilderSpy.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "read",
+				internalLinkBuilderSpy);
+
+		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 0, "rel", "read");
+		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 1, "url",
+				recordURL + "/" + dataResourceLink.getNameInData());
+		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 2, "requestMethod", "GET");
+		String mimeType = (String) dataResourceLink.MCR.getReturnValue("getMimeType", 0);
+		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 3, "accept", mimeType);
+		internalLinkBuilderSpy.MCR.assertNumberOfCallsToMethod("addKeyString", 4);
 
 	}
+
+	private JsonObjectBuilderSpy getActionsBuilder() {
+		return (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
+				.getReturnValue("createObjectBuilder", 1);
+	}
+
+	// private void addActionsToResourceLinkSpy() {
+	// List<Action> actions = new ArrayList<>();
+	// actions.add(Action.READ);
+	// dataResourceLink.actions = actions;
+	// dataResourceLink.hasReadAction = true;
+	// }
 
 	// @Test
 	// public void testCallToJson() throws Exception {

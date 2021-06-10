@@ -83,8 +83,7 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return null;
+		return "fakeFromSpy_" + nameInData;
 	}
 
 	@Override
