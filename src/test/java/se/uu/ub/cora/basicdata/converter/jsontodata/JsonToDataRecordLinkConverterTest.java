@@ -24,7 +24,6 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataRecordLinkConverter;
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;

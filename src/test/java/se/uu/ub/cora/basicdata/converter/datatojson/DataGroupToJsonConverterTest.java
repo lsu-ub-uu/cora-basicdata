@@ -21,11 +21,11 @@
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.converter.datatojson.DataToJsonConverterFactoryImp;
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.data.DataGroup;
@@ -115,7 +115,8 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChild() {
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		dataGroup
+				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForDataElement(factory, dataGroup);
@@ -132,12 +133,14 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChildAndGroupChildWithAtomicChild() {
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		dataGroup
+				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
 		DataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
 		dataGroup.addChild(dataGroup2);
 
-		dataGroup2.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
+		dataGroup2.addChild(
+				CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForDataElement(factory, dataGroup);
@@ -174,13 +177,15 @@ public class DataGroupToJsonConverterTest {
 		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		dataGroup
+				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
 		DataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
 		dataGroup2.addAttributeByIdWithValue("g2AttributeNameInData", "g2AttributeValue");
 		dataGroup.addChild(dataGroup2);
 
-		dataGroup2.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
+		dataGroup2.addChild(
+				CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForDataElement(factory, dataGroup);
@@ -228,12 +233,14 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonCompactFormatGroupWithAtomicChildAndGroupChildWithAtomicChild() {
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		dataGroup
+				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
 		DataGroup dataGroup2 = CoraDataGroup.withNameInData("groupNameInData2");
 		dataGroup.addChild(dataGroup2);
 
-		dataGroup2.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
+		dataGroup2.addChild(
+				CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForDataElement(factory, dataGroup);
@@ -257,4 +264,19 @@ public class DataGroupToJsonConverterTest {
 
 		assertEquals(json, expectedJson);
 	}
+
+	@Test
+	public void testHookForSubclassesToImplementExtraConversionMethodIsCalled() throws Exception {
+		DataToJsonConverterForTest dataToJsonConverterForTest = new DataToJsonConverterForTest(
+				factory, dataGroup);
+		assertTrue(dataToJsonConverterForTest instanceof DataGroupToJsonConverter);
+		dataToJsonConverterForTest.MCR
+				.assertMethodNotCalled("hookForSubclassesToImplementExtraConversion");
+
+		dataToJsonConverterForTest.toJsonObjectBuilder();
+
+		dataToJsonConverterForTest.MCR
+				.assertMethodWasCalled("hookForSubclassesToImplementExtraConversion");
+	}
+
 }

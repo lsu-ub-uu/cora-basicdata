@@ -33,7 +33,7 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 
 	private DataGroup dataGroup;
 	JsonObjectBuilder dataGroupJsonObjectBuilder;
-	private JsonBuilderFactory jsonBuilderFactory;
+	JsonBuilderFactory jsonBuilderFactory;
 
 	public static DataToJsonConverter usingJsonFactoryForDataGroup(JsonBuilderFactory factory,
 			DataGroup dataGroup) {
@@ -60,8 +60,13 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 		return dataGroupJsonObjectBuilder;
 	}
 
+	/**
+	 * hookForSubclassesToImplementExtraConversion enables subclasses (converters for DataRecordLink
+	 * and DataResourceLink) to add extra conversion needed to completely convert their classes to
+	 * json
+	 */
 	void hookForSubclassesToImplementExtraConversion() {
-		// TODO Auto-generated method stub
+		// No default implementation in this class
 	}
 
 	private void possiblyAddRepeatId() {

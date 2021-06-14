@@ -34,6 +34,10 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 		super(nameInData);
 	}
 
+	public static CoraDataRecordLink fromDataGroup(DataGroup dataGroup) {
+		return new CoraDataRecordLink(dataGroup);
+	}
+
 	private CoraDataRecordLink(DataGroup dataGroup) {
 		super(dataGroup.getNameInData());
 		addLinkedRecordTypeAndId(dataGroup);
@@ -64,12 +68,28 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 		actions.add(action);
 	}
 
+	/**
+	 * @deprecated use {@linkplain #hasReadAction()} instead
+	 */
 	@Override
+	@Deprecated
 	public List<Action> getActions() {
 		return actions;
 	}
 
-	public static CoraDataRecordLink fromDataGroup(DataGroup dataGroup) {
-		return new CoraDataRecordLink(dataGroup);
+	@Override
+	public boolean hasReadAction() {
+		return actions.contains(Action.READ);
 	}
+
+	@Override
+	public String getLinkedRecordType() {
+		return super.getFirstAtomicValueWithNameInData("linkedRecordType");
+	}
+
+	@Override
+	public String getLinkedRecordId() {
+		return super.getFirstAtomicValueWithNameInData("linkedRecordId");
+	}
+
 }

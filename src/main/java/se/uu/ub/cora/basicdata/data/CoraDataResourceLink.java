@@ -42,7 +42,7 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 		return new CoraDataResourceLink(dataGroup);
 	}
 
-	public CoraDataResourceLink(DataGroup dataGroup) {
+	private CoraDataResourceLink(DataGroup dataGroup) {
 		super(dataGroup.getNameInData());
 		addResourceLinkChildren(dataGroup);
 		setRepeatId(dataGroup.getRepeatId());
@@ -64,9 +64,23 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 		actions.add(action);
 	}
 
+	/**
+	 * @deprecated use {@linkplain #hasReadAction()} instead
+	 */
 	@Override
+	@Deprecated
 	public List<Action> getActions() {
 		return actions;
+	}
+
+	@Override
+	public boolean hasReadAction() {
+		return actions.contains(Action.READ);
+	}
+
+	@Override
+	public String getMimeType() {
+		return super.getFirstAtomicValueWithNameInData("mimeType");
 	}
 
 }

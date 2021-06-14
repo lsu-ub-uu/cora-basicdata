@@ -25,12 +25,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataAtomicConverter;
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataAttributeConverter;
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataGroupConverter;
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataRecordLinkConverter;
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataResourceLinkConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.json.parser.JsonParseException;

@@ -18,37 +18,23 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 
-public class DataResourceLinkToJsonConverterForTest extends DataResourceLinkToJsonConverter {
+/**
+ * DataToJsonConverterForTest is an extension to DataGroupToJsonConverter to help with testing of
+ * method hookForSubclassesToImplementExtraConversion.
+ */
+public class DataToJsonConverterForTest extends DataGroupToJsonConverter {
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
-	public boolean addChildrenToGroupHasBeenCalled = false;
-	public boolean dataGroupToJsonHasBeenCalled = false;
-
-	public DataResourceLinkToJsonConverterForTest(DataResourceLink dataResourceLink,
-			String recordURL, JsonBuilderFactory jsonBuilderFactorySpy) {
-		super(dataResourceLink, recordURL, jsonBuilderFactorySpy);
+	DataToJsonConverterForTest(JsonBuilderFactory factory, DataGroup dataGroup) {
+		super(factory, dataGroup);
 	}
-
-	// @Override
-	// public String toJson() {
-	// dataGroupToJsonHasBeenCalled = true;
-	// // super.addChildrenToGroup();
-	// addExtraStuff();
-	// return "fakeJsonFromForTest";
-	// }
 
 	@Override
 	void hookForSubclassesToImplementExtraConversion() {
-		// TODO Auto-generated method stub
+		MCR.addCall();
 	}
-
-	// @Override
-	// void addChildrenToGroup() {
-	// // dataGroupJsonObjectBuilder = new JsonObjectBuilderSpy();
-	//
-	// // addChildrenToGroupHasBeenCalled = true;
-	// super.addChildrenToGroup();
-	// }
 }

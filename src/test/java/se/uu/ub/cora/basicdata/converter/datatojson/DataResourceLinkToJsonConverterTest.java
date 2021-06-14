@@ -31,14 +31,7 @@ public class DataResourceLinkToJsonConverterTest {
 	DataResourceLinkToJsonConverter resourceLinkToJsonConverter;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
 	String recordURL;
-	private DataResourceLinkToJsonConverterForTest forTest;
 	private DataResourceLinkSpy dataResourceLink;
-
-	// private String childrenJsonString = "\"children\":[" +
-	// "{\"name\":\"streamId\",\"value\":\"aStreamId\"}"
-	// + ",{\"name\":\"filename\",\"value\":\"aFilename\"}"
-	// + ",{\"name\":\"filesize\",\"value\":\"12345\"}"
-	// + ",{\"name\":\"mimeType\",\"value\":\"application/png\"}]";
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -46,16 +39,9 @@ public class DataResourceLinkToJsonConverterTest {
 		dataResourceLink = new DataResourceLinkSpy("someNameInData");
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
-		// jsonBuilderFactorySpy = new OrgJsonBuilderFactoryAdapter();
-		// dataResourceLink = new DataResourceLinkSpy("master");
-		// dataResourceLink.addChild(new DataAtomicSpy("streamId", "aStreamId"));
-		// dataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
 
 		resourceLinkToJsonConverter = new DataResourceLinkToJsonConverter(dataResourceLink,
 				recordURL, jsonBuilderFactorySpy);
-
-		// forTest = new DataResourceLinkToJsonConverterForTest(dataResourceLink, recordURL,
-		// jsonBuilderFactorySpy);
 
 	}
 
@@ -69,15 +55,16 @@ public class DataResourceLinkToJsonConverterTest {
 	public void testNoActions() throws Exception {
 		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
 
+		assertJsonBuilderNotUsed();
+	}
+
+	private void assertJsonBuilderNotUsed() {
 		dataResourceLink.MCR.assertParameters("hasReadAction", 0);
 
 		JsonObjectBuilderSpy jsonObjectBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
 				.getReturnValue("createObjectBuilder", 0);
 
 		jsonObjectBuilderSpy.MCR.assertMethodNotCalled("addKeyJsonObjectBuilder");
-
-		// jsonObjectBuilderSpy.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "actionLinks",
-		// null);
 	}
 
 	@Test
@@ -88,6 +75,10 @@ public class DataResourceLinkToJsonConverterTest {
 
 		dataResourceLink.MCR.assertParameters("hasReadAction", 0);
 
+		assertActionLinksBuilderAddedToMainBuilder();
+	}
+
+	private void assertActionLinksBuilderAddedToMainBuilder() {
 		JsonObjectBuilderSpy mainBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
 				.getReturnValue("createObjectBuilder", 0);
 		JsonObjectBuilderSpy actionLinksBuilderSpy = getActionsBuilder();
@@ -122,18 +113,4 @@ public class DataResourceLinkToJsonConverterTest {
 		return (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
 				.getReturnValue("createObjectBuilder", 1);
 	}
-
-	// private void addActionsToResourceLinkSpy() {
-	// List<Action> actions = new ArrayList<>();
-	// actions.add(Action.READ);
-	// dataResourceLink.actions = actions;
-	// dataResourceLink.hasReadAction = true;
-	// }
-
-	// @Test
-	// public void testCallToJson() throws Exception {
-	// String json = converter.toJson();
-	// assertEquals(json, "{\"name\":\"nameInData\"}");
-	// // assertEquals(json, "{" + childrenJsonString + ",\"name\":\"nameInData\"}");
-	// }
 }

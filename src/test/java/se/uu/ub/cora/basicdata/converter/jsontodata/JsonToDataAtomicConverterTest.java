@@ -23,7 +23,6 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataAtomicConverter;
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;

@@ -26,7 +26,7 @@ import se.uu.ub.cora.data.converter.ConversionException;
  * exceptions occure while converting in basicData.
  *
  */
-public class ConverterException extends RuntimeException implements ConversionException {
+public class ConverterException extends ConversionException {
 
 	private static final long serialVersionUID = 6721892121477803630L;
 

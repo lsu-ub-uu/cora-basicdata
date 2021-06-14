@@ -23,7 +23,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataAttributeConverter;
 import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
