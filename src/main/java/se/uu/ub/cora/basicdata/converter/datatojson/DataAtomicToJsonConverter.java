@@ -27,9 +27,9 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 
 	private DataAtomic dataAtomic;
-	private JsonBuilderFactory factory;
+	JsonBuilderFactory factory;
 
-	public static DataToJsonConverter usingJsonFactoryForDataAtomic(JsonBuilderFactory factory,
+	public static DataToJsonConverter usingJsonBuilderFactoryAndDataAtomic(JsonBuilderFactory factory,
 			DataAtomic dataAtomic) {
 		return new DataAtomicToJsonConverter(factory, dataAtomic);
 	}

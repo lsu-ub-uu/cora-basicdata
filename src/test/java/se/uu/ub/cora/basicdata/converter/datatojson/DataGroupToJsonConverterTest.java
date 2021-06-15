@@ -41,15 +41,15 @@ public class DataGroupToJsonConverterTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
+		dataToJsonConverterFactory = DataToJsonConverterFactoryImp
+				.withoutActionLinksUsingBuilderFactory(factory);
 		dataGroup = CoraDataGroup.withNameInData("groupNameInData");
 	}
 
 	@Test
 	public void testToJson() {
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\"name\": \"groupNameInData\"}";
 		assertEquals(json, expectedJson);
@@ -58,8 +58,7 @@ public class DataGroupToJsonConverterTest {
 	@Test
 	public void testToJsonWithRepeatId() {
 		dataGroup.setRepeatId("4");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{\n";
@@ -73,8 +72,7 @@ public class DataGroupToJsonConverterTest {
 	@Test
 	public void testToJsonWithEmptyRepeatId() {
 		dataGroup.setRepeatId("");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{\"name\": \"groupNameInData\"}";
@@ -85,8 +83,7 @@ public class DataGroupToJsonConverterTest {
 	public void testToJsonGroupWithAttribute() {
 		dataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\n";
 		expectedJson += "    \"name\": \"groupNameInData\",\n";
@@ -100,8 +97,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeNameInData2", "attributeValue2");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\n";
 		expectedJson += "    \"name\": \"groupNameInData\",\n";
@@ -118,8 +114,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup
 				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\n";
 		expectedJson += "    \"children\": [{\n";
@@ -142,8 +137,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup2.addChild(
 				CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{\n";
@@ -187,8 +181,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup2.addChild(
 				CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\n";
 		expectedJson += "    \"children\": [\n";
@@ -242,8 +235,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup2.addChild(
 				CoraDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataGroup);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataGroup);
 		String json = dataToJsonConverter.toJsonCompactFormat();
 
 		String expectedJson = "{\"children\":[";
@@ -268,7 +260,7 @@ public class DataGroupToJsonConverterTest {
 	@Test
 	public void testHookForSubclassesToImplementExtraConversionMethodIsCalled() throws Exception {
 		DataToJsonConverterForTest dataToJsonConverterForTest = new DataToJsonConverterForTest(
-				factory, dataGroup);
+				dataToJsonConverterFactory, factory, dataGroup);
 		assertTrue(dataToJsonConverterForTest instanceof DataGroupToJsonConverter);
 		dataToJsonConverterForTest.MCR
 				.assertMethodNotCalled("hookForSubclassesToImplementExtraConversion");

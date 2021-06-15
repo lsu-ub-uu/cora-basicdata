@@ -27,10 +27,16 @@ public class DataRecordLinkToJsonConverter extends DataGroupToJsonConverter
 		implements DataToJsonConverter {
 	private static final String READ = "read";
 	private static final String GET = "GET";
-	DataRecordLink dataRecordLink;
-	private String baseURL;
 
-	public DataRecordLinkToJsonConverter(DataRecordLink dataRecordLink, String baseURL,
+	private String baseURL;
+	DataRecordLink dataRecordLink;
+
+	public static DataRecordLinkToJsonConverter usingJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(
+			JsonBuilderFactory jsonBuilderFactory, DataRecordLink dataRecordLink, String baseURL) {
+		return new DataRecordLinkToJsonConverter(dataRecordLink, baseURL, jsonBuilderFactory);
+	}
+
+	private DataRecordLinkToJsonConverter(DataRecordLink dataRecordLink, String baseURL,
 			JsonBuilderFactory jsonBuilderFactory) {
 		super(jsonBuilderFactory, dataRecordLink);
 		this.dataRecordLink = dataRecordLink;

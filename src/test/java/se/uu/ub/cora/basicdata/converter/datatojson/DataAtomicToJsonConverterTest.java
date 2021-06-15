@@ -36,7 +36,7 @@ public class DataAtomicToJsonConverterTest {
 	public void beforeMethod() {
 		dataAtomic = CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue");
 		OrgJsonBuilderFactoryAdapter factory = new OrgJsonBuilderFactoryAdapter();
-		converter = DataAtomicToJsonConverter.usingJsonFactoryForDataAtomic(factory, dataAtomic);
+		converter = DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory, dataAtomic);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class DataAtomicToJsonConverterTest {
 	public void testToJsonEmptyValue() {
 		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "");
 		OrgJsonBuilderFactoryAdapter factory = new OrgJsonBuilderFactoryAdapter();
-		converter = DataAtomicToJsonConverter.usingJsonFactoryForDataAtomic(factory, dataAtomic);
+		converter = DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory, dataAtomic);
 		String json = converter.toJson();
 
 		String expectedJson = "{\n";

@@ -39,8 +39,8 @@ public class DataRecordLinkToJsonConverterTest {
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
 
-		recordLinkToJsonConverter = new DataRecordLinkToJsonConverter(dataRecordLink, baseURL,
-				jsonBuilderFactorySpy);
+		recordLinkToJsonConverter = DataRecordLinkToJsonConverter
+				.usingJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(jsonBuilderFactorySpy, dataRecordLink, baseURL);
 	}
 
 	@Test

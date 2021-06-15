@@ -28,17 +28,23 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 
 	private DataResourceLink dataResourceLink;
 	private String recordURL;
-	private JsonBuilderFactory jsonBuilderFactory;
+	JsonBuilderFactory jsonBuilderFactory;
 	private static final String READ = "read";
 	private static final String GET = "GET";
 
-	public DataResourceLinkToJsonConverter(DataResourceLink dataResourceLink, String recordURL,
+	private DataResourceLinkToJsonConverter(DataResourceLink dataResourceLink, String recordURL,
 			JsonBuilderFactory jsonBuilderFactory) {
 
 		super(jsonBuilderFactory, dataResourceLink);
 		this.dataResourceLink = dataResourceLink;
 		this.recordURL = recordURL;
 		this.jsonBuilderFactory = jsonBuilderFactory;
+	}
+
+	public static DataResourceLinkToJsonConverter usingJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+			JsonBuilderFactory factory, DataResourceLink convertible, String recordUrl) {
+
+		return new DataResourceLinkToJsonConverter(convertible, recordUrl, factory);
 	}
 
 	@Override

@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
@@ -34,16 +34,20 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 	private DataGroup dataGroup;
 	JsonObjectBuilder dataGroupJsonObjectBuilder;
 	JsonBuilderFactory jsonBuilderFactory;
+	DataToJsonConverterFactory converterFactory;
 
-	public static DataToJsonConverter usingJsonFactoryForDataGroup(JsonBuilderFactory factory,
+	public static DataToJsonConverter usingConverterFactoryAndBuilderFactoryAndDataGroup(
+			DataToJsonConverterFactory converterFactory, JsonBuilderFactory builderFactory,
 			DataGroup dataGroup) {
-		return new DataGroupToJsonConverter(factory, dataGroup);
+		return new DataGroupToJsonConverter(converterFactory, builderFactory, dataGroup);
 	}
 
-	DataGroupToJsonConverter(JsonBuilderFactory factory, DataGroup dataGroup) {
-		this.jsonBuilderFactory = factory;
+	DataGroupToJsonConverter(DataToJsonConverterFactory converterFactory,
+			JsonBuilderFactory builderFactory, DataGroup dataGroup) {
+		this.converterFactory = converterFactory;
+		this.jsonBuilderFactory = builderFactory;
 		this.dataGroup = dataGroup;
-		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
+		dataGroupJsonObjectBuilder = builderFactory.createObjectBuilder();
 	}
 
 	@Override
@@ -88,12 +92,11 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 	}
 
 	void addChildrenToGroup() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (DataElement dataElement : dataGroup.getChildren()) {
-			DataPart dataPart = dataElement;
-			childrenArray.addJsonObjectBuilder(dataToJsonConverterFactory
-					.createForDataElement(jsonBuilderFactory, dataPart).toJsonObjectBuilder());
+			Convertible convertible = (Convertible) dataElement;
+			childrenArray.addJsonObjectBuilder(
+					converterFactory.factor(convertible).toJsonObjectBuilder());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
 	}

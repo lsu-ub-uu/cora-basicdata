@@ -40,8 +40,8 @@ public class DataResourceLinkToJsonConverterTest {
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
 
-		resourceLinkToJsonConverter = new DataResourceLinkToJsonConverter(dataResourceLink,
-				recordURL, jsonBuilderFactorySpy);
+		resourceLinkToJsonConverter = DataResourceLinkToJsonConverter
+				.usingJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(jsonBuilderFactorySpy, dataResourceLink, recordURL);
 
 	}
 

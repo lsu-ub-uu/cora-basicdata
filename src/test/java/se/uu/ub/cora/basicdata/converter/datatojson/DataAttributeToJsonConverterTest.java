@@ -36,8 +36,9 @@ public class DataAttributeToJsonConverterTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
+		dataToJsonConverterFactory = DataToJsonConverterFactoryImp
+				.withoutActionLinksUsingBuilderFactory(factory);
 
 	}
 
@@ -45,8 +46,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJson() {
 		CoraDataAttribute dataAttribute = CoraDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataAttribute);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataAttribute);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"attributeNameInData\": \"attributeValue\"}");
@@ -56,8 +56,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJsonEmptyValue() {
 		CoraDataAttribute dataAttribute = CoraDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataAttribute);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataAttribute);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"attributeNameInData\": \"\"}");
@@ -67,8 +66,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJsonCompactFormat() {
 		CoraDataAttribute dataAttribute = CoraDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForDataElement(factory, dataAttribute);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.factor(dataAttribute);
 		String json = dataToJsonConverter.toJsonCompactFormat();
 
 		Assert.assertEquals(json, "{\"attributeNameInData\":\"attributeValue\"}");

@@ -25,10 +25,10 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataAttributeToJsonConverter implements DataToJsonConverter {
-	private JsonBuilderFactory factory;
 	private DataAttribute dataAttribute;
+	JsonBuilderFactory factory;
 
-	public static DataToJsonConverter usingJsonFactoryForDataAttribute(JsonBuilderFactory factory,
+	public static DataToJsonConverter usingJsonBuilderFactoryAndDataAttribute(JsonBuilderFactory factory,
 			DataAttribute dataAttribute) {
 		return new DataAttributeToJsonConverter(factory, dataAttribute);
 	}

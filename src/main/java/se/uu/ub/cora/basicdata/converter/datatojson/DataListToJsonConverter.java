@@ -88,7 +88,7 @@ public final class DataListToJsonConverter {
 
 	private void convertGroupToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
 		DataToJsonConverter converter = DataGroupToJsonConverter
-				.usingJsonFactoryForDataGroup(jsonBuilderFactory, (DataGroup) data);
+				.usingJsonBuilderFactoryAndDataGroup(jsonBuilderFactory, (DataGroup) data);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 
