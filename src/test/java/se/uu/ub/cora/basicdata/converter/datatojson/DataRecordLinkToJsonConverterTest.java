@@ -18,17 +18,19 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 
 public class DataRecordLinkToJsonConverterTest {
 	DataRecordLinkToJsonConverter recordLinkToJsonConverter;
+	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
-	// String recordURL;
 	String baseURL;
 	DataRecordLinkSpy dataRecordLink;
 
@@ -38,9 +40,15 @@ public class DataRecordLinkToJsonConverterTest {
 		dataRecordLink = new DataRecordLinkSpy("someNameInData");
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
-
+		converterFactory = new DataToJsonConverterFactorySpy();
 		recordLinkToJsonConverter = DataRecordLinkToJsonConverter
-				.usingJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(jsonBuilderFactorySpy, dataRecordLink, baseURL);
+				.usingConverterFactoryAndJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(
+						converterFactory, jsonBuilderFactorySpy, dataRecordLink, baseURL);
+	}
+
+	@Test
+	public void testConverterFactorySetInParent() throws Exception {
+		assertSame(recordLinkToJsonConverter.converterFactory, converterFactory);
 	}
 
 	@Test

@@ -20,6 +20,7 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
@@ -27,24 +28,27 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 		implements DataToJsonConverter {
 
 	private DataResourceLink dataResourceLink;
-	private String recordURL;
+	String recordURL;
 	JsonBuilderFactory jsonBuilderFactory;
 	private static final String READ = "read";
 	private static final String GET = "GET";
 
-	private DataResourceLinkToJsonConverter(DataResourceLink dataResourceLink, String recordURL,
+	private DataResourceLinkToJsonConverter(DataToJsonConverterFactory converterFactory,
+			DataResourceLink dataResourceLink, String recordURL,
 			JsonBuilderFactory jsonBuilderFactory) {
 
-		super(jsonBuilderFactory, dataResourceLink);
+		super(converterFactory, jsonBuilderFactory, dataResourceLink);
 		this.dataResourceLink = dataResourceLink;
 		this.recordURL = recordURL;
 		this.jsonBuilderFactory = jsonBuilderFactory;
 	}
 
-	public static DataResourceLinkToJsonConverter usingJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
-			JsonBuilderFactory factory, DataResourceLink convertible, String recordUrl) {
+	public static DataResourceLinkToJsonConverter usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+			DataToJsonConverterFactory converterFactory, JsonBuilderFactory factory,
+			DataResourceLink convertible, String recordUrl) {
 
-		return new DataResourceLinkToJsonConverter(convertible, recordUrl, factory);
+		return new DataResourceLinkToJsonConverter(converterFactory, convertible, recordUrl,
+				factory);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -29,29 +29,10 @@ import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 
-public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory {
-	JsonBuilderFactory factory;
-	private String url;
-
-	/**
-	 * usingUrlInActionLinks will factor {@link DataToJsonConverter}s that generate actionLinks for
-	 * linked data when applicable
-	 * 
-	 * @param factory
-	 *            A {@link JsonBuilderFactory} to pass on to factored converters
-	 * @param baseUrl
-	 *            A String with the base URL for the system, to pass on to factored converters
-	 * @return A DataToJsonConverterFactoryImp that generates actionLinks for linked data
-	 */
-	public static DataToJsonConverterFactoryImp withActionLinksUsingBuilderFactoryAndUrl(
-			JsonBuilderFactory factory, String baseUrl) {
-		return new DataToJsonConverterFactoryImp(factory, baseUrl);
-	}
-
-	private DataToJsonConverterFactoryImp(JsonBuilderFactory factory, String url) {
-		this.factory = factory;
-		this.url = url;
-	}
+public class BasicDataToJsonConverterFactory implements DataToJsonConverterFactory {
+	JsonBuilderFactory builderFactory;
+	String baseUrl;
+	String recordUrl;
 
 	/**
 	 * withoutActionLinksUsingBuilderFactory will factor {@link DataToJsonConverter}s that does not
@@ -62,42 +43,60 @@ public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory
 	 * 
 	 * @return A DataToJsonConverterFactoryImp that does not generates actionLinks for linked data
 	 */
-	public static DataToJsonConverterFactoryImp withoutActionLinksUsingBuilderFactory(
-			JsonBuilderFactory factory) {
-		return new DataToJsonConverterFactoryImp(factory);
+	public static BasicDataToJsonConverterFactory usingBuilderFactory(JsonBuilderFactory factory) {
+		return new BasicDataToJsonConverterFactory(factory);
 	}
 
-	private DataToJsonConverterFactoryImp(JsonBuilderFactory factory) {
-		this.factory = factory;
+	BasicDataToJsonConverterFactory(JsonBuilderFactory factory) {
+		this.builderFactory = factory;
 	}
 
 	@Override
-	public DataToJsonConverter factor(Convertible convertible) {
-		if (urlExists()) {
+	public DataToJsonConverter factorUsingConvertible(Convertible convertible) {
+		if (baseUrlIsKnownGenerateRecordLinks()) {
 			if (convertible instanceof DataRecordLink) {
 				return DataRecordLinkToJsonConverter
-						.usingJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(factory,
-								(DataRecordLink) convertible, null);
+						.usingConverterFactoryAndJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(this,
+								builderFactory, (DataRecordLink) convertible, baseUrl);
 			}
+		}
+		if (recordUrl != null) {
 			if (convertible instanceof DataResourceLink) {
 				return DataResourceLinkToJsonConverter
-						.usingJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(factory,
-								(DataResourceLink) convertible, null);
+						.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+								this, builderFactory, (DataResourceLink) convertible, recordUrl);
 			}
 		}
 		if (convertible instanceof DataGroup) {
 			return DataGroupToJsonConverter.usingConverterFactoryAndBuilderFactoryAndDataGroup(this,
-					factory, (DataGroup) convertible);
+					builderFactory, (DataGroup) convertible);
 		}
 		if (convertible instanceof DataAtomic) {
-			return DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory,
+			return DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(builderFactory,
 					(DataAtomic) convertible);
 		}
-		return DataAttributeToJsonConverter.usingJsonBuilderFactoryAndDataAttribute(factory,
+		return DataAttributeToJsonConverter.usingJsonBuilderFactoryAndDataAttribute(builderFactory,
 				(DataAttribute) convertible);
 	}
 
-	private boolean urlExists() {
-		return url != null;
+	private boolean baseUrlIsKnownGenerateRecordLinks() {
+		return baseUrl != null;
+	}
+
+	@Override
+	public DataToJsonConverter factorUsingBaseUrlAndConvertible(String baseUrl,
+			Convertible convertible) {
+		this.baseUrl = baseUrl;
+
+		return factorUsingConvertible(convertible);
+	}
+
+	@Override
+	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl, String recordUrl,
+			Convertible convertible) {
+		this.baseUrl = baseUrl;
+		this.recordUrl = recordUrl;
+
+		return factorUsingConvertible(convertible);
 	}
 }

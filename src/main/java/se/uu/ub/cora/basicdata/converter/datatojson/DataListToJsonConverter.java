@@ -81,14 +81,18 @@ public final class DataListToJsonConverter {
 	}
 
 	private void convertRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
+		// TODO: no nulls :)
 		DataRecordToJsonConverter converter = DataRecordToJsonConverter
-				.usingJsonFactoryForDataRecord(jsonBuilderFactory, (CoraDataRecord) data);
+				.usingConverterFactoryAndBuilderFactoryAndDataRecord(null, jsonBuilderFactory, null,
+						(CoraDataRecord) data);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 
 	private void convertGroupToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
+		// TODO: no nulls :)
 		DataToJsonConverter converter = DataGroupToJsonConverter
-				.usingJsonBuilderFactoryAndDataGroup(jsonBuilderFactory, (DataGroup) data);
+				.usingConverterFactoryAndBuilderFactoryAndDataGroup(null, jsonBuilderFactory,
+						(DataGroup) data);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 

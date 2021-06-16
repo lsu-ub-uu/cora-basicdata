@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,6 +20,7 @@
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,26 +28,63 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataRecordToJsonConverterTest {
 
 	private CoraDataRecord dataRecord;
+	private DataRecordToJsonConverter dataRecordToJsonConverter;
+	JsonBuilderFactory builderFactory;
+	private DataToJsonConverterFactorySpy converterFactory;
+	private String baseUrl = "some/base/url";
 
 	@BeforeMethod
 	public void setUp() {
+		builderFactory = new OrgJsonBuilderFactoryAdapter();
 		DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
+		converterFactory = new DataToJsonConverterFactorySpy();
+
+		dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingConverterFactoryAndBuilderFactoryAndDataRecord(converterFactory,
+						builderFactory, baseUrl, dataRecord);
+	}
+
+	@Test
+	public void testConverterImplementsDataToJsonConverter() throws Exception {
+		assertTrue(dataRecordToJsonConverter instanceof DataToJsonConverter);
+	}
+
+	@Test
+	public void testConverterFactoryUsedToCreateConverterForMainDataGroupNoBaseUrl()
+			throws Exception {
+		dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingConverterFactoryAndBuilderFactoryAndDataRecord(converterFactory,
+						builderFactory, null, dataRecord);
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		converterFactory.MCR.assertMethodWasCalled("factorUsingConvertible");
+		converterFactory.MCR.assertMethodNotCalled("factorUsingBaseUrlAndRecordUrlAndConvertible");
+		converterFactory.MCR.assertParameters("factorUsingConvertible", 0,
+				dataRecord.getDataGroup());
+	}
+
+	@Test
+	public void testConverterFactoryUsedToCreateConverterForMainDataGroup() throws Exception {
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		converterFactory.MCR.assertMethodNotCalled("factorUsingConvertible");
+		converterFactory.MCR.assertMethodWasCalled("factorUsingBaseUrlAndRecordUrlAndConvertible");
+		// TODO: should not be null, fetch from record (new method in record)
+		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndRecordUrlAndConvertible", 0,
+				baseUrl, null, dataRecord.getDataGroup());
 	}
 
 	@Test
 	public void testToJson() {
-
-		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}}}");
@@ -57,9 +95,6 @@ public class DataRecordToJsonConverterTest {
 		dataRecord.addReadPermission("readPermissionOne");
 		dataRecord.addReadPermission("readPermissionTwo");
 
-		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,
@@ -71,9 +106,6 @@ public class DataRecordToJsonConverterTest {
 		dataRecord.addWritePermission("writePermissionOne");
 		dataRecord.addWritePermission("writePermissionTwo");
 
-		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,
@@ -87,9 +119,6 @@ public class DataRecordToJsonConverterTest {
 		dataRecord.addWritePermission("writePermissionOne");
 		dataRecord.addWritePermission("writePermissionTwo");
 
-		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingJsonFactoryForDataRecord(jsonFactory, dataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,

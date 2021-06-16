@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -28,40 +28,62 @@ import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataRecordToJsonConverter {
+public final class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private DataRecord dataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
+	private DataToJsonConverterFactory converterFactory;
+	private String baseUrl;
 
-	public static DataRecordToJsonConverter usingJsonFactoryForDataRecord(
-			JsonBuilderFactory jsonFactory, DataRecord dataRecord) {
-		return new DataRecordToJsonConverter(jsonFactory, dataRecord);
+	public static DataRecordToJsonConverter usingConverterFactoryAndBuilderFactoryAndDataRecord(
+			DataToJsonConverterFactory converterFactory, JsonBuilderFactory jsonFactory,
+			String baseUrl, DataRecord dataRecord) {
+		return new DataRecordToJsonConverter(converterFactory, jsonFactory, baseUrl, dataRecord);
 	}
 
-	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory, DataRecord dataRecord) {
-		this.jsonBuilderFactory = jsonFactory;
+	private DataRecordToJsonConverter(DataToJsonConverterFactory converterFactory,
+			JsonBuilderFactory builderFactory, String baseUrl, DataRecord dataRecord) {
+		this.converterFactory = converterFactory;
+		this.jsonBuilderFactory = builderFactory;
+		this.baseUrl = baseUrl;
 		this.dataRecord = dataRecord;
-		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
+		recordJsonObjectBuilder = builderFactory.createObjectBuilder();
 	}
 
+	@Override
 	public String toJson() {
 		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
-	JsonObjectBuilder toJsonObjectBuilder() {
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
 		convertMainDataGroup();
 		possiblyConvertPermissions();
 		return createTopLevelJsonObjectWithRecordAsChild();
 	}
 
 	private void convertMainDataGroup() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = DataToJsonConverterFactoryImp
-				.withoutActionLinksUsingBuilderFactory(null);
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.factor(dataRecord.getDataGroup());
+		DataToJsonConverter dataToJsonConverter;
+		dataToJsonConverter = createConverterForMainDataGroup();
+		// old code below
+		DataToJsonConverterFactory dataToJsonConverterFactory = BasicDataToJsonConverterFactory
+				.usingBuilderFactory(jsonBuilderFactory);
+		dataToJsonConverter = dataToJsonConverterFactory
+				.factorUsingConvertible(dataRecord.getDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
+	}
+
+	private DataToJsonConverter createConverterForMainDataGroup() {
+		if (baseUrl == null) {
+			return converterFactory.factorUsingConvertible(dataRecord.getDataGroup());
+		}
+		// TODO:
+		// String recordUrl = baseUrl + dataRecord.getRecordType +"/"+ dataRecord.getRecordId;
+		return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(baseUrl, null,
+				dataRecord.getDataGroup());
+
 	}
 
 	private void possiblyConvertPermissions() {
@@ -122,6 +144,12 @@ public final class DataRecordToJsonConverter {
 		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
 		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("record", recordJsonObjectBuilder);
 		return rootWrappingJsonObjectBuilder;
+	}
+
+	@Override
+	public String toJsonCompactFormat() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

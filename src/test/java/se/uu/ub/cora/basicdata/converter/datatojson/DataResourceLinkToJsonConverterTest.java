@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -25,10 +26,12 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.DataResourceLinkSpy;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 
 public class DataResourceLinkToJsonConverterTest {
 
 	DataResourceLinkToJsonConverter resourceLinkToJsonConverter;
+	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
 	String recordURL;
 	private DataResourceLinkSpy dataResourceLink;
@@ -40,9 +43,16 @@ public class DataResourceLinkToJsonConverterTest {
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
 
+		converterFactory = new DataToJsonConverterFactorySpy();
 		resourceLinkToJsonConverter = DataResourceLinkToJsonConverter
-				.usingJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(jsonBuilderFactorySpy, dataResourceLink, recordURL);
+				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(converterFactory,
+						jsonBuilderFactorySpy, dataResourceLink, recordURL);
 
+	}
+
+	@Test
+	public void testConverterFactorySetInParent() throws Exception {
+		assertSame(resourceLinkToJsonConverter.converterFactory, converterFactory);
 	}
 
 	@Test

@@ -96,7 +96,7 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 		for (DataElement dataElement : dataGroup.getChildren()) {
 			Convertible convertible = (Convertible) dataElement;
 			childrenArray.addJsonObjectBuilder(
-					converterFactory.factor(convertible).toJsonObjectBuilder());
+					converterFactory.factorUsingConvertible(convertible).toJsonObjectBuilder());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
 	}
