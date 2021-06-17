@@ -32,6 +32,7 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public class DataRecordToJsonConverterTest {
 
+	// private DataRecordSpy dataRecord;
 	private CoraDataRecord dataRecord;
 	private DataRecordToJsonConverter dataRecordToJsonConverter;
 	private JsonBuilderFactorySpy builderFactory;
@@ -44,6 +45,7 @@ public class DataRecordToJsonConverterTest {
 		builderFactory = new JsonBuilderFactorySpy();
 		// DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
 		DataGroupSpy dataGroup = new DataGroupSpy("groupNameInData");
+		// dataRecord = new DataRecordSpy(dataGroup);
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
 		converterFactory = new DataToJsonConverterFactorySpy();
@@ -220,5 +222,11 @@ public class DataRecordToJsonConverterTest {
 			return jsonObjectBuilderSpy;
 		}
 
+	}
+
+	@Test
+	public void testConvertActions() throws Exception {
+		// TODO: Use a dataRecord spy.
+		dataRecordToJsonConverter.toJsonObjectBuilder();
 	}
 }
