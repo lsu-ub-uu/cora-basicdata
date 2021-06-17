@@ -3,12 +3,18 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.Collection;
 import java.util.List;
 
+import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 
 public class DataGroupSpy implements DataGroup {
+
+	MethodCallRecorder MCR = new MethodCallRecorder();
+	public boolean throwException = false;
+	DataGroupSpy childDataGroupToReturn = null;
 
 	public DataGroupSpy(String nameInData) {
 		// TODO Auto-generated constructor stub
@@ -83,7 +89,13 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String nameInData) {
-		return "fakeFromSpy_" + nameInData;
+		MCR.addCall("nameInData", nameInData);
+		if (throwException) {
+			throw new DataMissingException("DME from Spy");
+		}
+		String atomicValue = "fakeFromSpy_" + nameInData;
+		MCR.addReturned(atomicValue);
+		return atomicValue;
 	}
 
 	@Override
@@ -94,8 +106,15 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return null;
+		MCR.addCall("nameInData", nameInData);
+		if (throwException) {
+			throw new DataMissingException("DME from Spy");
+		}
+		if (null == childDataGroupToReturn) {
+			childDataGroupToReturn = new DataGroupSpy("child to return");
+		}
+		MCR.addReturned(childDataGroupToReturn);
+		return childDataGroupToReturn;
 	}
 
 	@Override
@@ -134,6 +153,15 @@ public class DataGroupSpy implements DataGroup {
 	public DataAtomic getFirstDataAtomicWithNameInData(String nameInData) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setChildDataGroupToReturn(DataGroupSpy childDataGroupToReturn) {
+		this.childDataGroupToReturn = childDataGroupToReturn;
+	}
+
+	public void setChildToThrowException() {
+		childDataGroupToReturn = new DataGroupSpy("child to return");
+		childDataGroupToReturn.throwException = true;
 	}
 
 }

@@ -20,27 +20,51 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.json.parser.JsonArray;
 
-public class JsonBuilderFactorySpy implements JsonBuilderFactory {
-
+public class JsonArrayBuilderSpy implements JsonArrayBuilder {
 	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public JsonArrayBuilder createArrayBuilder() {
-		JsonArrayBuilderSpy out = new JsonArrayBuilderSpy();
+	public void addString(String value) {
+		MCR.addCall("value", value);
+	}
+
+	@Override
+	public void addJsonObjectBuilder(JsonObjectBuilder jsonObjectBuilder) {
+		MCR.addCall("jsonObjectBuilder", jsonObjectBuilder);
+
+	}
+
+	@Override
+	public void addJsonArrayBuilder(JsonArrayBuilder jsonArrayBuilder) {
+		MCR.addCall("jsonArrayBuilder", jsonArrayBuilder);
+
+	}
+
+	@Override
+	public JsonArray toJsonArray() {
+		JsonArray out = null;
 		MCR.addCall();
 		MCR.addReturned(out);
 		return out;
 	}
 
 	@Override
-	public JsonObjectBuilder createObjectBuilder() {
+	public String toJsonFormattedString() {
+		String out = "fake json from JsonArrayBuilderSpy toJsonFormattedString";
 		MCR.addCall();
-		JsonObjectBuilderSpy jsonObjectBuilderSpy = new JsonObjectBuilderSpy();
-		MCR.addReturned(jsonObjectBuilderSpy);
-		return jsonObjectBuilderSpy;
+		MCR.addReturned(out);
+		return out;
+	}
+
+	@Override
+	public String toJsonFormattedPrettyString() {
+		String out = "fake json from JsonArrayBuilderSpy toJsonFormattedPrettyString";
+		MCR.addCall();
+		MCR.addReturned(out);
+		return out;
 	}
 
 }

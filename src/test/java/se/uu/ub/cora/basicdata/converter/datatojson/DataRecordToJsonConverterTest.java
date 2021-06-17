@@ -19,31 +19,31 @@
 
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.basicdata.data.DataGroupSpy;
+import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public class DataRecordToJsonConverterTest {
 
 	private CoraDataRecord dataRecord;
 	private DataRecordToJsonConverter dataRecordToJsonConverter;
-	JsonBuilderFactory builderFactory;
+	private JsonBuilderFactorySpy builderFactory;
+
 	private DataToJsonConverterFactorySpy converterFactory;
-	private String baseUrl = "some/base/url";
+	private String baseUrl = "some/base/url/";
 
 	@BeforeMethod
 	public void setUp() {
-		builderFactory = new OrgJsonBuilderFactoryAdapter();
-		DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
+		builderFactory = new JsonBuilderFactorySpy();
+		// DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
+		DataGroupSpy dataGroup = new DataGroupSpy("groupNameInData");
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
 		converterFactory = new DataToJsonConverterFactorySpy();
@@ -61,55 +61,112 @@ public class DataRecordToJsonConverterTest {
 	@Test
 	public void testConverterFactoryUsedToCreateConverterForMainDataGroupNoBaseUrl()
 			throws Exception {
+
+		builderFactory = new JsonBuilderFactorySpy();
 		dataRecordToJsonConverter = DataRecordToJsonConverter
 				.usingConverterFactoryAndBuilderFactoryAndDataRecord(converterFactory,
 						builderFactory, null, dataRecord);
+
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
-		converterFactory.MCR.assertMethodWasCalled("factorUsingConvertible");
 		converterFactory.MCR.assertMethodNotCalled("factorUsingBaseUrlAndRecordUrlAndConvertible");
 		converterFactory.MCR.assertParameters("factorUsingConvertible", 0,
 				dataRecord.getDataGroup());
+
+		DataToJsonConverterSpy dataGroupConverter = (DataToJsonConverterSpy) converterFactory.MCR
+				.getReturnValue("factorUsingConvertible", 0);
+		assertKeyDataAddedToRecordBuilderIsBuilderFromDataGroupConverter(dataGroupConverter);
+
+		JsonObjectBuilderSpy recordBuilder = getRecordBuilderFromSpy();
+		JsonObjectBuilderSpy rootWrappingBuilder = getRootWrappingBuilder();
+		rootWrappingBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "record",
+				recordBuilder);
+	}
+
+	private JsonObjectBuilderSpy getRootWrappingBuilder() {
+		return (JsonObjectBuilderSpy) builderFactory.MCR.getReturnValue("createObjectBuilder", 1);
+	}
+
+	private JsonObjectBuilderSpy getRecordBuilderFromSpy() {
+		return (JsonObjectBuilderSpy) builderFactory.MCR.getReturnValue("createObjectBuilder", 0);
 	}
 
 	@Test
-	public void testConverterFactoryUsedToCreateConverterForMainDataGroup() throws Exception {
+	public void testConverterFactoryUsedToCreateConverterForMainDataGroupWithBaseUrl()
+			throws Exception {
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		converterFactory.MCR.assertMethodNotCalled("factorUsingConvertible");
-		converterFactory.MCR.assertMethodWasCalled("factorUsingBaseUrlAndRecordUrlAndConvertible");
-		// TODO: should not be null, fetch from record (new method in record)
+
+		String recordUrl = baseUrl + dataRecord.getType() + "/" + dataRecord.getId();
+
 		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndRecordUrlAndConvertible", 0,
-				baseUrl, null, dataRecord.getDataGroup());
+				baseUrl, recordUrl, dataRecord.getDataGroup());
+
+		DataToJsonConverterSpy dataGroupConverter = (DataToJsonConverterSpy) converterFactory.MCR
+				.getReturnValue("factorUsingBaseUrlAndRecordUrlAndConvertible", 0);
+		assertKeyDataAddedToRecordBuilderIsBuilderFromDataGroupConverter(dataGroupConverter);
+
+		JsonObjectBuilderSpy recordBuilder = getRecordBuilderFromSpy();
+		JsonObjectBuilderSpy rootWrappingBuilder = getRootWrappingBuilder();
+		rootWrappingBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "record",
+				recordBuilder);
+	}
+
+	private void assertKeyDataAddedToRecordBuilderIsBuilderFromDataGroupConverter(
+			DataToJsonConverterSpy dataGroupConverter) {
+		JsonObjectBuilderSpy dataGroupBuilder = (JsonObjectBuilderSpy) dataGroupConverter.MCR
+				.getReturnValue("toJsonObjectBuilder", 0);
+
+		JsonObjectBuilderSpy recordBuilder = getRecordBuilderFromSpy();
+		recordBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "data", dataGroupBuilder);
 	}
 
 	@Test
-	public void testToJson() {
-		String jsonString = dataRecordToJsonConverter.toJson();
-
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}}}");
-	}
-
-	@Test
-	public void testToJsonWithReadPermissions() {
+	public void testToJsonWithListOfReadPermissions() {
+		String type = "read";
 		dataRecord.addReadPermission("readPermissionOne");
 		dataRecord.addReadPermission("readPermissionTwo");
 
-		String jsonString = dataRecordToJsonConverter.toJson();
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+		assertTwoPermissionsAddedCorrectlyForType(type, 0);
+	}
 
-		assertEquals(jsonString,
-				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"read\":[\"readPermissionOne\",\"readPermissionTwo\"]}}}");
+	private void assertTwoPermissionsAddedCorrectlyForType(String type, int postitionOfTypes) {
+		JsonObjectBuilderSpy permissionBuilder = getPermissionBuilderFromSpy();
+		JsonObjectBuilderSpy recordBuilder = getRecordBuilderFromSpy();
+
+		JsonArrayBuilderSpy typePermissionBuilder = getTypePermissionArrayBuilderFromSpy(
+				postitionOfTypes);
+
+		typePermissionBuilder.MCR.assertParameters("addString", 0, type + "PermissionOne");
+		typePermissionBuilder.MCR.assertParameters("addString", 1, type + "PermissionTwo");
+		typePermissionBuilder.MCR.assertNumberOfCallsToMethod("addString", 2);
+
+		permissionBuilder.MCR.assertParameters("addKeyJsonArrayBuilder", postitionOfTypes, type,
+				typePermissionBuilder);
+
+		recordBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 1, "permissions",
+				permissionBuilder);
+	}
+
+	private JsonArrayBuilderSpy getTypePermissionArrayBuilderFromSpy(int postitionOfTypes) {
+		return (JsonArrayBuilderSpy) builderFactory.MCR.getReturnValue("createArrayBuilder",
+				postitionOfTypes);
+	}
+
+	private JsonObjectBuilderSpy getPermissionBuilderFromSpy() {
+		return (JsonObjectBuilderSpy) builderFactory.MCR.getReturnValue("createObjectBuilder", 1);
 	}
 
 	@Test
 	public void testToJsonWithWritePermissions() {
+		String type = "write";
 		dataRecord.addWritePermission("writePermissionOne");
 		dataRecord.addWritePermission("writePermissionTwo");
 
-		String jsonString = dataRecordToJsonConverter.toJson();
-
-		assertEquals(jsonString,
-				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"write\":[\"writePermissionOne\",\"writePermissionTwo\"]}}}");
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+		assertTwoPermissionsAddedCorrectlyForType(type, 0);
 	}
 
 	@Test
@@ -119,10 +176,49 @@ public class DataRecordToJsonConverterTest {
 		dataRecord.addWritePermission("writePermissionOne");
 		dataRecord.addWritePermission("writePermissionTwo");
 
-		String jsonString = dataRecordToJsonConverter.toJson();
-
-		assertEquals(jsonString,
-				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"read\":[\"readPermissionOne\",\"readPermissionTwo\"],\"write\":[\"writePermissionOne\",\"writePermissionTwo\"]}}}");
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+		assertTwoPermissionsAddedCorrectlyForType("read", 0);
+		assertTwoPermissionsAddedCorrectlyForType("write", 1);
 	}
 
+	@Test
+	public void testToJson() {
+		DataRecordToJsonConverterForTest forTest = new DataRecordToJsonConverterForTest();
+
+		String jsonString = forTest.toJson();
+
+		forTest.MCR.assertMethodWasCalled("toJsonObjectBuilder");
+		JsonObjectBuilderSpy builderSpy = (JsonObjectBuilderSpy) forTest.MCR
+				.getReturnValue("toJsonObjectBuilder", 0);
+		builderSpy.MCR.assertReturn("toJsonFormattedPrettyString", 0, jsonString);
+	}
+
+	@Test
+	public void testToJsonCompactFormat() {
+		DataRecordToJsonConverterForTest forTest = new DataRecordToJsonConverterForTest();
+
+		String jsonString = forTest.toJsonCompactFormat();
+
+		forTest.MCR.assertMethodWasCalled("toJsonObjectBuilder");
+		JsonObjectBuilderSpy builderSpy = (JsonObjectBuilderSpy) forTest.MCR
+				.getReturnValue("toJsonObjectBuilder", 0);
+		builderSpy.MCR.assertReturn("toJsonFormattedString", 0, jsonString);
+	}
+
+	class DataRecordToJsonConverterForTest extends DataRecordToJsonConverter {
+		MethodCallRecorder MCR = new MethodCallRecorder();
+
+		DataRecordToJsonConverterForTest() {
+			super(null, builderFactory, null, null);
+		}
+
+		@Override
+		public JsonObjectBuilder toJsonObjectBuilder() {
+			MCR.addCall();
+			JsonObjectBuilderSpy jsonObjectBuilderSpy = new JsonObjectBuilderSpy();
+			MCR.addReturned(jsonObjectBuilderSpy);
+			return jsonObjectBuilderSpy;
+		}
+
+	}
 }

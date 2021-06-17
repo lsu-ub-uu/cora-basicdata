@@ -26,7 +26,7 @@ public class JsonObjectBuilderSpy implements JsonObjectBuilder {
 
 	@Override
 	public String toJsonFormattedPrettyString() {
-		String out = null;
+		String out = "fake json from JsonObjectBuilderSpy toJsonFormattedPrettyString";
 		MCR.addCall();
 		MCR.addReturned(out);
 		return out;
@@ -34,7 +34,7 @@ public class JsonObjectBuilderSpy implements JsonObjectBuilder {
 
 	@Override
 	public String toJsonFormattedString() {
-		String out = null;
+		String out = "fake json from JsonObjectBuilderSpy toJsonFormattedString";
 		MCR.addCall();
 		MCR.addReturned(out);
 		return out;

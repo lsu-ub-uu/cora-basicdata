@@ -28,7 +28,7 @@ import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataRecordToJsonConverter implements DataToJsonConverter {
+public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private DataRecord dataRecord;
@@ -42,7 +42,7 @@ public final class DataRecordToJsonConverter implements DataToJsonConverter {
 		return new DataRecordToJsonConverter(converterFactory, jsonFactory, baseUrl, dataRecord);
 	}
 
-	private DataRecordToJsonConverter(DataToJsonConverterFactory converterFactory,
+	DataRecordToJsonConverter(DataToJsonConverterFactory converterFactory,
 			JsonBuilderFactory builderFactory, String baseUrl, DataRecord dataRecord) {
 		this.converterFactory = converterFactory;
 		this.jsonBuilderFactory = builderFactory;
@@ -53,37 +53,55 @@ public final class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	@Override
 	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
+		return toJsonObjectBuilder().toJsonFormattedPrettyString();
 	}
 
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		convertMainDataGroup();
 		possiblyConvertPermissions();
+		// TODO: convertActions
 		return createTopLevelJsonObjectWithRecordAsChild();
 	}
+
+	// private void convertActionLinks() {
+	// if (recordHasActionLinks()) {
+	// addActionLinksToRecord();
+	// }
+	// }
+
+	// private boolean recordHasActionLinks() {
+	// return !dataRecord.getActions().isEmpty();
+	// }
+	//
+	// private void addActionLinksToRecord() {
+	// List<Action> actionLinks = dataRecord.getActions();
+	// ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(
+	// jsonBuilderFactory, actionLinks);
+	// JsonObjectBuilder actionLinksObject = actionLinkConverter.toJsonObjectBuilder();
+	// recordJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+	// }
 
 	private void convertMainDataGroup() {
 		DataToJsonConverter dataToJsonConverter;
 		dataToJsonConverter = createConverterForMainDataGroup();
-		// old code below
-		DataToJsonConverterFactory dataToJsonConverterFactory = BasicDataToJsonConverterFactory
-				.usingBuilderFactory(jsonBuilderFactory);
-		dataToJsonConverter = dataToJsonConverterFactory
-				.factorUsingConvertible(dataRecord.getDataGroup());
+
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
 	}
 
 	private DataToJsonConverter createConverterForMainDataGroup() {
-		if (baseUrl == null) {
-			return converterFactory.factorUsingConvertible(dataRecord.getDataGroup());
+		if (actionLinksShouldBeCreated()) {
+			String recordUrl = baseUrl + dataRecord.getType() + "/" + dataRecord.getId();
+			return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(baseUrl, recordUrl,
+					dataRecord.getDataGroup());
 		}
-		// TODO:
-		// String recordUrl = baseUrl + dataRecord.getRecordType +"/"+ dataRecord.getRecordId;
-		return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(baseUrl, null,
-				dataRecord.getDataGroup());
+		return converterFactory.factorUsingConvertible(dataRecord.getDataGroup());
 
+	}
+
+	private boolean actionLinksShouldBeCreated() {
+		return baseUrl != null;
 	}
 
 	private void possiblyConvertPermissions() {
@@ -148,8 +166,7 @@ public final class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	@Override
 	public String toJsonCompactFormat() {
-		// TODO Auto-generated method stub
-		return null;
+		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 }

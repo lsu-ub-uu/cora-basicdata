@@ -32,13 +32,15 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 
 public class CoraDataRecordTest {
 	private CoraDataRecord dataRecord;
+	private DataGroup dataGroup;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 	}
 
@@ -141,6 +143,127 @@ public class CoraDataRecordTest {
 
 		assertEquals(writePermissions.size(), 4);
 		assertSetContains(writePermissions, "rating", "value", "rating2", "value2");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record id not known")
+	public void testGetIdNoDataGroup() throws Exception {
+		dataRecord.setDataGroup(null);
+		dataRecord.getId();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record id not known")
+	public void testGetIdNoRecordInfoDataGroup() throws Exception {
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataGroup.throwException = true;
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		dataRecord.getId();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record id not known")
+
+	public void testGetIdNoIdDataGroup() throws Exception {
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataGroup.setChildToThrowException();
+
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		dataRecord.getId();
+	}
+
+	@Test
+	public void testGetId() throws Exception {
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		String recordId = dataRecord.getId();
+
+		dataGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
+		DataGroupSpy recordInfo = (DataGroupSpy) dataGroup.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+
+		recordInfo.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "id");
+
+		recordInfo.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0, recordId);
+
+	}
+
+	@Test
+	public void testGetType() throws Exception {
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		String returnType = dataRecord.getType();
+
+		dataGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
+		DataGroupSpy recordInfo = (DataGroupSpy) dataGroup.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+
+		recordInfo.MCR.assertParameters("getFirstGroupWithNameInData", 0, "type");
+
+		DataGroupSpy typeGroup = (DataGroupSpy) recordInfo.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+		typeGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "linkedRecordId");
+
+		typeGroup.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0, returnType);
+
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record type not known")
+	public void testGetTypeNoDataGroup() throws Exception {
+		dataRecord.setDataGroup(null);
+		dataRecord.getType();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record type not known")
+	public void testGetTypeNoRecordInfoDataGroup() throws Exception {
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataGroup.throwException = true;
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		dataRecord.getType();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record type not known")
+
+	public void testGetTypeNoLinkedTypeDataGroup() throws Exception {
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataGroup.setChildToThrowException();
+
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		dataRecord.getType();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record type not known")
+
+	public void testGetTypeNolinkedRecordIdAtomicGroup() throws Exception {
+		DataGroupSpy childDataGroup = new DataGroupSpy("childDataGroup");
+		childDataGroup.setChildToThrowException();
+		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
+		dataGroup.setChildDataGroupToReturn(childDataGroup);
+
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		dataRecord.getType();
+	}
+
+	@Test
+	public void testHasActionsNoActions() throws Exception {
+		assertFalse(dataRecord.hasActions());
+	}
+
+	@Test
+	public void testHasActionsRecordHasActions() throws Exception {
+		dataRecord.addAction(Action.CREATE);
+		assertTrue(dataRecord.hasActions());
 	}
 
 }
