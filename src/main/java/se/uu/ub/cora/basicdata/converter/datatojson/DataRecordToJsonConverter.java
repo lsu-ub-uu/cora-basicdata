@@ -105,17 +105,13 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	}
 
 	private void possiblyConvertPermissions() {
-		if (recordHasReadPermissions() || recordHasWritePermissions()) {
+		if (recordHasPermissions()) {
 			convertPermissions();
 		}
 	}
 
-	private boolean recordHasReadPermissions() {
-		return !dataRecord.getReadPermissions().isEmpty();
-	}
-
-	private boolean recordHasWritePermissions() {
-		return !dataRecord.getWritePermissions().isEmpty();
+	private boolean recordHasPermissions() {
+		return dataRecord.hasReadPermissions() || dataRecord.hasWritePermissions();
 	}
 
 	private void convertPermissions() {
@@ -127,7 +123,7 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	}
 
 	private void possiblyAddReadPermissions(JsonObjectBuilder permissionsJsonObjectBuilder) {
-		if (recordHasReadPermissions()) {
+		if (dataRecord.hasReadPermissions()) {
 			addReadPermissions(permissionsJsonObjectBuilder);
 		}
 	}
@@ -147,7 +143,7 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	}
 
 	private void possiblyAddWritePermissions(JsonObjectBuilder permissionsJsonObjectBuilder) {
-		if (recordHasWritePermissions()) {
+		if (dataRecord.hasWritePermissions()) {
 			addWritePermissions(permissionsJsonObjectBuilder);
 		}
 	}
