@@ -120,4 +120,20 @@ public class DataRecordSpy implements DataRecord {
 		return null;
 	}
 
+	@Override
+	public boolean hasReadPermissions() {
+		MCR.addCall();
+		boolean returnValue = false;
+		MCR.addReturned(returnValue);
+		return returnValue;
+	}
+
+	@Override
+	public boolean hasWritePermissions() {
+		MCR.addCall();
+		boolean returnValue = false;
+		MCR.addReturned(returnValue);
+		return false;
+	}
+
 }

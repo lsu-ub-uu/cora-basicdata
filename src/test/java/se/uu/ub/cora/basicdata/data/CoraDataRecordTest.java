@@ -266,4 +266,25 @@ public class CoraDataRecordTest {
 		assertTrue(dataRecord.hasActions());
 	}
 
+	@Test
+	public void testHasReadPremissionsNoReadPermissions() throws Exception {
+		assertFalse(dataRecord.hasReadPermissions());
+	}
+
+	@Test
+	public void testHasReadPremissionsHasReadPermissions() throws Exception {
+		dataRecord.addReadPermission("ReadPermission");
+		assertTrue(dataRecord.hasReadPermissions());
+	}
+
+	@Test
+	public void testHasWritePremissionsNoWritePermissions() throws Exception {
+		assertFalse(dataRecord.hasWritePermissions());
+	}
+
+	@Test
+	public void testHasWritedPremissionsHasWritePermissions() throws Exception {
+		dataRecord.addWritePermission("WritePermission");
+		assertTrue(dataRecord.hasWritePermissions());
+	}
 }

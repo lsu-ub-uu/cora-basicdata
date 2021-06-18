@@ -92,9 +92,19 @@ public final class CoraDataRecord implements DataRecord {
 	}
 
 	@Override
+	public boolean hasReadPermissions() {
+		return !this.readPermissions.isEmpty();
+	}
+
+	@Override
 	public void addWritePermissions(Collection<String> writePermissions) {
 		this.writePermissions.addAll(writePermissions);
 
+	}
+
+	@Override
+	public boolean hasWritePermissions() {
+		return !this.writePermissions.isEmpty();
 	}
 
 	@Override
@@ -130,4 +140,5 @@ public final class CoraDataRecord implements DataRecord {
 	public boolean hasActions() {
 		return !actions.isEmpty();
 	}
+
 }
