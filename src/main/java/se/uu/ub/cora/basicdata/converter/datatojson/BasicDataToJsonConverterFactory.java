@@ -53,6 +53,9 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 
 	@Override
 	public DataToJsonConverter factorUsingConvertible(Convertible convertible) {
+		// if record
+		// RecordActionsToJsonConverter ratjc = new RecordActionsToJsonConverterImp();
+
 		if (baseUrlIsKnownGenerateRecordLinks()) {
 			if (convertible instanceof DataRecordLink) {
 				return DataRecordLinkToJsonConverter
@@ -92,8 +95,8 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 	}
 
 	@Override
-	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl, String recordUrl,
-			Convertible convertible) {
+	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl,
+			String recordUrl, Convertible convertible) {
 		this.baseUrl = baseUrl;
 		this.recordUrl = recordUrl;
 

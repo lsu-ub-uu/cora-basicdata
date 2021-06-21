@@ -19,6 +19,7 @@
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,8 @@ public class DataRecordSpy implements DataRecord {
 	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	private DataGroupSpy dataGroup;
+
+	public List<Action> actions = Collections.emptyList();
 
 	public DataRecordSpy(DataGroupSpy dataGroup) {
 		this.dataGroup = dataGroup;
@@ -75,15 +78,16 @@ public class DataRecordSpy implements DataRecord {
 	@Override
 	public List<Action> getActions() {
 		MCR.addCall();
-		MCR.addReturned(null);
-		return null;
+		MCR.addReturned(actions);
+		return actions;
 	}
 
 	@Override
 	public boolean hasActions() {
 		MCR.addCall();
-		MCR.addReturned(false);
-		return false;
+		boolean hasActions = !actions.isEmpty();
+		MCR.addReturned(hasActions);
+		return hasActions;
 	}
 
 	@Override

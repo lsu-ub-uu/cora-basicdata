@@ -61,6 +61,9 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 		convertMainDataGroup();
 		possiblyConvertPermissions();
 		// TODO: convertActions
+		if (dataRecord.hasActions()) {
+			dataRecord.getActions();
+		}
 		return createTopLevelJsonObjectWithRecordAsChild();
 	}
 
@@ -70,9 +73,6 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	// }
 	// }
 
-	// private boolean recordHasActionLinks() {
-	// return !dataRecord.getActions().isEmpty();
-	// }
 	//
 	// private void addActionLinksToRecord() {
 	// List<Action> actionLinks = dataRecord.getActions();

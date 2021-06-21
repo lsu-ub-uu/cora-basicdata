@@ -21,30 +21,33 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.basicdata.data.DataGroupSpy;
 import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
+import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public class DataRecordToJsonConverterTest {
 
-	// private DataRecordSpy dataRecord;
 	private CoraDataRecord dataRecord;
 	private DataRecordToJsonConverter dataRecordToJsonConverter;
 	private JsonBuilderFactorySpy builderFactory;
 
 	private DataToJsonConverterFactorySpy converterFactory;
 	private String baseUrl = "some/base/url/";
+	private DataGroupSpy dataGroup;
 
 	@BeforeMethod
 	public void setUp() {
 		builderFactory = new JsonBuilderFactorySpy();
-		// DataGroup dataGroup = CoraDataGroup.withNameInData("groupNameInData");
-		DataGroupSpy dataGroup = new DataGroupSpy("groupNameInData");
+		dataGroup = new DataGroupSpy("groupNameInData");
 		// dataRecord = new DataRecordSpy(dataGroup);
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
@@ -53,6 +56,7 @@ public class DataRecordToJsonConverterTest {
 		dataRecordToJsonConverter = DataRecordToJsonConverter
 				.usingConverterFactoryAndBuilderFactoryAndDataRecord(converterFactory,
 						builderFactory, baseUrl, dataRecord);
+
 	}
 
 	@Test
@@ -225,9 +229,40 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConvertActions() throws Exception {
-		// TODO:
+	public void testConvertActionsNoActions() throws Exception {
+
 		// TODO: Use a dataRecord spy.
+		DataRecordSpy dataRecordSpy = setUpDataRecordSpy();
+
 		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		dataRecordSpy.MCR.assertMethodNotCalled("getActions");
+	}
+
+	@Test
+	public void testConvertActionsOneAction() throws Exception {
+
+		// TODO: Use a dataRecord spy.
+		DataRecordSpy dataRecordSpy = setUpDataRecordSpy();
+
+		addOneReadAction(dataRecordSpy);
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		dataRecordSpy.MCR.assertMethodWasCalled("getActions");
+	}
+
+	private void addOneReadAction(DataRecordSpy dataRecordSpy) {
+		List<Action> actionList = new ArrayList<>();
+		actionList.add(Action.READ);
+		dataRecordSpy.actions = actionList;
+	}
+
+	private DataRecordSpy setUpDataRecordSpy() {
+		DataRecordSpy dataRecordSpy = new DataRecordSpy(dataGroup);
+		dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingConverterFactoryAndBuilderFactoryAndDataRecord(converterFactory,
+						builderFactory, baseUrl, dataRecordSpy);
+		return dataRecordSpy;
 	}
 }
