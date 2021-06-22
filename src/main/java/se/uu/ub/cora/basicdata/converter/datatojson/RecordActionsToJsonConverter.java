@@ -28,18 +28,23 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
  * enable testing, this interface is currently not ment to be exported or used outside of the
  * package it is in. The Java module system is used to keep it as an internal interface to this
  * module.
+ * <p>
+ * Implementations do not have to be threadsafe.
  */
 public interface RecordActionsToJsonConverter {
 	/**
-	 * toJsonObjectBuilder return a {@link JsonObjectBuilder} representation of the DataPart that is
+	 * toJsonObjectBuilder return a {@link JsonObjectBuilder} representation of the Actions that are
 	 * to be converted.
 	 * 
 	 * @param actions
 	 * @param recordId
 	 * @param recordType
 	 * 
-	 * @return A JsonObectBuilder set up to build the DataPart.
+	 * @return A JsonObectBuilder set up to build the Actions.
 	 */
 	JsonObjectBuilder toJsonObjectBuilder(List<Action> actions, String recordType, String recordId);
+
+	JsonObjectBuilder toJsonObjectBuilderForRecordTypeWithSearchId(List<Action> actions,
+			String recordId, String searchRecordId);
 
 }
