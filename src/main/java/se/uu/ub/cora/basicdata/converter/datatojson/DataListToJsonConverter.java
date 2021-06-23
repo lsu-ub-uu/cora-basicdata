@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,81 +19,79 @@
 
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.data.Data;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public final class DataListToJsonConverter {
-
-	private JsonBuilderFactory jsonBuilderFactory;
-	private DataList restRecordList;
-	private JsonObjectBuilder recordListJsonObjectBuilder;
+public class DataListToJsonConverter implements DataToJsonConverter {
+	DataToJsonConverterFactory converterFactory;
+	JsonBuilderFactory builderFactory;
+	DataList dataList;
+	private JsonObjectBuilder dataListBuilder;
+	private JsonArrayBuilder dataBuilder;
 
 	public static DataListToJsonConverter usingJsonFactoryForDataList(
-			JsonBuilderFactory jsonFactory, DataList restRecordList) {
-		return new DataListToJsonConverter(jsonFactory, restRecordList);
+			DataToJsonConverterFactory converterFactory, JsonBuilderFactory builderFactory,
+			DataList restRecordList) {
+		return new DataListToJsonConverter(converterFactory, builderFactory, restRecordList);
 	}
 
-	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, DataList restRecordList) {
-		this.jsonBuilderFactory = jsonFactory;
-		this.restRecordList = restRecordList;
-		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
+	DataListToJsonConverter(DataToJsonConverterFactory converterFactory,
+			JsonBuilderFactory builderFactory, DataList dataList) {
+		this.converterFactory = converterFactory;
+		this.builderFactory = builderFactory;
+		this.dataList = dataList;
+		dataListBuilder = builderFactory.createObjectBuilder();
 	}
 
-	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		addBasicListInfoToDataListBuilder();
+		createDataBuilderAndAddAsDataToDataListBuilder();
+		addAllRecordsOrGroupsFromListToDataBuilder();
+		return createRootBuilderAndAddDataListBuilder();
 	}
 
-	JsonObjectBuilder toJsonObjectBuilder() {
+	private void addBasicListInfoToDataListBuilder() {
+		dataListBuilder.addKeyString("totalNo", dataList.getTotalNumberOfTypeInStorage());
+		dataListBuilder.addKeyString("fromNo", dataList.getFromNo());
+		dataListBuilder.addKeyString("toNo", dataList.getToNo());
+		dataListBuilder.addKeyString("containDataOfType", dataList.getContainDataOfType());
+	}
 
-		recordListJsonObjectBuilder.addKeyString("totalNo",
-				restRecordList.getTotalNumberOfTypeInStorage());
-		recordListJsonObjectBuilder.addKeyString("fromNo", restRecordList.getFromNo());
-		recordListJsonObjectBuilder.addKeyString("toNo", restRecordList.getToNo());
-		recordListJsonObjectBuilder.addKeyString("containDataOfType",
-				restRecordList.getContainDataOfType());
+	private void createDataBuilderAndAddAsDataToDataListBuilder() {
+		dataBuilder = builderFactory.createArrayBuilder();
+		dataListBuilder.addKeyJsonArrayBuilder("data", dataBuilder);
+	}
 
-		JsonArrayBuilder recordsJsonBuilder = jsonBuilderFactory.createArrayBuilder();
-
-		for (Data data : restRecordList.getDataList()) {
-			convertToJsonBuilder(recordsJsonBuilder, data);
+	private void addAllRecordsOrGroupsFromListToDataBuilder() {
+		for (Data data : dataList.getDataList()) {
+			DataToJsonConverter dataConverter = converterFactory.factorUsingConvertible(data);
+			JsonObjectBuilder jsonObjectBuilder = dataConverter.toJsonObjectBuilder();
+			dataBuilder.addJsonObjectBuilder(jsonObjectBuilder);
 		}
+	}
 
-		recordListJsonObjectBuilder.addKeyJsonArrayBuilder("data", recordsJsonBuilder);
-
-		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
-		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("dataList",
-				recordListJsonObjectBuilder);
+	private JsonObjectBuilder createRootBuilderAndAddDataListBuilder() {
+		JsonObjectBuilder rootWrappingJsonObjectBuilder = builderFactory.createObjectBuilder();
+		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("dataList", dataListBuilder);
 		return rootWrappingJsonObjectBuilder;
 	}
 
-	private void convertToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
-		if (data instanceof CoraDataRecord) {
-			convertRecordToJsonBuilder(recordsJsonBuilder, data);
-		} else {
-			convertGroupToJsonBuilder(recordsJsonBuilder, data);
-		}
+	@Override
+	public String toJson() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedPrettyString();
 	}
 
-	private void convertRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
-		// TODO: no nulls :)
-		DataRecordToJsonConverter converter = DataRecordToJsonConverter
-				.usingConverterFactoryAndBuilderFactoryAndDataRecord(null, jsonBuilderFactory, null,
-						(CoraDataRecord) data);
-		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
-	}
-
-	private void convertGroupToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, Data data) {
-		// TODO: no nulls :)
-		DataToJsonConverter converter = DataGroupToJsonConverter
-				.usingConverterFactoryAndBuilderFactoryAndDataGroup(null, jsonBuilderFactory,
-						(DataGroup) data);
-		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
+	@Override
+	public String toJsonCompactFormat() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
 	}
 
 }

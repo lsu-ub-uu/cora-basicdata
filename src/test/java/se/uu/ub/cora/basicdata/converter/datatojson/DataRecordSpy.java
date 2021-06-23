@@ -37,14 +37,19 @@ public class DataRecordSpy implements DataRecord {
 
 	public List<Action> actions = Collections.emptyList();
 
+	public String type = "fake type";
+
 	public DataRecordSpy(DataGroupSpy dataGroup) {
 		this.dataGroup = dataGroup;
+	}
+
+	public DataRecordSpy() {
 	}
 
 	@Override
 	public String getType() {
 		MCR.addCall();
-		String returnedValue = "fake type";
+		String returnedValue = type;
 		MCR.addReturned(returnedValue);
 		return returnedValue;
 	}

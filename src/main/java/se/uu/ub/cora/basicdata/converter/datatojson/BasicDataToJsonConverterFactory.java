@@ -23,6 +23,8 @@ import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
@@ -53,8 +55,19 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 
 	@Override
 	public DataToJsonConverter factorUsingConvertible(Convertible convertible) {
-		// if record
-		// RecordActionsToJsonConverter ratjc = new RecordActionsToJsonConverterImp();
+		if (convertible instanceof DataList) {
+			return DataListToJsonConverter.usingJsonFactoryForDataList(this, builderFactory,
+					(DataList) convertible);
+		}
+		if (convertible instanceof DataRecord) {
+			RecordActionsToJsonConverter actionsConverter = RecordActionsToJsonConverterImp
+					.usingConverterFactoryAndBuilderFactoryAndBaseUrl(this, builderFactory,
+							baseUrl);
+			return DataRecordToJsonConverter
+					.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
+							this, actionsConverter, builderFactory, baseUrl,
+							(DataRecord) convertible);
+		}
 
 		if (baseUrlIsKnownGenerateRecordLinks()) {
 			if (convertible instanceof DataRecordLink) {
@@ -63,8 +76,9 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 								builderFactory, (DataRecordLink) convertible, baseUrl);
 			}
 		}
-		if (recordUrl != null) {
-			if (convertible instanceof DataResourceLink) {
+		// TODO: negative if not run... see coverage
+		if (convertible instanceof DataResourceLink) {
+			if (recordUrl != null) {
 				return DataResourceLinkToJsonConverter
 						.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 								this, builderFactory, (DataResourceLink) convertible, recordUrl);

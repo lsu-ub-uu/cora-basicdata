@@ -16,28 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-/**
- * RecordActionsToJsonConverter is an interface to decouple the implementation from the API to
- * enable testing, this interface is currently not meant to be exported or used outside of the
- * package it is in. The Java module system is used to keep it as an internal interface to this
- * module.
- * <p>
- * Implementations do not have to be threadsafe.
- */
-public interface RecordActionsToJsonConverter {
-	/**
-	 * toJsonObjectBuilder return a {@link JsonObjectBuilder} representation of the Actions that are
-	 * to be converted.
-	 * 
-	 * @param actionsConverterData
-	 *            An {@link ActionsConverterData} with info needed to convert the actions
-	 * 
-	 * @return A JsonObectBuilder set up to build the Actions.
-	 */
-	JsonObjectBuilder toJsonObjectBuilder(ActionsConverterData actionsConverterData);
+public class RecordActionsToJsonConverterSpy implements RecordActionsToJsonConverter {
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder(ActionsConverterData actionsConverterData) {
+		MCR.addCall("actionsConverterData", actionsConverterData);
+		JsonObjectBuilderSpy actionsBuilder = new JsonObjectBuilderSpy();
+		MCR.addReturned(actionsBuilder);
+		return actionsBuilder;
+	}
 }

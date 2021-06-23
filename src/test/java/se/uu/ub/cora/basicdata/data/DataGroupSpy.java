@@ -12,7 +12,7 @@ import se.uu.ub.cora.data.DataMissingException;
 
 public class DataGroupSpy implements DataGroup {
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public boolean throwException = false;
 	DataGroupSpy childDataGroupToReturn = null;
 
@@ -46,8 +46,9 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
-		// TODO Auto-generated method stub
-		return false;
+		MCR.addCall("nameInData", nameInData);
+		MCR.addReturned(true);
+		return true;
 	}
 
 	@Override

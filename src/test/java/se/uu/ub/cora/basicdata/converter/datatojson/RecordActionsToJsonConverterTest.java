@@ -20,9 +20,6 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -35,41 +32,29 @@ public class RecordActionsToJsonConverterTest {
 	private static final String GET = "GET";
 	private static final String POST = "POST";
 	private RecordActionsToJsonConverter actionsConverter;
-	private List<Action> actions;
 	private JsonBuilderFactorySpy builderFactory;
 	private String baseUrl = "some/base/url/";
-	private String recordType = "someRecordType";
-	private String recordId = "someRecordId";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private DataToJsonConverterFactorySpy converterFactory;
+	private ActionsConverterData actionsConverterData;
 
 	@BeforeMethod
 	private void beforeMethod() {
 		builderFactory = new JsonBuilderFactorySpy();
-		actions = new ArrayList<>();
 
 		converterFactory = new DataToJsonConverterFactorySpy();
-		actionsConverter = new RecordActionsToJsonConverterImp(converterFactory, builderFactory,
-				baseUrl);
-
+		actionsConverter = RecordActionsToJsonConverterImp.usingConverterFactoryAndBuilderFactoryAndBaseUrl(converterFactory,
+				builderFactory, baseUrl);
+		actionsConverterData = new ActionsConverterData();
+		actionsConverterData.recordType = "someRecordType";
+		actionsConverterData.recordId = "someRecordId";
 	}
 
 	@Test
 	public void testToJsonObjectBuilder() throws Exception {
-		JsonObjectBuilder objectBuilder = actionsConverter.toJsonObjectBuilder(actions, recordType,
-				recordId);
-
-		builderFactory.MCR.assertMethodWasCalled("createObjectBuilder");
-		builderFactory.MCR.assertReturn("createObjectBuilder", 0, objectBuilder);
-		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 1);
-	}
-
-	@Test
-	public void testToJsonObjectBuilderForRecordType() throws Exception {
-		String searchRecordId = "someSearchRecordId";
 		JsonObjectBuilder objectBuilder = actionsConverter
-				.toJsonObjectBuilderForRecordTypeWithSearchId(actions, recordId, searchRecordId);
+				.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertMethodWasCalled("createObjectBuilder");
 		builderFactory.MCR.assertReturn("createObjectBuilder", 0, objectBuilder);
@@ -79,16 +64,17 @@ public class RecordActionsToJsonConverterTest {
 	@Test
 	public void testReadAction() throws Exception {
 		Action action = Action.READ;
-		actions.add(action);
+		actionsConverterData.actions.add(action);
+
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordType + "/" + recordId;
+		String url = baseUrl + actionsConverterData.recordType + "/"
+				+ actionsConverterData.recordId;
 
 		String requestMethod = GET;
 		String accept = APPLICATION_VND_UUB_RECORD_JSON;
 		String contentType = null;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
-
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
 
@@ -125,15 +111,16 @@ public class RecordActionsToJsonConverterTest {
 	@Test
 	public void testUpdateAction() throws Exception {
 		Action action = Action.UPDATE;
-		actions.add(action);
+		actionsConverterData.actions.add(action);
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordType + "/" + recordId;
+		String url = baseUrl + actionsConverterData.recordType + "/"
+				+ actionsConverterData.recordId;
 
 		String requestMethod = POST;
 		String accept = APPLICATION_VND_UUB_RECORD_JSON;
 		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
@@ -142,15 +129,16 @@ public class RecordActionsToJsonConverterTest {
 	@Test
 	public void testReadIncommingLinksAction() throws Exception {
 		Action action = Action.READ_INCOMING_LINKS;
-		actions.add(action);
+		actionsConverterData.actions.add(action);
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordType + "/" + recordId + "/incomingLinks";
+		String url = baseUrl + actionsConverterData.recordType + "/" + actionsConverterData.recordId
+				+ "/incomingLinks";
 
 		String requestMethod = GET;
 		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
 		String contentType = null;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
@@ -159,85 +147,16 @@ public class RecordActionsToJsonConverterTest {
 	@Test
 	public void testDeleteAction() throws Exception {
 		Action action = Action.DELETE;
-		actions.add(action);
+		actionsConverterData.actions.add(action);
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordType + "/" + recordId;
+		String url = baseUrl + actionsConverterData.recordType + "/"
+				+ actionsConverterData.recordId;
 
 		String requestMethod = "DELETE";
 		String accept = null;
 		String contentType = null;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
-
-		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
-		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
-	}
-
-	@Test
-	public void testCreateAction() throws Exception {
-		Action action = Action.CREATE;
-		actions.add(action);
-
-		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordId + "/";
-		String requestMethod = POST;
-		String accept = APPLICATION_VND_UUB_RECORD_JSON;
-		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
-
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
-
-		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
-		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
-	}
-
-	@Test
-	public void testUploadAction() throws Exception {
-		Action action = Action.UPLOAD;
-		actions.add(action);
-
-		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordType + "/" + recordId + "/master";
-		String requestMethod = POST;
-		String accept = null;
-		String contentType = "multipart/form-data";
-
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
-
-		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
-		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
-	}
-
-	@Test
-	public void testSearchActionForSearchRecordType() throws Exception {
-		Action action = Action.SEARCH;
-		actions.add(action);
-
-		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + "searchResult/" + recordId;
-		String requestMethod = GET;
-		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
-		String contentType = null;
-
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
-
-		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
-		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
-	}
-
-	@Test
-	public void testSearchActionForRecordTypeTypeWithSearchId() throws Exception {
-		Action action = Action.SEARCH;
-		actions.add(action);
-
-		String lowerCaseAction = action.name().toLowerCase();
-		String searchRecordId = "someSearchRecordId";
-		String url = baseUrl + "searchResult/" + searchRecordId;
-		String requestMethod = GET;
-		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
-		String contentType = null;
-
-		actionsConverter.toJsonObjectBuilderForRecordTypeWithSearchId(actions, recordId,
-				searchRecordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
@@ -246,7 +165,7 @@ public class RecordActionsToJsonConverterTest {
 	@Test
 	public void testIndexAction() throws Exception {
 		Action action = Action.INDEX;
-		actions.add(action);
+		actionsConverterData.actions.add(action);
 
 		String lowerCaseAction = action.name().toLowerCase();
 		String url = baseUrl + "workOrder/";
@@ -254,7 +173,7 @@ public class RecordActionsToJsonConverterTest {
 		String accept = APPLICATION_VND_UUB_RECORD_JSON;
 		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
@@ -285,40 +204,95 @@ public class RecordActionsToJsonConverterTest {
 		assertEquals(recordTypeGroup.getFirstAtomicValueWithNameInData("linkedRecordType"),
 				"recordType");
 		assertEquals(recordTypeGroup.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				recordType);
-		assertEquals(workOrder.getFirstAtomicValueWithNameInData("recordId"), recordId);
+				actionsConverterData.recordType);
+		assertEquals(workOrder.getFirstAtomicValueWithNameInData("recordId"),
+				actionsConverterData.recordId);
 		assertEquals(workOrder.getFirstAtomicValueWithNameInData("type"), "index");
 	}
 
 	@Test
-	public void testValidateAction() throws Exception {
-		Action action = Action.VALIDATE;
-		actions.add(action);
+	public void testSearchAction() throws Exception {
+		Action action = Action.SEARCH;
+		actionsConverterData.actions.add(action);
 
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + "workOrder/";
-		String requestMethod = POST;
-		String accept = APPLICATION_VND_UUB_RECORD_JSON;
-		String contentType = "application/vnd.uub.workorder+json";
+		String url = baseUrl + "searchResult/" + actionsConverterData.recordId;
+		String requestMethod = GET;
+		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
+		String contentType = null;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
 	}
 
 	@Test
-	public void testBatchIndexAction() throws Exception {
-		Action action = Action.BATCH_INDEX;
-		actions.add(action);
+	public void testUploadAction() throws Exception {
+		Action action = Action.UPLOAD;
+		actionsConverterData.actions.add(action);
 
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + "index/" + recordId + "/";
+		String url = baseUrl + actionsConverterData.recordType + "/" + actionsConverterData.recordId
+				+ "/master";
 		String requestMethod = POST;
-		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String accept = null;
+		String contentType = "multipart/form-data";
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testSearchActionForRecordTypeWithoutSearchId() throws Exception {
+		Action action = Action.SEARCH;
+		actionsConverterData.actions.add(action);
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + "searchResult/" + actionsConverterData.recordId;
+		String requestMethod = GET;
+		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
 		String contentType = null;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testSearchActionForRecordTypeTypeWithSearchId() throws Exception {
+		Action action = Action.SEARCH;
+		actionsConverterData.actions.add(action);
+
+		String lowerCaseAction = action.name().toLowerCase();
+		actionsConverterData.searchRecordId = "someSearchRecordId";
+		String url = baseUrl + "searchResult/" + actionsConverterData.searchRecordId;
+		String requestMethod = GET;
+		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
+		String contentType = null;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testCreateAction() throws Exception {
+		Action action = Action.CREATE;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + actionsConverterData.recordId + "/";
+		String requestMethod = POST;
+		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
@@ -327,15 +301,52 @@ public class RecordActionsToJsonConverterTest {
 	@Test
 	public void testListAction() throws Exception {
 		Action action = Action.LIST;
-		actions.add(action);
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
 
 		String lowerCaseAction = action.name().toLowerCase();
-		String url = baseUrl + recordId + "/";
+		String url = baseUrl + actionsConverterData.recordId + "/";
 		String requestMethod = GET;
 		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
 		String contentType = null;
 
-		actionsConverter.toJsonObjectBuilder(actions, recordType, recordId);
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testBatchIndexAction() throws Exception {
+		Action action = Action.BATCH_INDEX;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + "index/" + actionsConverterData.recordId + "/";
+		String requestMethod = POST;
+		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String contentType = null;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testValidateAction() throws Exception {
+		Action action = Action.VALIDATE;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + "workOrder/";
+		String requestMethod = POST;
+		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String contentType = "application/vnd.uub.workorder+json";
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);

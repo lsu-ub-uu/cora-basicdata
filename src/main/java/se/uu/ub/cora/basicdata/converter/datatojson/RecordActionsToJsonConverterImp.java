@@ -30,12 +30,14 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConverter {
 
+	private static final String RECORD_TYPE = "recordType";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
-	private DataToJsonConverterFactory converterFactory;
-	private JsonBuilderFactory builderFactory;
+
+	DataToJsonConverterFactory converterFactory;
+	JsonBuilderFactory builderFactory;
+	String baseUrl;
 	private JsonObjectBuilder mainBuilder;
-	private String baseUrl;
 	private List<Action> actions;
 	private String recordType;
 	private String recordId;
@@ -44,9 +46,15 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 	private String currentRequestMethod;
 	private String currentUrl;
 	private String currentAccept;
-	private String searchIdOrRecordId;
+	private ActionsConverterData actionsConverterData;
 
-	public RecordActionsToJsonConverterImp(DataToJsonConverterFactory converterFactory,
+	public static RecordActionsToJsonConverterImp usingConverterFactoryAndBuilderFactoryAndBaseUrl(
+			DataToJsonConverterFactory converterFactory, JsonBuilderFactory builderFactory,
+			String baseUrl) {
+		return new RecordActionsToJsonConverterImp(converterFactory, builderFactory, baseUrl);
+	}
+
+	private RecordActionsToJsonConverterImp(DataToJsonConverterFactory converterFactory,
 			JsonBuilderFactory builderFactory, String baseUrl) {
 		this.converterFactory = converterFactory;
 		this.builderFactory = builderFactory;
@@ -55,15 +63,13 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 	}
 
 	@Override
-	public JsonObjectBuilder toJsonObjectBuilder(List<Action> actions, String recordType,
-			String recordId) {
-		this.actions = actions;
-		this.recordType = recordType;
-		this.recordId = recordId;
-		// if (!actions.isEmpty()) {
-		searchIdOrRecordId = recordId;
+	public JsonObjectBuilder toJsonObjectBuilder(ActionsConverterData actionsConverterData) {
+		this.actionsConverterData = actionsConverterData;
+		actions = actionsConverterData.actions;
+		recordType = actionsConverterData.recordType;
+		recordId = actionsConverterData.recordId;
+
 		createJsonForActions();
-		// }
 		return mainBuilder;
 	}
 
@@ -71,79 +77,101 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 		for (Action action : actions) {
 			setStandardForAction(action);
 
-			if (Action.READ.equals(action)) {
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-			}
-			if (Action.UPDATE.equals(action)) {
-				currentRequestMethod = "POST";
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-				currentLinkBuilder.addKeyString("contentType", APPLICATION_VND_UUB_RECORD_JSON);
-			}
-			if (Action.READ_INCOMING_LINKS.equals(action)) {
-				currentUrl = currentUrl + "/incomingLinks";
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", APPLICATION_VND_UUB_RECORD_LIST_JSON);
-			}
-			if (Action.DELETE.equals(action)) {
-				currentRequestMethod = "DELETE";
-				addStandardParametersToCurrentLinkBuilder();
-			}
-			if (Action.INDEX.equals(action)) {
-				currentRequestMethod = "POST";
-				currentUrl = baseUrl + "workOrder/";
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-				currentLinkBuilder.addKeyString("contentType", APPLICATION_VND_UUB_RECORD_JSON);
-				createBody();
-			}
-			// recordType=binary and children to binary
-			if (Action.UPLOAD.equals(action)) {
-				currentRequestMethod = "POST";
-				currentUrl = baseUrl + recordType + "/" + recordId + "/master";
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("contentType", "multipart/form-data");
-			}
-			// recordtype=search / recordType (with searchIdOrRecordId)
-			if (Action.SEARCH.equals(action)) {
-				currentUrl = baseUrl + "searchResult/" + searchIdOrRecordId;
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", APPLICATION_VND_UUB_RECORD_LIST_JSON);
-			}
-			// createActionWhenRecordIsARecordType
-			// for recordtype = recordType
-			if (Action.CREATE.equals(action)) {
-				currentRequestMethod = "POST";
-				String urlForRecordTypeActions = baseUrl + recordId + "/";
-				currentUrl = urlForRecordTypeActions;
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-				currentLinkBuilder.addKeyString("contentType", APPLICATION_VND_UUB_RECORD_JSON);
-			}
-			if (Action.LIST.equals(action)) {
-				currentRequestMethod = "GET";
-				String urlForRecordTypeActions = baseUrl + recordId + "/";
-				currentUrl = urlForRecordTypeActions;
-				currentAccept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-			}
-			if (Action.BATCH_INDEX.equals(action)) {
-				currentRequestMethod = "POST";
-				currentUrl = baseUrl + "index/" + recordId + "/";
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-			}
-			if (Action.VALIDATE.equals(action)) {
-				currentRequestMethod = "POST";
-				currentUrl = baseUrl + "workOrder/";
-				addStandardParametersToCurrentLinkBuilder();
-				currentLinkBuilder.addKeyString("accept", currentAccept);
-				currentLinkBuilder.addKeyString("contentType",
-						"application/vnd.uub.workorder+json");
+			possiblyCreateActionsForAll(action);
+			possiblyCreateUploadActionForBinaryAndItsChildren(action);
+			possiblyCreateSearchActionForSearchOrRecordType(action);
+			if (RECORD_TYPE.equals(recordType)) {
+				possiblyCreateActionsForRecordType(action);
 			}
 		}
+	}
+
+	private void possiblyCreateActionsForAll(Action action) {
+		if (Action.READ.equals(action)) {
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", currentAccept);
+		} else if (Action.UPDATE.equals(action)) {
+			currentRequestMethod = "POST";
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", currentAccept);
+			currentLinkBuilder.addKeyString("contentType", APPLICATION_VND_UUB_RECORD_JSON);
+		} else if (Action.READ_INCOMING_LINKS.equals(action)) {
+			currentUrl = currentUrl + "/incomingLinks";
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		} else if (Action.DELETE.equals(action)) {
+			currentRequestMethod = "DELETE";
+			addStandardParametersToCurrentLinkBuilder();
+		} else if (Action.INDEX.equals(action)) {
+			currentRequestMethod = "POST";
+			currentUrl = baseUrl + "workOrder/";
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", currentAccept);
+			currentLinkBuilder.addKeyString("contentType", APPLICATION_VND_UUB_RECORD_JSON);
+			createBody();
+		}
+	}
+
+	private void possiblyCreateUploadActionForBinaryAndItsChildren(Action action) {
+		if (Action.UPLOAD.equals(action)) {
+			currentRequestMethod = "POST";
+			currentUrl = baseUrl + recordType + "/" + recordId + "/master";
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("contentType", "multipart/form-data");
+		}
+	}
+
+	private void possiblyCreateSearchActionForSearchOrRecordType(Action action) {
+		if (Action.SEARCH.equals(action)) {
+			String searchIdOrRecordId = setSearchRecordId();
+			currentUrl = baseUrl + "searchResult/" + searchIdOrRecordId;
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		}
+	}
+
+	private String setSearchRecordId() {
+		if (searchIdIsSpecifiedOnThisRecord()) {
+			return actionsConverterData.searchRecordId;
+		}
+		return recordId;
+	}
+
+	private boolean searchIdIsSpecifiedOnThisRecord() {
+		return actionsConverterData.searchRecordId != null;
+	}
+
+	private void possiblyCreateActionsForRecordType(Action action) {
+		if (Action.CREATE.equals(action)) {
+			currentRequestMethod = "POST";
+			String urlForRecordTypeActions = baseUrl + recordId + "/";
+			currentUrl = urlForRecordTypeActions;
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", currentAccept);
+			currentLinkBuilder.addKeyString("contentType", APPLICATION_VND_UUB_RECORD_JSON);
+		} else if (Action.LIST.equals(action)) {
+			currentRequestMethod = "GET";
+			String urlForRecordTypeActions = baseUrl + recordId + "/";
+			currentUrl = urlForRecordTypeActions;
+			currentAccept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", currentAccept);
+		} else if (Action.BATCH_INDEX.equals(action)) {
+			currentRequestMethod = "POST";
+			currentUrl = baseUrl + "index/" + recordId + "/";
+			addStandardParametersToCurrentLinkBuilder();
+			currentLinkBuilder.addKeyString("accept", currentAccept);
+		} else {
+			createActionLinkForValidate();
+		}
+	}
+
+	private void createActionLinkForValidate() {
+		currentRequestMethod = "POST";
+		currentUrl = baseUrl + "workOrder/";
+		addStandardParametersToCurrentLinkBuilder();
+		currentLinkBuilder.addKeyString("accept", currentAccept);
+		currentLinkBuilder.addKeyString("contentType", "application/vnd.uub.workorder+json");
 	}
 
 	private void setStandardForAction(Action action) {
@@ -169,9 +197,9 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 
 	private CoraDataGroup createWorkOrderDataGroup() {
 		CoraDataGroup workOrder = CoraDataGroup.withNameInData("workOrder");
-		CoraDataGroup recordTypeGroup = CoraDataGroup.withNameInData("recordType");
+		CoraDataGroup recordTypeGroup = CoraDataGroup.withNameInData(RECORD_TYPE);
 		recordTypeGroup
-				.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+				.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordType", RECORD_TYPE));
 		recordTypeGroup
 				.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordId", recordType));
 		workOrder.addChild(recordTypeGroup);
@@ -185,16 +213,4 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 		currentLinkBuilder.addKeyString("url", currentUrl);
 		currentLinkBuilder.addKeyString("requestMethod", currentRequestMethod);
 	}
-
-	@Override
-	public JsonObjectBuilder toJsonObjectBuilderForRecordTypeWithSearchId(List<Action> actions,
-			String recordId, String searchRecordId) {
-		this.actions = actions;
-		this.recordType = "recordType";
-		this.recordId = recordId;
-		searchIdOrRecordId = searchRecordId;
-		createJsonForActions();
-		return mainBuilder;
-	}
-
 }
