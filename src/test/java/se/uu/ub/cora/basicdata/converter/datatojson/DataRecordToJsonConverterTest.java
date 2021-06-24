@@ -78,7 +78,7 @@ public class DataRecordToJsonConverterTest {
 				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
 						converterFactory, actionsConverterSpy, builderFactory, null, dataRecord);
 
-		dataRecordToJsonConverter.toJsonObjectBuilder();
+		JsonObjectBuilder returnedJsonObjectBuilder = dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		converterFactory.MCR.assertMethodNotCalled("factorUsingBaseUrlAndRecordUrlAndConvertible");
 		converterFactory.MCR.assertParameters("factorUsingConvertible", 0,
@@ -92,6 +92,7 @@ public class DataRecordToJsonConverterTest {
 		JsonObjectBuilderSpy rootWrappingBuilder = getRootWrappingBuilder();
 		rootWrappingBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "record",
 				recordBuilder);
+		assertSame(returnedJsonObjectBuilder, rootWrappingBuilder);
 	}
 
 	private JsonObjectBuilderSpy getRootWrappingBuilder() {
