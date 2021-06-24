@@ -76,7 +76,6 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 								builderFactory, (DataRecordLink) convertible, baseUrl);
 			}
 		}
-		// TODO: negative if not run... see coverage
 		if (convertible instanceof DataResourceLink) {
 			if (recordUrl != null) {
 				return DataResourceLinkToJsonConverter
