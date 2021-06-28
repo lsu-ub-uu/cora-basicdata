@@ -40,12 +40,13 @@ public class RecordActionsToJsonConverterTest {
 	private ActionsConverterData actionsConverterData;
 
 	@BeforeMethod
-	private void beforeMethod() {
+	void beforeMethod() {
 		builderFactory = new JsonBuilderFactorySpy();
 
 		converterFactory = new DataToJsonConverterFactorySpy();
-		actionsConverter = RecordActionsToJsonConverterImp.usingConverterFactoryAndBuilderFactoryAndBaseUrl(converterFactory,
-				builderFactory, baseUrl);
+		actionsConverter = RecordActionsToJsonConverterImp
+				.usingConverterFactoryAndBuilderFactoryAndBaseUrl(converterFactory, builderFactory,
+						baseUrl);
 		actionsConverterData = new ActionsConverterData();
 		actionsConverterData.recordType = "someRecordType";
 		actionsConverterData.recordId = "someRecordId";
