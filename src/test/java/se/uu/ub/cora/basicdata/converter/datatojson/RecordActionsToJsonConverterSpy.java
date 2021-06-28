@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -17,25 +17,19 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata.converter;
+package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.data.converter.ConversionException;
+import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-/**
- * ConverterException is an implementation of {@link ConversionException} used when conversion
- * exceptions occure while converting in basicData.
- *
- */
-public class ConverterException extends ConversionException {
+public class RecordActionsToJsonConverterSpy implements RecordActionsToJsonConverter {
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
-	private static final long serialVersionUID = 6721892121477803630L;
-
-	public ConverterException(String message) {
-		super(message);
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder(ActionsConverterData actionsConverterData) {
+		MCR.addCall("actionsConverterData", actionsConverterData);
+		JsonObjectBuilderSpy actionsBuilder = new JsonObjectBuilderSpy();
+		MCR.addReturned(actionsBuilder);
+		return actionsBuilder;
 	}
-
-	public ConverterException(String message, Exception exception) {
-		super(message, exception);
-	}
-
 }

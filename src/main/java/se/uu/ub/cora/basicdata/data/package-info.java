@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -17,25 +17,12 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata.converter;
-
-import se.uu.ub.cora.data.converter.ConversionException;
-
 /**
- * ConverterException is an implementation of {@link ConversionException} used when conversion
- * exceptions occure while converting in basicData.
- *
+ * The data package contains implemenations of the data interfaces found in se.uu.ub.cora.data
+ * package from the cora-data project.
+ * <p>
+ * These implementations are not expected to be accessed directly from outside this module, but
+ * instead accessed through the providers found in the cora-data project, such as
+ * {@link se.uu.ub.cora.data.DataGroupProvider} and its sibbling providers.
  */
-public class ConverterException extends ConversionException {
-
-	private static final long serialVersionUID = 6721892121477803630L;
-
-	public ConverterException(String message) {
-		super(message);
-	}
-
-	public ConverterException(String message, Exception exception) {
-		super(message, exception);
-	}
-
-}
+package se.uu.ub.cora.basicdata.data;

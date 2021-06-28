@@ -27,6 +27,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecord;
 
 public final class CoraDataRecord implements DataRecord {
@@ -91,8 +92,53 @@ public final class CoraDataRecord implements DataRecord {
 	}
 
 	@Override
+	public boolean hasReadPermissions() {
+		return !this.readPermissions.isEmpty();
+	}
+
+	@Override
 	public void addWritePermissions(Collection<String> writePermissions) {
 		this.writePermissions.addAll(writePermissions);
 
 	}
+
+	@Override
+	public boolean hasWritePermissions() {
+		return !this.writePermissions.isEmpty();
+	}
+
+	@Override
+	public String getType() {
+		try {
+			return getTypeFromGroup();
+		} catch (Exception dmException) {
+			throw new DataMissingException("Record type not known");
+		}
+	}
+
+	private String getTypeFromGroup() {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		DataGroup linkedTypeGroup = recordInfo.getFirstGroupWithNameInData("type");
+		return linkedTypeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
+	}
+
+	@Override
+	public String getId() {
+		try {
+			return getIdFromGroup();
+		} catch (Exception dmException) {
+			throw new DataMissingException("Record id not known");
+		}
+	}
+
+	private String getIdFromGroup() {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		return recordInfo.getFirstAtomicValueWithNameInData("id");
+	}
+
+	@Override
+	public boolean hasActions() {
+		return !actions.isEmpty();
+	}
+
 }

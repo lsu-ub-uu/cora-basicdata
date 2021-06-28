@@ -75,6 +75,14 @@ public class CoraDataCopierFactoryTest {
 		dataGroup.addChild(
 				CoraDataAtomic.withNameInDataAndValue("mimeType", "application/octet-stream"));
 
+		// CoraDataResourceLink resourceLink = CoraDataResourceLink.withNameInData("master");
+		// resourceLink.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", "binary:456"));
+		// resourceLink.addChild(CoraDataAtomic.withNameInDataAndValue("filename",
+		// "someImage.png"));
+		// resourceLink.addChild(CoraDataAtomic.withNameInDataAndValue("filesize", "44196"));
+		// resourceLink.addChild(
+		// CoraDataAtomic.withNameInDataAndValue("mimeType", "application/octet-stream"));
+
 		CoraDataResourceLink dataRecordLink = CoraDataResourceLink.fromDataGroup(dataGroup);
 
 		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();

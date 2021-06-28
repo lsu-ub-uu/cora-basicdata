@@ -30,11 +30,19 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 
 	private List<Action> actions = new ArrayList<>();
 
+	public static CoraDataResourceLink withNameInData(String nameInData) {
+		return new CoraDataResourceLink(nameInData);
+	}
+
 	private CoraDataResourceLink(String nameInData) {
 		super(nameInData);
 	}
 
-	public CoraDataResourceLink(DataGroup dataGroup) {
+	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
+		return new CoraDataResourceLink(dataGroup);
+	}
+
+	private CoraDataResourceLink(DataGroup dataGroup) {
 		super(dataGroup.getNameInData());
 		addResourceLinkChildren(dataGroup);
 		setRepeatId(dataGroup.getRepeatId());
@@ -51,21 +59,28 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 		addChild(mimeType);
 	}
 
-	public static CoraDataResourceLink withNameInData(String nameInData) {
-		return new CoraDataResourceLink(nameInData);
-	}
-
 	@Override
 	public void addAction(Action action) {
 		actions.add(action);
 	}
 
+	/**
+	 * @deprecated use {@linkplain #hasReadAction()} instead
+	 */
 	@Override
+	@Deprecated
 	public List<Action> getActions() {
 		return actions;
 	}
 
-	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
-		return new CoraDataResourceLink(dataGroup);
+	@Override
+	public boolean hasReadAction() {
+		return actions.contains(Action.READ);
 	}
+
+	@Override
+	public String getMimeType() {
+		return super.getFirstAtomicValueWithNameInData("mimeType");
+	}
+
 }

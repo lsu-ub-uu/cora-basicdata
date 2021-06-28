@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,26 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.basicdata.converter.datatojson;
 
-package se.uu.ub.cora.basicdata.converter;
+import java.util.ArrayList;
+import java.util.List;
 
-import se.uu.ub.cora.data.converter.ConversionException;
+import se.uu.ub.cora.data.Action;
 
 /**
- * ConverterException is an implementation of {@link ConversionException} used when conversion
- * exceptions occure while converting in basicData.
- *
+ * ActionsConverterData is a container for gathering action converter variables to be used on
+ * {@link RecordActionsToJsonConverter}.
  */
-public class ConverterException extends ConversionException {
-
-	private static final long serialVersionUID = 6721892121477803630L;
-
-	public ConverterException(String message) {
-		super(message);
-	}
-
-	public ConverterException(String message, Exception exception) {
-		super(message, exception);
-	}
-
+class ActionsConverterData {
+	final List<Action> actions = new ArrayList<>();
+	String recordType;
+	String recordId;
+	String searchRecordId;
 }

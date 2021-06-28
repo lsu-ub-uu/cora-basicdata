@@ -115,4 +115,34 @@ public class CoraDataResourceLinkTest {
 		assertCorrectFromDataResourceLink(dataResourceLink);
 		assertEquals(dataResourceLink.getRepeatId(), "2");
 	}
+
+	@Test
+	public void testHasReadActionsNoReadAction() throws Exception {
+		assertFalse(resourceLink.hasReadAction());
+
+	}
+
+	@Test
+	public void testHasReadActionsReadAction() throws Exception {
+		resourceLink.addAction(Action.READ);
+
+		assertTrue(resourceLink.hasReadAction());
+
+	}
+
+	@Test
+	public void testGetMimeType() throws Exception {
+		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
+
+		CoraDataResourceLink dataResourceLink = CoraDataResourceLink
+				.fromDataGroup(dataGroupResourceLink);
+
+		assertEquals(dataResourceLink.getMimeType(), "someMimeType");
+	}
+
+	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
+	public void testGetMimeTypeDataMissing() throws Exception {
+
+		assertEquals(resourceLink.getMimeType(), "someMimeType");
+	}
 }

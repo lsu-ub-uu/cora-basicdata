@@ -33,6 +33,7 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordLinkTest {
@@ -149,6 +150,42 @@ public class CoraDataRecordLinkTest {
 
 		assertCorrectFromDataRecordLink(dataRecordLink);
 		assertEquals(dataRecordLink.getRepeatId(), "1");
+	}
+
+	@Test
+	public void testHasReadActionsNoReadAction() throws Exception {
+		assertFalse(recordLink.hasReadAction());
+
+	}
+
+	@Test
+	public void testHasReadActionsReadAction() throws Exception {
+		recordLink.addAction(Action.READ);
+
+		assertTrue(recordLink.hasReadAction());
+
+	}
+
+	@Test
+	public void testGetLinkedRecordType() throws Exception {
+		assertEquals(recordLink.getLinkedRecordType(), "myLinkedRecordType");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testGetLinkedRecordTypeMissing() throws Exception {
+		CoraDataRecordLink withNameInData = CoraDataRecordLink.withNameInData("nameInData");
+		withNameInData.getLinkedRecordType();
+	}
+
+	@Test
+	public void testGetLinkedRecordId() throws Exception {
+		assertEquals(recordLink.getLinkedRecordId(), "myLinkedRecordId");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testGetLinkedRecordIdMissing() throws Exception {
+		CoraDataRecordLink withNameInData = CoraDataRecordLink.withNameInData("nameInData");
+		withNameInData.getLinkedRecordId();
 	}
 
 }

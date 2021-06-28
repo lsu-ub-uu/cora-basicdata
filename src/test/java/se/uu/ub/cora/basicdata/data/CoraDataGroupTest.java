@@ -33,11 +33,12 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.DataMissingException;
 import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 
 public class CoraDataGroupTest {
 
@@ -236,7 +237,13 @@ public class CoraDataGroupTest {
 		DataGroup book = createDataGroupWithTwoAtomicChildrenAndOneGroupChild();
 
 		assertEquals(book.getAllDataAtomicsWithNameInData("someChild").size(), 2);
+	}
 
+	@Test
+	public void testGetAllDataAtomicsWithNameInDataNoResult() throws Exception {
+		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("someNameInData");
+		List<DataAtomic> aList = dataGroup.getAllDataAtomicsWithNameInData("someNameInData");
+		assertEquals(aList.size(), 0);
 	}
 
 	private DataGroup createDataGroupWithTwoAtomicChildrenAndOneGroupChild() {
