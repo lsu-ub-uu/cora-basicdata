@@ -40,7 +40,7 @@ public class RecordActionsToJsonConverterTest {
 	private ActionsConverterData actionsConverterData;
 
 	@BeforeMethod
-	private void beforeMethod() {
+	public void beforeMethod() {
 		builderFactory = new JsonBuilderFactorySpy();
 
 		converterFactory = new DataToJsonConverterFactorySpy();
