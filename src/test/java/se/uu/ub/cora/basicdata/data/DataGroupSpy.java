@@ -15,6 +15,7 @@ public class DataGroupSpy implements DataGroup {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public boolean throwException = false;
 	DataGroupSpy childDataGroupToReturn = null;
+	public boolean searchGroupDefined = false;
 
 	public DataGroupSpy(String nameInData) {
 		// TODO Auto-generated constructor stub
@@ -47,6 +48,10 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
 		MCR.addCall("nameInData", nameInData);
+		if ("search".equals(nameInData)) {
+			MCR.addReturned(searchGroupDefined);
+			return searchGroupDefined;
+		}
 		MCR.addReturned(true);
 		return true;
 	}

@@ -40,9 +40,9 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	public static DataRecordToJsonConverter usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
 			DataToJsonConverterFactory converterFactory,
-			RecordActionsToJsonConverter actionsConverter, JsonBuilderFactory jsonFactory,
+			RecordActionsToJsonConverter actionsConverter, JsonBuilderFactory builderFactory,
 			String baseUrl, DataRecord dataRecord) {
-		return new DataRecordToJsonConverter(converterFactory, actionsConverter, jsonFactory,
+		return new DataRecordToJsonConverter(converterFactory, actionsConverter, builderFactory,
 				baseUrl, dataRecord);
 	}
 
@@ -59,7 +59,7 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	@Override
 	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedPrettyString();
+		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	@Override
@@ -74,7 +74,9 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 		if (dataRecord.hasActions()) {
 			ActionsConverterData actionsConverterData = collectDataForActions();
 			possiblySetSearchIdFromRecordType(actionsConverterData);
-			actionsConverter.toJsonObjectBuilder(actionsConverterData);
+			JsonObjectBuilder jsonObjectBuilder = actionsConverter
+					.toJsonObjectBuilder(actionsConverterData);
+			recordJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", jsonObjectBuilder);
 		}
 	}
 
@@ -88,19 +90,21 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	private void possiblySetSearchIdFromRecordType(ActionsConverterData actionsConverterData) {
 		if (thisRecordIsRecordType()) {
-			actionsConverterData.searchRecordId = extractSearchRecordIdFromDataGroup();
+			DataGroup dataGroup = dataRecord.getDataGroup();
+			possiblySetSearchRecordIdIfDefinedInDataGroup(actionsConverterData, dataGroup);
+		}
+	}
+
+	private void possiblySetSearchRecordIdIfDefinedInDataGroup(ActionsConverterData actionsConverterData, DataGroup dataGroup) {
+		if (dataGroup.containsChildWithNameInData("search")) {
+			DataGroup searchGroup = dataGroup.getFirstGroupWithNameInData("search");
+			actionsConverterData.searchRecordId = searchGroup
+					.getFirstAtomicValueWithNameInData("linkedRecordId");
 		}
 	}
 
 	private boolean thisRecordIsRecordType() {
 		return "recordType".equals(dataRecord.getType());
-	}
-
-	private String extractSearchRecordIdFromDataGroup() {
-		DataGroup dataGroup = dataRecord.getDataGroup();
-		dataGroup.containsChildWithNameInData("search");
-		DataGroup searchGroup = dataGroup.getFirstGroupWithNameInData("search");
-		return searchGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 	private void convertMainDataGroup() {

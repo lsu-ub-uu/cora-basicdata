@@ -70,9 +70,8 @@ public class DataRecordSpy implements DataRecord {
 	@Override
 	public DataGroup getDataGroup() {
 		MCR.addCall();
-		DataGroupSpy groupSpy = new DataGroupSpy("spy");
-		MCR.addReturned(groupSpy);
-		return groupSpy;
+		MCR.addReturned(this.dataGroup);
+		return this.dataGroup;
 	}
 
 	@Override
