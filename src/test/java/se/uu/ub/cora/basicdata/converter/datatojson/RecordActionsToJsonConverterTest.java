@@ -76,6 +76,7 @@ public class RecordActionsToJsonConverterTest {
 		String contentType = null;
 
 		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
 
@@ -351,6 +352,105 @@ public class RecordActionsToJsonConverterTest {
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testReadForRecordType() throws Exception {
+		Action readAction = Action.READ;
+		actionsConverterData.actions.add(readAction);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = readAction.name().toLowerCase();
+		String url = baseUrl + actionsConverterData.recordType + "/"
+				+ actionsConverterData.recordId;
+
+		String requestMethod = GET;
+		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String contentType = null;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testUpdateActionForRecordType() throws Exception {
+		Action action = Action.UPDATE;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + actionsConverterData.recordType + "/"
+				+ actionsConverterData.recordId;
+		String requestMethod = POST;
+		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testReadIncommingLinksActionForRecordType() throws Exception {
+		Action action = Action.READ_INCOMING_LINKS;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + actionsConverterData.recordType + "/" + actionsConverterData.recordId
+				+ "/incomingLinks";
+		String requestMethod = GET;
+		String accept = APPLICATION_VND_UUB_RECORD_LIST_JSON;
+		String contentType = null;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testDeleteActionForRecordType() throws Exception {
+		Action action = Action.DELETE;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + actionsConverterData.recordType + "/"
+				+ actionsConverterData.recordId;
+		String requestMethod = "DELETE";
+		String accept = null;
+		String contentType = null;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+	}
+
+	@Test
+	public void testIndexActionForRecordType() throws Exception {
+		Action action = Action.INDEX;
+		actionsConverterData.actions.add(action);
+		actionsConverterData.recordType = "recordType";
+
+		String lowerCaseAction = action.name().toLowerCase();
+		String url = baseUrl + "workOrder/";
+		String requestMethod = POST;
+		String accept = APPLICATION_VND_UUB_RECORD_JSON;
+		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
+
+		actionsConverter.toJsonObjectBuilder(actionsConverterData);
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
+
+		assertWorkOrderBuilderCreatedUsingConverterFactoryWithDataGroupAddedToInternalLinkBuilderAsBody();
+
+		assertCreatedWorkOrderBodyDataStructureIsCorrect();
 	}
 
 }

@@ -161,7 +161,7 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 			currentUrl = baseUrl + "index/" + recordId + "/";
 			addStandardParametersToCurrentLinkBuilder();
 			currentLinkBuilder.addKeyString("accept", currentAccept);
-		} else {
+		} else if (Action.VALIDATE.equals(action)) {
 			createActionLinkForValidate();
 		}
 	}
