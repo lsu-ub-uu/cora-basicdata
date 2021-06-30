@@ -43,8 +43,8 @@ public class CoraDataGroup implements DataGroup {
 	private Set<DataAttribute> attributes = new HashSet<>();
 	private List<DataElement> children = new ArrayList<>();
 	private String repeatId;
-	private Predicate<DataElement> isDataAtomic = dataElement -> dataElement instanceof CoraDataAtomic;
-	private Predicate<DataElement> isDataGroup = dataElement -> dataElement instanceof CoraDataGroup;
+	private Predicate<DataElement> isDataAtomic = CoraDataAtomic.class::isInstance;
+	private Predicate<DataElement> isDataGroup = CoraDataGroup.class::isInstance;
 
 	public static CoraDataGroup withNameInData(String nameInData) {
 		return new CoraDataGroup(nameInData);
