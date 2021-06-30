@@ -230,7 +230,7 @@ public class BasicDataToJsonConverterFactoryTest {
 		DataResourceLinkToJsonConverter converter = (DataResourceLinkToJsonConverter) converterFactory
 				.factorUsingBaseUrlAndRecordUrlAndConvertible(baseUrl, recordUrl, dataResourceLink);
 
-		JsonBuilderFactory jsonBuilderFactory = converter.jsonBuilderFactory;
+		JsonBuilderFactory jsonBuilderFactory = converter.resourceLinkBuilderFactory;
 		assertSame(jsonBuilderFactory, builderFactory);
 		assertSame(converter.converterFactory, converterFactory);
 		assertEquals(converter.recordURL, recordUrl);

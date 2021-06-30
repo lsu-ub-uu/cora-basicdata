@@ -29,7 +29,7 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 
 	private DataResourceLink dataResourceLink;
 	String recordURL;
-	JsonBuilderFactory jsonBuilderFactory;
+	JsonBuilderFactory resourceLinkBuilderFactory;
 	private static final String READ = "read";
 	private static final String GET = "GET";
 
@@ -40,7 +40,7 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 		super(converterFactory, jsonBuilderFactory, dataResourceLink);
 		this.dataResourceLink = dataResourceLink;
 		this.recordURL = recordURL;
-		this.jsonBuilderFactory = jsonBuilderFactory;
+		this.resourceLinkBuilderFactory = jsonBuilderFactory;
 	}
 
 	public static DataResourceLinkToJsonConverter usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
@@ -63,7 +63,7 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 	}
 
 	private void createReadActionLink() {
-		JsonObjectBuilder actionLinksObject = jsonBuilderFactory.createObjectBuilder();
+		JsonObjectBuilder actionLinksObject = resourceLinkBuilderFactory.createObjectBuilder();
 
 		JsonObjectBuilder internalLinkBuilder = buildInternalLinkBuilder();
 		actionLinksObject.addKeyJsonObjectBuilder(READ, internalLinkBuilder);
@@ -74,7 +74,7 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 	private JsonObjectBuilder buildInternalLinkBuilder() {
 		String url = recordURL + "/" + dataResourceLink.getNameInData();
 		String mimeType = dataResourceLink.getMimeType();
-		JsonObjectBuilder internalLinkBuilder = jsonBuilderFactory.createObjectBuilder();
+		JsonObjectBuilder internalLinkBuilder = resourceLinkBuilderFactory.createObjectBuilder();
 		internalLinkBuilder.addKeyString("rel", READ);
 		internalLinkBuilder.addKeyString("url", url);
 		internalLinkBuilder.addKeyString("requestMethod", GET);

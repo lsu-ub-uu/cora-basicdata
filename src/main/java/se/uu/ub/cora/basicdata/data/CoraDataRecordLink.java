@@ -28,6 +28,8 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public final class CoraDataRecordLink extends CoraDataGroup implements DataRecordLink {
 
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
+	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private List<Action> actions = new ArrayList<>();
 
 	private CoraDataRecordLink(String nameInData) {
@@ -45,9 +47,9 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	}
 
 	private void addLinkedRecordTypeAndId(DataGroup dataGroup) {
-		DataElement linkedRecordType = dataGroup.getFirstChildWithNameInData("linkedRecordType");
+		DataElement linkedRecordType = dataGroup.getFirstChildWithNameInData(LINKED_RECORD_TYPE);
 		addChild(linkedRecordType);
-		DataElement linkedRecordId = dataGroup.getFirstChildWithNameInData("linkedRecordId");
+		DataElement linkedRecordId = dataGroup.getFirstChildWithNameInData(LINKED_RECORD_ID);
 		addChild(linkedRecordId);
 	}
 
@@ -58,8 +60,8 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	public static CoraDataRecordLink asLinkWithNameInDataAndTypeAndId(String nameInData,
 			String type, String id) {
 		CoraDataRecordLink dataRecordLink = new CoraDataRecordLink(nameInData);
-		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordType", type));
-		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordId", id));
+		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE, type));
+		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID, id));
 		return dataRecordLink;
 	}
 
@@ -69,7 +71,8 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	}
 
 	/**
-	 * @deprecated use {@linkplain #hasReadAction()} instead
+	 * @deprecated (on basicData 3.0.0, CoraDatRecordLink has only one READ action, use
+	 *             hasReadAction() instead) use {@linkplain #hasReadAction()} instead
 	 */
 	@Override
 	@Deprecated
@@ -84,12 +87,12 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 
 	@Override
 	public String getLinkedRecordType() {
-		return super.getFirstAtomicValueWithNameInData("linkedRecordType");
+		return super.getFirstAtomicValueWithNameInData(LINKED_RECORD_TYPE);
 	}
 
 	@Override
 	public String getLinkedRecordId() {
-		return super.getFirstAtomicValueWithNameInData("linkedRecordId");
+		return super.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
 	}
 
 }

@@ -65,7 +65,8 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 	}
 
 	/**
-	 * @deprecated use {@linkplain #hasReadAction()} instead
+	 * @deprecated (on basicData 3.0.0, CoraDatRecordLink has only one READ action, use
+	 *             hasReadAction() instead) use {@linkplain #hasReadAction()} instead
 	 */
 	@Override
 	@Deprecated

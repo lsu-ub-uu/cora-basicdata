@@ -69,19 +69,16 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 							(DataRecord) convertible);
 		}
 
-		if (baseUrlIsKnownGenerateRecordLinks()) {
-			if (convertible instanceof DataRecordLink) {
-				return DataRecordLinkToJsonConverter
-						.usingConverterFactoryAndJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(this,
-								builderFactory, (DataRecordLink) convertible, baseUrl);
-			}
+		if (isDataRecordLinkAndHasBaseUrl(convertible)) {
+			return DataRecordLinkToJsonConverter
+					.usingConverterFactoryAndJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(this,
+							builderFactory, (DataRecordLink) convertible, baseUrl);
 		}
-		if (convertible instanceof DataResourceLink) {
-			if (recordUrl != null) {
-				return DataResourceLinkToJsonConverter
-						.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
-								this, builderFactory, (DataResourceLink) convertible, recordUrl);
-			}
+		if (isDataResourceLinkAndHasRecordUrl(convertible)) {
+			return DataResourceLinkToJsonConverter
+					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
+							builderFactory, (DataResourceLink) convertible, recordUrl);
+
 		}
 		if (convertible instanceof DataGroup) {
 			return DataGroupToJsonConverter.usingConverterFactoryAndBuilderFactoryAndDataGroup(this,
@@ -95,8 +92,12 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 				(DataAttribute) convertible);
 	}
 
-	private boolean baseUrlIsKnownGenerateRecordLinks() {
-		return baseUrl != null;
+	private boolean isDataResourceLinkAndHasRecordUrl(Convertible convertible) {
+		return (convertible instanceof DataResourceLink) && (recordUrl != null);
+	}
+
+	private boolean isDataRecordLinkAndHasBaseUrl(Convertible convertible) {
+		return baseUrl != null && (convertible instanceof DataRecordLink);
 	}
 
 	@Override
