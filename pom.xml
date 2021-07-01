@@ -35,7 +35,7 @@
 	<properties>
 <!-- 	<json.version>2.3.0</json.version> -->
 <!-- TEMPORARLY MOVED TO NEXT VERSION TO GET ACCESS TO NEW JAVADOC -->
-	<json.version>2.4-SNAPSHOT</json.version>
+	<json.version>2.4.0</json.version>
 	<coradata.version>5.0-SNAPSHOT</coradata.version>
 	</properties>
 
