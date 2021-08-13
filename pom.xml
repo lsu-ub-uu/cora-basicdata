@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-        <version>1.3.1</version>
+        <version>1.4.1</version>
 	</parent>
 
 	<artifactId>basicdata</artifactId>
@@ -35,8 +35,8 @@
 	<properties>
 <!-- 	<json.version>2.3.0</json.version> -->
 <!-- TEMPORARLY MOVED TO NEXT VERSION TO GET ACCESS TO NEW JAVADOC -->
-	<json.version>2.4.0</json.version>
-	<coradata.version>5.0.0</coradata.version>
+	<json.version>2.5.0</json.version>
+	<coradata.version>5.1.0</coradata.version>
 	</properties>
 
 	<scm>
