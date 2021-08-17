@@ -59,7 +59,7 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	@Override
 	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
+		return toJsonObjectBuilder().toJsonFormattedPrettyString();
 	}
 
 	@Override
@@ -95,7 +95,8 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 		}
 	}
 
-	private void possiblySetSearchRecordIdIfDefinedInDataGroup(ActionsConverterData actionsConverterData, DataGroup dataGroup) {
+	private void possiblySetSearchRecordIdIfDefinedInDataGroup(
+			ActionsConverterData actionsConverterData, DataGroup dataGroup) {
 		if (dataGroup.containsChildWithNameInData("search")) {
 			DataGroup searchGroup = dataGroup.getFirstGroupWithNameInData("search");
 			actionsConverterData.searchRecordId = searchGroup

@@ -85,7 +85,7 @@ public class DataListToJsonConverter implements DataToJsonConverter {
 	@Override
 	public String toJson() {
 		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
-		return jsonObjectBuilder.toJsonFormattedString();
+		return jsonObjectBuilder.toJsonFormattedPrettyString();
 	}
 
 	@Override
