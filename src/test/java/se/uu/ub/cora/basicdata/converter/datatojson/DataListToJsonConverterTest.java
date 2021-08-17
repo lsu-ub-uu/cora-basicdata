@@ -149,8 +149,8 @@ public class DataListToJsonConverterTest {
 		recordListConverterForTest.MCR.methodWasCalled("toJsonObjectBuilder");
 		JsonObjectBuilderSpy jsonBuilder = (JsonObjectBuilderSpy) recordListConverterForTest.MCR
 				.getReturnValue("toJsonObjectBuilder", 0);
-		jsonBuilder.MCR.methodWasCalled("toJsonFormattedString");
-		jsonBuilder.MCR.assertReturn("toJsonFormattedString", 0, json);
+		jsonBuilder.MCR.assertMethodWasCalled("toJsonFormattedPrettyString");
+		jsonBuilder.MCR.assertReturn("toJsonFormattedPrettyString", 0, json);
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class DataListToJsonConverterTest {
 		recordListConverterForTest.MCR.methodWasCalled("toJsonObjectBuilder");
 		JsonObjectBuilderSpy jsonBuilder = (JsonObjectBuilderSpy) recordListConverterForTest.MCR
 				.getReturnValue("toJsonObjectBuilder", 0);
-		jsonBuilder.MCR.methodWasCalled("toJsonFormattedString");
+		jsonBuilder.MCR.assertMethodWasCalled("toJsonFormattedString");
 		jsonBuilder.MCR.assertReturn("toJsonFormattedString", 0, json);
 	}
 

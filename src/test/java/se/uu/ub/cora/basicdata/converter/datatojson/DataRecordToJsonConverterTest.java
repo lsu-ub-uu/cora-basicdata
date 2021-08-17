@@ -213,7 +213,8 @@ public class DataRecordToJsonConverterTest {
 		forTest.MCR.assertMethodWasCalled("toJsonObjectBuilder");
 		JsonObjectBuilderSpy builderSpy = (JsonObjectBuilderSpy) forTest.MCR
 				.getReturnValue("toJsonObjectBuilder", 0);
-		builderSpy.MCR.assertReturn("toJsonFormattedString", 0, jsonString);
+		builderSpy.MCR.assertReturn("toJsonFormattedPrettyString", 0, jsonString);
+		builderSpy.MCR.assertMethodWasCalled("toJsonFormattedPrettyString");
 	}
 
 	@Test
