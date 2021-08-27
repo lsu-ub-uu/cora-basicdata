@@ -18,10 +18,10 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class JsonBuilderFactorySpy implements JsonBuilderFactory {
 

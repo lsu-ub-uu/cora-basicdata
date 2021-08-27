@@ -34,11 +34,11 @@ import se.uu.ub.cora.basicdata.data.CoraDataList;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
-import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class BasicDataToJsonConverterFactoryTest {
 	private DataToJsonConverterFactory converterFactory;

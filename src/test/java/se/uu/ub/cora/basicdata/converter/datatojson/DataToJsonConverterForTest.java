@@ -18,10 +18,10 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 /**
  * DataToJsonConverterForTest is an extension to DataGroupToJsonConverter to help with testing of

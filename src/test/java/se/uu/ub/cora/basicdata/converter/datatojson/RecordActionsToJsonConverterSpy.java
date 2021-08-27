@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class RecordActionsToJsonConverterSpy implements RecordActionsToJsonConverter {
 	MethodCallRecorder MCR = new MethodCallRecorder();

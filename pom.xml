@@ -33,10 +33,9 @@
 	<name>Basic data</name>
 
 	<properties>
-<!-- 	<json.version>2.3.0</json.version> -->
-<!-- TEMPORARLY MOVED TO NEXT VERSION TO GET ACCESS TO NEW JAVADOC -->
-	<json.version>2.5.0</json.version>
-	<coradata.version>5.1.0</coradata.version>
+		<json.version>2.5.0</json.version>
+		<coradata.version>5.1.0</coradata.version>
+		<testutils.version>1.1.0</testutils.version>
 	</properties>
 
 	<scm>
@@ -51,6 +50,12 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>testutils</artifactId>
+			<version>${testutils.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

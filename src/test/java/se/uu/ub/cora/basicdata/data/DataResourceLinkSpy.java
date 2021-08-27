@@ -21,9 +21,9 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLink {
 

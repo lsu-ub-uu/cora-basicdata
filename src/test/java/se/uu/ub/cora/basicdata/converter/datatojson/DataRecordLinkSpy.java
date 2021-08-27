@@ -21,9 +21,9 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 import java.util.List;
 
 import se.uu.ub.cora.basicdata.data.DataGroupSpy;
-import se.uu.ub.cora.basicdata.mcr.MethodCallRecorder;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
 	MethodCallRecorder MCR = new MethodCallRecorder();
