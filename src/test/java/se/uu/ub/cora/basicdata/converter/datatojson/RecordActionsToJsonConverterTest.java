@@ -328,7 +328,7 @@ public class RecordActionsToJsonConverterTest {
 		String url = baseUrl + "index/" + actionsConverterData.recordId + "/";
 		String requestMethod = POST;
 		String accept = APPLICATION_VND_UUB_RECORD_JSON;
-		String contentType = null;
+		String contentType = APPLICATION_VND_UUB_RECORD_JSON;
 
 		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
