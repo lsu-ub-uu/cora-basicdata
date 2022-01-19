@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -166,9 +166,7 @@ public class CoraDataRecordTest {
 			+ "Record id not known")
 
 	public void testGetIdNoIdDataGroup() throws Exception {
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataGroup.setChildToThrowException();
-
+		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
 		dataRecord.getId();
@@ -233,9 +231,7 @@ public class CoraDataRecordTest {
 			+ "Record type not known")
 
 	public void testGetTypeNoLinkedTypeDataGroup() throws Exception {
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataGroup.setChildToThrowException();
-
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
 		dataRecord.getType();
@@ -244,11 +240,12 @@ public class CoraDataRecordTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record type not known")
 
-	public void testGetTypeNolinkedRecordIdAtomicGroup() throws Exception {
-		DataGroupSpy childDataGroup = new DataGroupSpy("childDataGroup");
-		childDataGroup.setChildToThrowException();
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataGroup.setChildDataGroupToReturn(childDataGroup);
+	public void testGetTypeNoLinkedRecordIdAtomicGroup() throws Exception {
+		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		DataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(CoraDataGroup.withNameInData("type"));
+
+		dataGroup.addChild(recordInfo);
 
 		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
@@ -286,5 +283,77 @@ public class CoraDataRecordTest {
 	public void testHasWritedPremissionsHasWritePermissions() throws Exception {
 		dataRecord.addWritePermission("WritePermission");
 		assertTrue(dataRecord.hasWritePermissions());
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "No searchId exists")
+	public void testGetSearchIdNotSearchOrRecordType() {
+		DataGroup dataGroup = createDataGroup("someOtherType", "someId");
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		dataRecord.getSearchId();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Record id not known")
+	public void testGetSearchIdForSearchButNoSearchId() {
+		CoraDataGroup dataGroup = createDataGroup("search", "searchId");
+		removeSearchId(dataGroup);
+
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		dataRecord.getSearchId();
+	}
+
+	private void removeSearchId(CoraDataGroup dataGroup) {
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		recordInfo.removeFirstChildWithNameInData("id");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "No searchId exists")
+	public void testGetSearchIdForRecordTypeButNoSearchId() {
+		CoraDataGroup dataGroup = createDataGroup("recordType", "someId");
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		dataRecord.getSearchId();
+	}
+
+	@Test
+	public void testGetSearchIdForSearch() {
+		CoraDataGroup dataGroup = createDataGroup("search", "someSearchId");
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		String searchId = dataRecord.getSearchId();
+		assertEquals(searchId, "someSearchId");
+	}
+
+	@Test
+	public void testGetSearchIdForRecordType() {
+		DataGroup dataGroup = createDataGroup("recordType", "someRecordType");
+		addSearchDataGroup(dataGroup);
+		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		String searchId = dataRecord.getSearchId();
+		assertEquals(searchId, "someLinkedSearch");
+	}
+
+	private void addSearchDataGroup(DataGroup dataGroup) {
+		DataGroup searchDataGroup = CoraDataGroup.withNameInData("search");
+		searchDataGroup.addChild(
+				CoraDataAtomic.withNameInDataAndValue("linkedRecordId", "someLinkedSearch"));
+		dataGroup.addChild(searchDataGroup);
+	}
+
+	private CoraDataGroup createDataGroup(String type, String id) {
+		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("searchOrRecordType");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("id", id));
+
+		addType(type, recordInfo);
+		dataGroup.addChild(recordInfo);
+		return dataGroup;
+	}
+
+	private void addType(String type, CoraDataGroup recordInfo) {
+		CoraDataGroup typeGroup = CoraDataGroup.withNameInData("type");
+		typeGroup.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordId", type));
+		recordInfo.addChild(typeGroup);
 	}
 }

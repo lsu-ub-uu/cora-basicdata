@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2019, 2020 Uppsala University Library
+ * Copyright 2015, 2016, 2019, 2020, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -31,6 +31,7 @@ import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecord;
 
 public final class CoraDataRecord implements DataRecord {
+	private static final String SEARCH = "search";
 	private DataGroup dataGroup;
 	private List<Action> actions = new ArrayList<>();
 	private Set<String> readPermissions = new LinkedHashSet<>();
@@ -139,6 +140,26 @@ public final class CoraDataRecord implements DataRecord {
 	@Override
 	public boolean hasActions() {
 		return !actions.isEmpty();
+	}
+
+	@Override
+	public String getSearchId() {
+		String type = getType();
+		if (SEARCH.equals(type)) {
+			return getId();
+		} else if (isRecordTypeAndHasSearch(type)) {
+			return extractSearchId();
+		}
+		throw new DataMissingException("No searchId exists");
+	}
+
+	private boolean isRecordTypeAndHasSearch(String type) {
+		return "recordType".equals(type) && dataGroup.containsChildWithNameInData(SEARCH);
+	}
+
+	private String extractSearchId() {
+		DataGroup search = dataGroup.getFirstGroupWithNameInData(SEARCH);
+		return search.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 }

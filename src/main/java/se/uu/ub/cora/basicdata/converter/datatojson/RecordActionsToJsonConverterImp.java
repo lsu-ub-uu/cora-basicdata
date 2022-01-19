@@ -163,6 +163,7 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 			currentUrl = baseUrl + "index/" + recordId + "/";
 			addStandardParametersToCurrentLinkBuilder();
 			currentLinkBuilder.addKeyString(ACCEPT, currentAccept);
+			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_UUB_RECORD_JSON);
 		} else if (action == Action.VALIDATE) {
 			createActionLinkForValidate();
 		}
