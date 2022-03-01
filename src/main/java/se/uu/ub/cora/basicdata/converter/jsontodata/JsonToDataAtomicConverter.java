@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -84,17 +84,21 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	}
 
 	private void validateOptionalKeys() {
-		if (jsonObject.keySet().size() == ONE_OPTIONAL_KEY_PRESENT
-				&& keyMissingOrNotStringValueInJsonObject(REPEAT_ID) && !hasAttributes()) {
+		if (oneOptionalKeyButRepeatIdAndAttributesMissing()
+				|| maxOptionalKeysButRepeatIdOrAttributesMissing()) {
 			throw new JsonParseException(
 					"Atomic data can only contain string value for name, value, repeatId and attributes");
+		}
+	}
 
-		}
-		if (jsonObject.keySet().size() == ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL
-				&& (keyMissingOrNotStringValueInJsonObject(REPEAT_ID) || !hasAttributes())) {
-			throw new JsonParseException(
-					"Atomic data can only contain string value for name, value, repeatId and attributes");
-		}
+	private boolean oneOptionalKeyButRepeatIdAndAttributesMissing() {
+		return jsonObject.keySet().size() == ONE_OPTIONAL_KEY_PRESENT
+				&& keyMissingOrNotStringValueInJsonObject(REPEAT_ID) && !hasAttributes();
+	}
+
+	private boolean maxOptionalKeysButRepeatIdOrAttributesMissing() {
+		return jsonObject.keySet().size() == ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL
+				&& (keyMissingOrNotStringValueInJsonObject(REPEAT_ID) || !hasAttributes());
 	}
 
 	private boolean hasAttributes() {
