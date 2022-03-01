@@ -19,16 +19,21 @@
 
 package se.uu.ub.cora.basicdata.converter.jsontodata;
 
+import java.util.Map.Entry;
+
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonString;
+import se.uu.ub.cora.json.parser.JsonValue;
 
 public final class JsonToDataAtomicConverter implements JsonToDataConverter {
+	private static final String ATTRIBUTES = "attributes";
 	private static final String REPEAT_ID = "repeatId";
-	private static final int ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL = 3;
+	private static final int ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL = 4;
+	private static final int ONE_OPTIONAL_KEY_PRESENT = 3;
 	private static final String NAME = "name";
 	private static final String VALUE = "value";
 	private JsonObject jsonObject;
@@ -58,7 +63,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private void validateJsonData() {
 		validateNameInData();
 		validateValue();
-		validateRepeatId();
+		validateOptionalKeys();
 		validateNoExtraElements();
 	}
 
@@ -78,16 +83,26 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private void validateRepeatId() {
-		if (jsonObject.size() == ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL
-				&& keyMissingOrNotStringValueInJsonObject(REPEAT_ID)) {
+	private void validateOptionalKeys() {
+		if (jsonObject.keySet().size() == ONE_OPTIONAL_KEY_PRESENT
+				&& keyMissingOrNotStringValueInJsonObject(REPEAT_ID) && !hasAttributes()) {
 			throw new JsonParseException(
-					"Atomic data can only contain string value for name, value and repeatId");
+					"Atomic data can only contain string value for name, value, repeatId and attributes");
+
+		}
+		if (jsonObject.keySet().size() == ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL
+				&& (keyMissingOrNotStringValueInJsonObject(REPEAT_ID) || !hasAttributes())) {
+			throw new JsonParseException(
+					"Atomic data can only contain string value for name, value, repeatId and attributes");
 		}
 	}
 
+	private boolean hasAttributes() {
+		return jsonObject.containsKey(ATTRIBUTES);
+	}
+
 	private void validateNoExtraElements() {
-		if (jsonObject.size() > ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL) {
+		if (jsonObject.keySet().size() > ALLOWED_MAX_NO_OF_ELEMENTS_AT_TOP_LEVEL) {
 			throw new JsonParseException("Atomic data can only contain name, value and repeatId");
 		}
 	}
@@ -95,6 +110,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private CoraDataAtomic convertJsonToDataAtomic() {
 		CoraDataAtomic dataAtomic = createFromJsonWithNameInDataAndValue();
 		addRepeatIdFromJson(dataAtomic);
+		possiblyAddAttributes(dataAtomic);
 		return dataAtomic;
 	}
 
@@ -112,5 +128,20 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		if (jsonObject.containsKey(REPEAT_ID)) {
 			dataAtomic.setRepeatId(jsonObject.getValueAsJsonString(REPEAT_ID).getStringValue());
 		}
+	}
+
+	private void possiblyAddAttributes(CoraDataAtomic dataAtomic) {
+		if (hasAttributes()) {
+			JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
+			for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
+				addAttributeToGroup(dataAtomic, attributeEntry);
+			}
+		}
+	}
+
+	private void addAttributeToGroup(CoraDataAtomic dataAtomic,
+			Entry<String, JsonValue> attributeEntry) {
+		String value = ((JsonString) attributeEntry.getValue()).getStringValue();
+		dataAtomic.addAttributeByIdWithValue(attributeEntry.getKey(), value);
 	}
 }

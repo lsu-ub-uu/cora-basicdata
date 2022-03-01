@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import se.uu.ub.cora.data.DataAtomic;
@@ -111,7 +110,7 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
-		return getDataAtomicChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+		return getDataAtomicChildrenWithNameInData(childNameInData).toList();
 	}
 
 	private Stream<DataAtomic> getDataAtomicChildrenWithNameInData(String childNameInData) {
@@ -165,7 +164,7 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
-		return getGroupChildrenWithNameInDataStream(childNameInData).collect(Collectors.toList());
+		return getGroupChildrenWithNameInDataStream(childNameInData).toList();
 	}
 
 	@Override
@@ -247,7 +246,7 @@ public class CoraDataGroup implements DataGroup {
 	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
 		return getGroupChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
-				.collect(Collectors.toList());
+				.toList();
 
 	}
 
@@ -330,7 +329,7 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public List<DataElement> getAllChildrenWithNameInData(String childNameInData) {
-		return getChildrenWithNameInData(childNameInData).collect(Collectors.toList());
+		return getChildrenWithNameInData(childNameInData).toList();
 
 	}
 
@@ -360,7 +359,24 @@ public class CoraDataGroup implements DataGroup {
 			DataAttribute... childAttributes) {
 		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
 				element, childNameInData, childAttributes);
-		return getChildren().stream().filter(childNameInDataMatches).collect(Collectors.toList());
+		return getChildren().stream().filter(childNameInDataMatches).toList();
+	}
+
+	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
+			String childNameInData, DataAttribute... childAttributes) {
+		return getAtomicChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
+				.toList();
+	}
+
+	private Stream<DataAtomic> getAtomicChildrenWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		return getAtomicChildrenWithNameInDataStream(childNameInData)
+				.filter(filterByAttributes(childAttributes));
+	}
+
+	private Stream<DataAtomic> getAtomicChildrenWithNameInDataStream(String childNameInData) {
+		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
+				.map(CoraDataAtomic.class::cast);
 	}
 
 }

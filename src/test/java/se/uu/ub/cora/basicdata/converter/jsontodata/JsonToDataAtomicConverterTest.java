@@ -96,13 +96,25 @@ public class JsonToDataAtomicConverterTest {
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKey() {
 		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"repeatId\":\"5\""
-				+ ",\"extra\":\"extra\"}";
+				+ ",\"extra\":\"extra\", ,\"extra2\":\"extra\"}";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
-	public void testToClassWrongJsonExtraKeyMissingRepeatId() {
-		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"NOTrepeatId\":\"5\"" + "}";
+	public void testToClassWrongJsonOneExtraKeyMissingRepeatIdAndMissingAttributes() {
+		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"NOTrepeatId\":\"5\"}";
+		createDataAtomicForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonTwoExtraKeyMissingRepeatIdAndMissingAttributes() {
+		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"NOTrepeatId\":\"5\",\"NOTattributes\":\"5\"}";
+		createDataAtomicForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonMaxKeysMissingAttributes() {
+		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"repeatId\":\"5\",\"NOTattributes\":\"5\"}";
 		createDataAtomicForJsonString(json);
 	}
 
@@ -118,6 +130,28 @@ public class JsonToDataAtomicConverterTest {
 		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\","
 				+ "\"name\":\"id2\",\"value\":[]}";
 		createDataAtomicForJsonString(json);
+	}
+
+	@Test
+	public void testWithOneAttribute() {
+		String json = "{\"name\":\"mode\",\"value\":\"output\",\"attributes\":{\"type\":\"container\"}}";
+		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
+		assertEquals(dataAtomic.getNameInData(), "mode");
+		assertEquals(dataAtomic.getValue(), "output");
+		assertEquals(dataAtomic.getAttributes().size(), 1);
+		assertEquals(dataAtomic.getAttribute("type").getValue(), "container");
+	}
+
+	@Test
+	public void testWithTwoAttributesAndRepeatId() {
+		String json = "{\"name\":\"mode\",\"value\":\"output\",\"attributes\":{\"type\":\"container\",\"repeat\":\"children\"},\"repeatId\":\"0\"}";
+		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
+		assertEquals(dataAtomic.getNameInData(), "mode");
+		assertEquals(dataAtomic.getValue(), "output");
+		assertEquals(dataAtomic.getRepeatId(), "0");
+		assertEquals(dataAtomic.getAttributes().size(), 2);
+		assertEquals(dataAtomic.getAttribute("type").getValue(), "container");
+		assertEquals(dataAtomic.getAttribute("repeat").getValue(), "children");
 	}
 
 }
