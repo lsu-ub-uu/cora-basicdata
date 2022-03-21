@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,22 +20,36 @@
 package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataMissingException;
 
 public class CoraDataAtomicTest {
 
+	private CoraDataAtomic dataAtomic;
+
+	@BeforeMethod
+	public void setUp() {
+		dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData", "value");
+
+	}
+
 	@Test
 	public void testInit() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData", "value");
 		assertEquals(dataAtomic.getNameInData(), "nameInData");
 		assertEquals(dataAtomic.getValue(), "value");
 	}
 
 	@Test
 	public void testInitWithRepeatId() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValueAndRepeatId("nameInData",
-				"value", "2");
+		dataAtomic = CoraDataAtomic.withNameInDataAndValueAndRepeatId("nameInData", "value", "2");
 		assertEquals(dataAtomic.getNameInData(), "nameInData");
 		assertEquals(dataAtomic.getValue(), "value");
 		assertEquals(dataAtomic.getRepeatId(), "2");
@@ -43,10 +57,50 @@ public class CoraDataAtomicTest {
 
 	@Test
 	public void testSetRepeatId() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("nameInData", "value");
 		dataAtomic.setRepeatId("3");
 		assertEquals(dataAtomic.getNameInData(), "nameInData");
 		assertEquals(dataAtomic.getValue(), "value");
 		assertEquals(dataAtomic.getRepeatId(), "3");
 	}
+
+	@Test
+	public void testAddAttribute() {
+		dataAtomic.addAttributeByIdWithValue("someAttributeName", "value");
+		Collection<DataAttribute> attributes = dataAtomic.getAttributes();
+		DataAttribute next = attributes.iterator().next();
+		assertEquals(next.getNameInData(), "someAttributeName");
+		assertEquals(next.getValue(), "value");
+	}
+
+	@Test
+	public void testAddAttributeWithSameNameInDataOverwrites() {
+		dataAtomic.addAttributeByIdWithValue("someAttributeName", "value");
+		dataAtomic.addAttributeByIdWithValue("someAttributeName", "someOtherValue");
+
+		Collection<DataAttribute> attributes = dataAtomic.getAttributes();
+		assertEquals(attributes.size(), 1);
+		DataAttribute next = attributes.iterator().next();
+		assertEquals(next.getValue(), "someOtherValue");
+	}
+
+	@Test
+	public void testHasAttributes() {
+		assertFalse(dataAtomic.hasAttributes());
+		dataAtomic.addAttributeByIdWithValue("attributeId", "attributeValue");
+		assertTrue(dataAtomic.hasAttributes());
+	}
+
+	@Test
+	public void testGetAttribute() {
+		dataAtomic.addAttributeByIdWithValue("someOtherAttributeId", "attributeValue");
+		dataAtomic.addAttributeByIdWithValue("attributeId", "attributeValue");
+		assertEquals(dataAtomic.getAttribute("attributeId").getValue(), "attributeValue");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Attribute with id someAttributeId not found.")
+	public void testGetAttributeDoesNotExist() {
+		dataAtomic.getAttribute("someAttributeId");
+	}
+
 }

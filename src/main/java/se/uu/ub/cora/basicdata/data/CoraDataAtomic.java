@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,13 +19,21 @@
 
 package se.uu.ub.cora.basicdata.data;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataMissingException;
 
 public final class CoraDataAtomic implements DataAtomic {
 
 	private String nameInData;
 	private String value;
 	private String repeatId;
+	private Set<DataAttribute> attributes = new HashSet<>();
 
 	public static CoraDataAtomic withNameInDataAndValue(String nameInData, String value) {
 		return new CoraDataAtomic(nameInData, value);
@@ -50,6 +58,46 @@ public final class CoraDataAtomic implements DataAtomic {
 	@Override
 	public String getNameInData() {
 		return nameInData;
+	}
+
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		possiblyRemovePreviouslyStoredAttribute(nameInData);
+		attributes.add(CoraDataAttribute.withNameInDataAndValue(nameInData, value));
+	}
+
+	private void possiblyRemovePreviouslyStoredAttribute(String nameInData) {
+		Iterator<DataAttribute> iterator = attributes.iterator();
+		while (iterator.hasNext()) {
+			possiblyRemoveAttribute(iterator, nameInData);
+		}
+	}
+
+	private void possiblyRemoveAttribute(Iterator<DataAttribute> iterator, String nameInData) {
+		DataAttribute next = iterator.next();
+		if (next.getNameInData().equals(nameInData)) {
+			iterator.remove();
+		}
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		return !attributes.isEmpty();
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		return attributes;
+	}
+
+	@Override
+	public DataAttribute getAttribute(String attributeId) {
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(attributeId)) {
+				return dataAttribute;
+			}
+		}
+		throw new DataMissingException("Attribute with id " + attributeId + " not found.");
 	}
 
 	@Override

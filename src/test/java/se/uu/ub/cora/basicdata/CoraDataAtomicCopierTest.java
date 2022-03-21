@@ -43,8 +43,8 @@ public class CoraDataAtomicCopierTest {
 
 	@Test
 	public void testCopyDataAtomicWithRepeatId() {
-		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValueAndRepeatId("someNameInData",
-				"someAtomicValue", "22");
+		CoraDataAtomic dataAtomic = CoraDataAtomic
+				.withNameInDataAndValueAndRepeatId("someNameInData", "someAtomicValue", "22");
 		CoraDataAtomicCopier dataAtomicCopier = CoraDataAtomicCopier.usingDataAtomic(dataAtomic);
 
 		CoraDataAtomic dataAtomicCopy = (CoraDataAtomic) dataAtomicCopier.copy();
@@ -52,6 +52,20 @@ public class CoraDataAtomicCopierTest {
 		assertEquals(dataAtomic.getNameInData(), dataAtomicCopy.getNameInData());
 		assertEquals(dataAtomic.getValue(), dataAtomicCopy.getValue());
 		assertEquals(dataAtomic.getRepeatId(), dataAtomicCopy.getRepeatId());
+	}
+
+	@Test
+	public void testCopyDataAtomicWithOneAttribute() {
+		CoraDataAtomic dataAtomic = CoraDataAtomic
+				.withNameInDataAndValueAndRepeatId("someNameInData", "someAtomicValue", "22");
+		dataAtomic.addAttributeByIdWithValue("type", "someTypeAttribute");
+
+		CoraDataAtomicCopier dataAtomicCopier = CoraDataAtomicCopier.usingDataAtomic(dataAtomic);
+
+		CoraDataAtomic dataAtomicCopy = (CoraDataAtomic) dataAtomicCopier.copy();
+		assertEquals(dataAtomicCopy.getAttribute("type").getValue(),
+				dataAtomic.getAttribute("type").getValue());
+		assertEquals(dataAtomicCopy.getAttributes().size(), 1);
 	}
 
 }
