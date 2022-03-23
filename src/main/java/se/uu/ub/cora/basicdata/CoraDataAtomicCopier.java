@@ -18,8 +18,11 @@
  */
 package se.uu.ub.cora.basicdata;
 
+import java.util.Collection;
+
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.copier.DataCopier;
 
@@ -41,12 +44,21 @@ public class CoraDataAtomicCopier implements DataCopier {
 		CoraDataAtomic dataAtomicCopy = CoraDataAtomic
 				.withNameInDataAndValue(dataAtomic.getNameInData(), dataAtomic.getValue());
 		possiblySetRepeatId(dataAtomic, dataAtomicCopy);
+		possiblyCopyAttributes(dataAtomic, dataAtomicCopy);
 		return dataAtomicCopy;
 	}
 
 	private void possiblySetRepeatId(DataAtomic dataAtomic, DataAtomic dataAtomicCopy) {
 		if (dataAtomic.getRepeatId() != null) {
 			dataAtomicCopy.setRepeatId(dataAtomic.getRepeatId());
+		}
+	}
+
+	private void possiblyCopyAttributes(DataAtomic dataAtomic, DataAtomic dataAtomicCopy) {
+		Collection<DataAttribute> attributes = dataAtomic.getAttributes();
+		for (DataAttribute attribute : attributes) {
+			dataAtomicCopy.addAttributeByIdWithValue(attribute.getNameInData(),
+					attribute.getValue());
 		}
 	}
 

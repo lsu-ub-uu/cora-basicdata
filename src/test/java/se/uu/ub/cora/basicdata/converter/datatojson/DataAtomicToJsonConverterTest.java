@@ -20,7 +20,8 @@
 
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -36,7 +37,8 @@ public class DataAtomicToJsonConverterTest {
 	public void beforeMethod() {
 		dataAtomic = CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue");
 		OrgJsonBuilderFactoryAdapter factory = new OrgJsonBuilderFactoryAdapter();
-		converter = DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory, dataAtomic);
+		converter = DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory,
+				dataAtomic);
 	}
 
 	@Test
@@ -47,7 +49,7 @@ public class DataAtomicToJsonConverterTest {
 		expectedJson += "    \"name\": \"atomicNameInData\",\n";
 		expectedJson += "    \"value\": \"atomicValue\"\n";
 		expectedJson += "}";
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 	@Test
@@ -59,7 +61,7 @@ public class DataAtomicToJsonConverterTest {
 		expectedJson += "    \"name\": \"atomicNameInData\",\n";
 		expectedJson += "    \"value\": \"atomicValue\"\n";
 		expectedJson += "}";
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 	@Test
@@ -71,21 +73,22 @@ public class DataAtomicToJsonConverterTest {
 		expectedJson += "    \"name\": \"atomicNameInData\",\n";
 		expectedJson += "    \"value\": \"atomicValue\"\n";
 		expectedJson += "}";
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 	@Test
 	public void testToJsonEmptyValue() {
 		CoraDataAtomic dataAtomic = CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "");
 		OrgJsonBuilderFactoryAdapter factory = new OrgJsonBuilderFactoryAdapter();
-		converter = DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory, dataAtomic);
+		converter = DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(factory,
+				dataAtomic);
 		String json = converter.toJson();
 
 		String expectedJson = "{\n";
 		expectedJson += "    \"name\": \"atomicNameInData\",\n";
 		expectedJson += "    \"value\": \"\"\n";
 		expectedJson += "}";
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 	@Test
@@ -93,6 +96,40 @@ public class DataAtomicToJsonConverterTest {
 		String json = converter.toJsonCompactFormat();
 
 		String expectedJson = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}";
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testToJsonOneAttribute() {
+		dataAtomic.addAttributeByIdWithValue("type", "container");
+		String json = converter.toJson();
+
+		String expectedJson = "{\n" + "    \"name\": \"atomicNameInData\",\n"
+				+ "    \"attributes\": {\"type\": \"container\"},\n"
+				+ "    \"value\": \"atomicValue\"\n" + "}";
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testToJsonTwoAttributes() {
+		dataAtomic.addAttributeByIdWithValue("type", "container");
+		dataAtomic.addAttributeByIdWithValue("repeat", "children");
+		String json = converter.toJson();
+
+		String expectedJson = "{\n" + "    \"name\": \"atomicNameInData\",\n"
+				+ "    \"attributes\": {\n" + "        \"repeat\": \"children\",\n"
+				+ "        \"type\": \"container\"\n" + "    },\n"
+				+ "    \"value\": \"atomicValue\"\n" + "}";
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testToJsonTwoAttributesCompactFormat() {
+		dataAtomic.addAttributeByIdWithValue("type", "container");
+		dataAtomic.addAttributeByIdWithValue("repeat", "children");
+		String json = converter.toJsonCompactFormat();
+
+		String expectedJson = "{\"name\":\"atomicNameInData\",\"attributes\":{\"repeat\":\"children\",\"type\":\"container\"},\"value\":\"atomicValue\"}";
+		assertEquals(json, expectedJson);
 	}
 }

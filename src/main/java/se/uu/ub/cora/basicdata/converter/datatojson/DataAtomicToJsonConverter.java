@@ -20,6 +20,7 @@
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
@@ -29,8 +30,8 @@ public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 	private DataAtomic dataAtomic;
 	JsonBuilderFactory factory;
 
-	public static DataToJsonConverter usingJsonBuilderFactoryAndDataAtomic(JsonBuilderFactory factory,
-			DataAtomic dataAtomic) {
+	public static DataToJsonConverter usingJsonBuilderFactoryAndDataAtomic(
+			JsonBuilderFactory factory, DataAtomic dataAtomic) {
 		return new DataAtomicToJsonConverter(factory, dataAtomic);
 	}
 
@@ -46,6 +47,7 @@ public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 		jsonObjectBuilder.addKeyString("name", dataAtomic.getNameInData());
 		jsonObjectBuilder.addKeyString("value", dataAtomic.getValue());
 		possiblyAddRepeatId(jsonObjectBuilder);
+		possiblyAddAttributes(jsonObjectBuilder);
 		return jsonObjectBuilder;
 	}
 
@@ -57,6 +59,20 @@ public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 
 	private boolean hasNonEmptyRepeatId() {
 		return dataAtomic.getRepeatId() != null && !"".equals(dataAtomic.getRepeatId());
+	}
+
+	private void possiblyAddAttributes(JsonObjectBuilder jsonObjectBuilder) {
+		if (dataAtomic.hasAttributes()) {
+			addAttributes(jsonObjectBuilder);
+		}
+	}
+
+	private void addAttributes(JsonObjectBuilder jsonObjectBuilder) {
+		JsonObjectBuilder attributes = factory.createObjectBuilder();
+		for (DataAttribute attribute : dataAtomic.getAttributes()) {
+			attributes.addKeyString(attribute.getNameInData(), attribute.getValue());
+		}
+		jsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
 	}
 
 	@Override
