@@ -22,6 +22,7 @@ package se.uu.ub.cora.basicdata.converter.jsontodata;
 import java.util.Map.Entry;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
+import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
@@ -134,7 +135,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private void possiblyAddAttributes(CoraDataAtomic dataAtomic) {
+	private void possiblyAddAttributes(DataElement dataAtomic) {
 		if (hasAttributes()) {
 			JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
 			for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
@@ -143,7 +144,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private void addAttributeToGroup(CoraDataAtomic dataAtomic,
+	private void addAttributeToGroup(DataElement dataAtomic,
 			Entry<String, JsonValue> attributeEntry) {
 		String value = ((JsonString) attributeEntry.getValue()).getStringValue();
 		dataAtomic.addAttributeByIdWithValue(attributeEntry.getKey(), value);
