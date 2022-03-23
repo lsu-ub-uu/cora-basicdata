@@ -25,7 +25,6 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataPart;
-import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -44,7 +43,7 @@ public class JsonToDataAtomicConverterTest {
 	private CoraDataAtomic createDataAtomicForJsonString(String json) {
 		OrgJsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = JsonToDataAtomicConverter
+		JsonToDataAtomicConverter jsonToDataConverter = JsonToDataAtomicConverter
 				.forJsonObject((JsonObject) jsonValue);
 		DataPart dataPart = jsonToDataConverter.toInstance();
 
@@ -96,7 +95,7 @@ public class JsonToDataAtomicConverterTest {
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKey() {
 		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"repeatId\":\"5\""
-				+ ",\"extra\":\"extra\", ,\"extra2\":\"extra\"}";
+				+ ",\"extra\":\"extra\", \"extra2\":\"extra\"}";
 		createDataAtomicForJsonString(json);
 	}
 
