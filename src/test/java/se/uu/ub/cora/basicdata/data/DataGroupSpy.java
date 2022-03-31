@@ -170,4 +170,28 @@ public class DataGroupSpy implements DataGroup {
 		childDataGroupToReturn.throwException = true;
 	}
 
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public DataAttribute getAttribute(String nameInData) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
