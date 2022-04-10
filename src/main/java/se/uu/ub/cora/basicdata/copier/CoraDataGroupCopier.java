@@ -17,7 +17,7 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.copier;
 
 import java.util.Collection;
 

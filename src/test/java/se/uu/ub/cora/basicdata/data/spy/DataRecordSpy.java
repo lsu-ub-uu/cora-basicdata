@@ -16,14 +16,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata.converter.datatojson;
+package se.uu.ub.cora.basicdata.data.spy;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import se.uu.ub.cora.basicdata.data.DataGroupSpy;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
@@ -31,7 +30,7 @@ import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataRecordSpy implements DataRecord {
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	private DataGroupSpy dataGroup;
 

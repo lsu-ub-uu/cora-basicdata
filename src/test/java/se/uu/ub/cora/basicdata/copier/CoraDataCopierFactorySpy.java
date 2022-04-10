@@ -16,18 +16,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.copier;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecord;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.data.DataRecordFactory;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CoraDataRecordFactory implements DataRecordFactory {
+import se.uu.ub.cora.basicdata.data.CoraDataCopierSpy;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.copier.DataCopier;
+import se.uu.ub.cora.data.copier.DataCopierFactory;
+
+public class CoraDataCopierFactorySpy implements DataCopierFactory {
+
+	public List<DataElement> dataElements = new ArrayList<>();
+	public List<DataCopier> factoredDataCopiers = new ArrayList<>();
 
 	@Override
-	public DataRecord factorUsingDataGroup(DataGroup dataGroup) {
-		return CoraDataRecord.withDataGroup(dataGroup);
+	public DataCopier factorForDataElement(DataElement dataElement) {
+		dataElements.add(dataElement);
+		CoraDataCopierSpy dataCopier = new CoraDataCopierSpy();
+		factoredDataCopiers.add(dataCopier);
+		return dataCopier;
 	}
 
 }

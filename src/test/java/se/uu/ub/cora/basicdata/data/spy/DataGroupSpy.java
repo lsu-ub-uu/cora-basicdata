@@ -1,4 +1,4 @@
-package se.uu.ub.cora.basicdata.data;
+package se.uu.ub.cora.basicdata.data.spy;
 
 import java.util.Collection;
 import java.util.List;

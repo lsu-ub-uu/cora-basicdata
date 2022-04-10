@@ -70,16 +70,6 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 		actions.add(action);
 	}
 
-	/**
-	 * @deprecated (on basicData 3.0.0, CoraDatRecordLink has only one READ action, use
-	 *             hasReadAction() instead) use {@linkplain #hasReadAction()} instead
-	 */
-	@Override
-	@Deprecated
-	public List<Action> getActions() {
-		return actions;
-	}
-
 	@Override
 	public boolean hasReadAction() {
 		return actions.contains(Action.READ);

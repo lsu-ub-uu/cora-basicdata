@@ -1,6 +1,6 @@
 /*
- * Copyright 2019 Uppsala University Library
- *
+ * Copyright 2022 Olov McKie
+ * 
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
@@ -16,24 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
-import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.data.DataRecordLinkFactory;
+import se.uu.ub.cora.data.DataRecordGroup;
 
-public class CoraDataRecordLinkFactory implements DataRecordLinkFactory {
+public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGroup {
 
-	@Override
-	public DataRecordLink factorUsingNameInData(String nameInData) {
-		return CoraDataRecordLink.withNameInData(nameInData);
+	public static CoraDataRecordGroup withNameInData(String nameInData) {
+		return new CoraDataRecordGroup(nameInData);
 	}
 
-	@Override
-	public DataRecordLink factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
-			String recordId) {
-		return CoraDataRecordLink.asLinkWithNameInDataAndTypeAndId(nameInData, recordType,
-				recordId);
+	protected CoraDataRecordGroup(String nameInData) {
+		super(nameInData);
 	}
 
 }

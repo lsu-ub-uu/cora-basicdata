@@ -16,18 +16,15 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata.converter.datatojson;
+package se.uu.ub.cora.basicdata.data.spy;
 
-import java.util.List;
-
-import se.uu.ub.cora.basicdata.data.DataGroupSpy;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
-	MethodCallRecorder MCR = new MethodCallRecorder();
-	boolean hasReadAction = false;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public boolean hasReadAction = false;
 
 	public DataRecordLinkSpy(String nameInData) {
 		super(nameInData);
@@ -37,12 +34,6 @@ public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
 	public void addAction(Action action) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public List<Action> getActions() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

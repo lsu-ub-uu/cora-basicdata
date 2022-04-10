@@ -24,7 +24,6 @@ public class CoraDataResourceLinkTest {
 
 		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "myStreamId");
 		resourceLink.addChild(streamId);
-
 	}
 
 	@Test
@@ -39,23 +38,12 @@ public class CoraDataResourceLinkTest {
 		assertNotNull(resourceLink.getAttributes());
 		assertNotNull(resourceLink.getChildren());
 		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("streamId"), "myStreamId");
-		assertNotNull(resourceLink.getActions());
 	}
 
 	@Test
 	public void testInitWithRepeatId() {
 		resourceLink.setRepeatId("hugh");
 		assertEquals(resourceLink.getRepeatId(), "hugh");
-	}
-
-	@Test
-	public void testAddAction() {
-		resourceLink.addAction(Action.READ);
-
-		assertTrue(resourceLink.getActions().contains(Action.READ));
-		assertFalse(resourceLink.getActions().contains(Action.DELETE));
-		// small hack to get 100% coverage on enum
-		Action.valueOf(Action.READ.toString());
 	}
 
 	@Test
@@ -127,7 +115,6 @@ public class CoraDataResourceLinkTest {
 		resourceLink.addAction(Action.READ);
 
 		assertTrue(resourceLink.hasReadAction());
-
 	}
 
 	@Test

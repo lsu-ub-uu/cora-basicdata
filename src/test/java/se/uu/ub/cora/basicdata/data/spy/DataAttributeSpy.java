@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,23 +16,28 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data.spy;
 
-import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataAtomicFactory;
+import se.uu.ub.cora.data.DataAttribute;
 
-public class CoraDataAtomicFactory implements DataAtomicFactory {
+public class DataAttributeSpy implements DataAttribute {
 
-	@Override
-	public DataAtomic factorUsingNameInDataAndValue(String nameInData, String value) {
-		return CoraDataAtomic.withNameInDataAndValue(nameInData, value);
+	public String nameInData;
+	public String value;
+
+	public DataAttributeSpy(String nameInData, String value) {
+		this.nameInData = nameInData;
+		this.value = value;
 	}
 
 	@Override
-	public DataAtomic factorUsingNameInDataAndValueAndRepeatId(String nameInData, String value,
-			String repeatId) {
-		return CoraDataAtomic.withNameInDataAndValueAndRepeatId(nameInData, value, repeatId);
+	public String getNameInData() {
+		return nameInData;
+	}
+
+	@Override
+	public String getValue() {
+		return value;
 	}
 
 }
