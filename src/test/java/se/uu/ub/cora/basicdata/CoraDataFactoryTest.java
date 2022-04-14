@@ -24,6 +24,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -82,22 +84,29 @@ public class CoraDataFactoryTest {
 	}
 
 	@Test
+	public void testFactorRecordGroupFromDataGroup() {
+		DataGroup dataGroup = CoraDataGroup.withNameInData(nameInData);
+		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomic", "aValue"));
+		dataGroup.addAttributeByIdWithValue("attribute", "atValue");
+
+		DataGroup factoredDataRecordGroup = dataFactory.factorRecordGroupFromDataGroup(dataGroup);
+
+		assertTrue(factoredDataRecordGroup instanceof CoraDataRecordGroup);
+		assertEquals(factoredDataRecordGroup.getNameInData(), nameInData);
+		assertSame(factoredDataRecordGroup.getChildren().size(), dataGroup.getChildren().size());
+		assertSame(factoredDataRecordGroup.getFirstChildWithNameInData("atomic"),
+				dataGroup.getFirstChildWithNameInData("atomic"));
+		Collection<DataAttribute> attributes = factoredDataRecordGroup.getAttributes();
+		assertEquals(attributes.size(), 1);
+		DataAttribute attribute = factoredDataRecordGroup.getAttribute("attribute");
+		assertEquals(attribute.getValue(), "atValue");
+	}
+
+	@Test
 	public void testFactorGroupUsingNameInData() {
 		DataGroup factoredDataGroup = dataFactory.factorGroupUsingNameInData(nameInData);
 		assertTrue(factoredDataGroup instanceof CoraDataGroup);
 		assertEquals(factoredDataGroup.getNameInData(), nameInData);
-	}
-
-	@Test
-	public void testFactorGroupAsLink() {
-		DataGroup factoredDataGroup = dataFactory
-				.factorGroupAsLinkUsingNameInDataAndTypeAndId(nameInData, recordType, recordId);
-		assertEquals(factoredDataGroup.getNameInData(), nameInData);
-		assertEquals(factoredDataGroup.getChildren().size(), 2);
-		assertEquals(factoredDataGroup.getFirstAtomicValueWithNameInData("linkedRecordType"),
-				recordType);
-		assertEquals(factoredDataGroup.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				recordId);
 	}
 
 	@Test

@@ -55,14 +55,19 @@ public class CoraDataFactory implements DataFactory {
 	}
 
 	@Override
-	public DataGroup factorGroupUsingNameInData(String nameInData) {
-		return CoraDataGroup.withNameInData(nameInData);
+	public DataRecordGroup factorRecordGroupFromDataGroup(DataGroup dataGroup) {
+		CoraDataRecordGroup recordGroup = CoraDataRecordGroup
+				.withNameInData(dataGroup.getNameInData());
+		recordGroup.addChildren(dataGroup.getChildren());
+		for (DataAttribute attribute : dataGroup.getAttributes()) {
+			recordGroup.addAttributeByIdWithValue(attribute.getNameInData(), attribute.getValue());
+		}
+		return recordGroup;
 	}
 
 	@Override
-	public DataGroup factorGroupAsLinkUsingNameInDataAndTypeAndId(String nameInData,
-			String recordType, String recordId) {
-		return CoraDataGroup.asLinkWithNameInDataAndTypeAndId(nameInData, recordType, recordId);
+	public DataGroup factorGroupUsingNameInData(String nameInData) {
+		return CoraDataGroup.withNameInData(nameInData);
 	}
 
 	@Override
