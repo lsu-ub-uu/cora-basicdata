@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataResourceLink;
 
@@ -49,13 +49,13 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 	}
 
 	private void addResourceLinkChildren(DataGroup dataGroup) {
-		DataElement streamId = dataGroup.getFirstChildWithNameInData("streamId");
+		DataChild streamId = dataGroup.getFirstChildWithNameInData("streamId");
 		addChild(streamId);
-		DataElement fileName = dataGroup.getFirstChildWithNameInData("filename");
+		DataChild fileName = dataGroup.getFirstChildWithNameInData("filename");
 		addChild(fileName);
-		DataElement fileSize = dataGroup.getFirstChildWithNameInData("filesize");
+		DataChild fileSize = dataGroup.getFirstChildWithNameInData("filesize");
 		addChild(fileSize);
-		DataElement mimeType = dataGroup.getFirstChildWithNameInData("mimeType");
+		DataChild mimeType = dataGroup.getFirstChildWithNameInData("mimeType");
 		addChild(mimeType);
 	}
 

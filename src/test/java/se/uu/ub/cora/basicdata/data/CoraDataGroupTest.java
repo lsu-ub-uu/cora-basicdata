@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 
@@ -61,15 +61,6 @@ public class CoraDataGroupTest {
 	public void testGroupIsData() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
 		assertTrue(dataGroup instanceof Data);
-	}
-
-	@Test
-	public void testGroupAsLink() {
-		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId("nameInData",
-				"someType", "someId");
-		assertEquals(dataGroup.getNameInData(), "nameInData");
-		assertEquals(dataGroup.getFirstAtomicValueWithNameInData("linkedRecordType"), "someType");
-		assertEquals(dataGroup.getFirstAtomicValueWithNameInData("linkedRecordId"), "someId");
 	}
 
 	@Test
@@ -122,11 +113,11 @@ public class CoraDataGroupTest {
 
 	@Test
 	public void testAddChild() {
-		DataElement dataElement = CoraDataAtomic.withNameInDataAndValue("childNameInData",
+		DataChild dataElement = CoraDataAtomic.withNameInDataAndValue("childNameInData",
 				"childValue");
 		defaultDataGroup.addChild(dataElement);
-		List<DataElement> children = defaultDataGroup.getChildren();
-		DataElement childElementOut = children.get(0);
+		List<DataChild> children = defaultDataGroup.getChildren();
+		DataChild childElementOut = children.get(0);
 		assertEquals(childElementOut.getNameInData(), "childNameInData");
 	}
 
@@ -145,11 +136,11 @@ public class CoraDataGroupTest {
 
 	@Test
 	public void testAddChildrenAddOneChildNoChildrenBefore() {
-		List<DataElement> dataElements = createListWithOneChild();
+		List<DataChild> dataElements = createListWithOneChild();
 
 		defaultDataGroup.addChildren(dataElements);
 
-		List<DataElement> children = defaultDataGroup.getChildren();
+		List<DataChild> children = defaultDataGroup.getChildren();
 		assertEquals(children.size(), 1);
 		assertSame(children.get(0), dataElements.get(0));
 	}
@@ -157,11 +148,11 @@ public class CoraDataGroupTest {
 	@Test
 	public void testAddChildrenAddOneChildOneChildBefore() {
 		defaultDataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("someChild", "someValue"));
-		List<DataElement> dataElements = createListWithOneChild();
+		List<DataChild> dataElements = createListWithOneChild();
 
 		defaultDataGroup.addChildren(dataElements);
 
-		List<DataElement> children = defaultDataGroup.getChildren();
+		List<DataChild> children = defaultDataGroup.getChildren();
 		assertEquals(children.size(), 2);
 		assertSame(children.get(1), dataElements.get(0));
 	}
@@ -169,23 +160,23 @@ public class CoraDataGroupTest {
 	@Test
 	public void testAddChildrenAddMultipleChildOneChildBefore() {
 		defaultDataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("someChild", "someValue"));
-		List<DataElement> dataElements = createListWithOneChild();
+		List<DataChild> dataElements = createListWithOneChild();
 		dataElements.add(CoraDataGroup.withNameInData("someGroupChild"));
 		dataElements.add(CoraDataAtomic.withNameInDataAndValue("someOtherAtomicChild", "42"));
 
 		defaultDataGroup.addChildren(dataElements);
 
-		List<DataElement> children = defaultDataGroup.getChildren();
+		List<DataChild> children = defaultDataGroup.getChildren();
 		assertEquals(children.size(), 4);
 		assertSame(children.get(1), dataElements.get(0));
 		assertSame(children.get(2), dataElements.get(1));
 		assertSame(children.get(3), dataElements.get(2));
 	}
 
-	private List<DataElement> createListWithOneChild() {
-		DataElement dataElement = CoraDataAtomic.withNameInDataAndValue("childNameInData",
+	private List<DataChild> createListWithOneChild() {
+		DataChild dataElement = CoraDataAtomic.withNameInDataAndValue("childNameInData",
 				"childValue");
-		List<DataElement> dataElements = new ArrayList<>();
+		List<DataChild> dataElements = new ArrayList<>();
 		dataElements.add(dataElement);
 		return dataElements;
 	}
@@ -194,14 +185,14 @@ public class CoraDataGroupTest {
 	public void testContainsChildWithId() {
 		defaultDataGroup
 				.addChild(CoraDataAtomic.withNameInDataAndValue("otherChildId", "otherChildValue"));
-		DataElement child = CoraDataAtomic.withNameInDataAndValue("childId", "child value");
+		DataChild child = CoraDataAtomic.withNameInDataAndValue("childId", "child value");
 		defaultDataGroup.addChild(child);
 		assertTrue(defaultDataGroup.containsChildWithNameInData("childId"));
 	}
 
 	@Test
 	public void testContainsChildWithIdNotFound() {
-		DataElement child = CoraDataAtomic.withNameInDataAndValue("childId", "child value");
+		DataChild child = CoraDataAtomic.withNameInDataAndValue("childId", "child value");
 		defaultDataGroup.addChild(child);
 		assertFalse(defaultDataGroup.containsChildWithNameInData("childId_NOT_FOUND"));
 	}
@@ -274,7 +265,7 @@ public class CoraDataGroupTest {
 						CoraDataAttribute.withNameInDataAndValue("otherAttribute", "alternative"));
 
 		assertEquals(atomicsFound.size(), 1);
-		DataElement expectedMatchingChild = dataGroup.getChildren().get(2);
+		DataChild expectedMatchingChild = dataGroup.getChildren().get(2);
 		assertSame(atomicsFound.get(0), expectedMatchingChild);
 	}
 
@@ -536,13 +527,13 @@ public class CoraDataGroupTest {
 		assertFalse(childWasRemoved);
 	}
 
-	private DataElement createAndAddAnAtomicChildToDataGroup(DataGroup dataGroup) {
+	private DataChild createAndAddAnAtomicChildToDataGroup(DataGroup dataGroup) {
 		return createAndAddAnAtomicChildToDataGroupUsingNameInData(dataGroup, "childId");
 	}
 
-	private DataElement createAndAddAnAtomicChildToDataGroupUsingNameInData(DataGroup dataGroup,
+	private DataChild createAndAddAnAtomicChildToDataGroupUsingNameInData(DataGroup dataGroup,
 			String nameInData) {
-		DataElement child = CoraDataAtomic.withNameInDataAndValue(nameInData, "child value");
+		DataChild child = CoraDataAtomic.withNameInDataAndValue(nameInData, "child value");
 		dataGroup.addChild(child);
 		return child;
 	}
@@ -557,10 +548,10 @@ public class CoraDataGroupTest {
 		assertFalse(dataGroup.containsChildWithNameInData("childId"));
 	}
 
-	private DataElement createAndAddAnAtomicChildWithRepeatIdToDataGroup(DataGroup dataGroup,
+	private DataChild createAndAddAnAtomicChildWithRepeatIdToDataGroup(DataGroup dataGroup,
 			String repeatId) {
-		DataElement child = CoraDataAtomic.withNameInDataAndValueAndRepeatId("childId",
-				"child value", repeatId);
+		DataChild child = CoraDataAtomic.withNameInDataAndValueAndRepeatId("childId", "child value",
+				repeatId);
 		dataGroup.addChild(child);
 		return child;
 	}
@@ -588,7 +579,7 @@ public class CoraDataGroupTest {
 	@Test
 	public void testGetAllChildrenWithNameInDataNoChildren() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
-		List<DataElement> allChildrenWithNameInData = dataGroup
+		List<DataChild> allChildrenWithNameInData = dataGroup
 				.getAllChildrenWithNameInData("someChildNameInData");
 		assertTrue(allChildrenWithNameInData.isEmpty());
 
@@ -598,7 +589,7 @@ public class CoraDataGroupTest {
 	public void testGetAllChildrenWithNameInDataNoMatchingChildren() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		createAndAddAtomicChild(dataGroup, "someChildNameInData", "0");
-		List<DataElement> allChildrenWithNameInData = dataGroup
+		List<DataChild> allChildrenWithNameInData = dataGroup
 				.getAllChildrenWithNameInData("someOtherChildNameInData");
 		assertTrue(allChildrenWithNameInData.isEmpty());
 
@@ -609,7 +600,7 @@ public class CoraDataGroupTest {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("someDataGroup");
 		CoraDataAtomic atomicChild = createAndAddAtomicChild(dataGroup, "someChildNameInData", "0");
 
-		List<DataElement> allChildrenWithNameInData = dataGroup
+		List<DataChild> allChildrenWithNameInData = dataGroup
 				.getAllChildrenWithNameInData("someChildNameInData");
 		assertEquals(allChildrenWithNameInData.size(), 1);
 		assertSame(allChildrenWithNameInData.get(0), atomicChild);
@@ -635,7 +626,7 @@ public class CoraDataGroupTest {
 		DataGroup dataGroupChild = CoraDataGroup.withNameInData("someChildNameInData");
 		defaultDataGroup.addChild(dataGroupChild);
 
-		List<DataElement> allChildrenWithNameInData = defaultDataGroup
+		List<DataChild> allChildrenWithNameInData = defaultDataGroup
 				.getAllChildrenWithNameInData("someChildNameInData");
 		assertEquals(allChildrenWithNameInData.size(), 3);
 		assertSame(allChildrenWithNameInData.get(0), atomicChild);
@@ -705,7 +696,7 @@ public class CoraDataGroupTest {
 		assertTrue(childWasRemoved);
 		assertTrue(defaultDataGroup.containsChildWithNameInData("childId"));
 
-		List<DataElement> allChildrenWithNameInData = defaultDataGroup
+		List<DataChild> allChildrenWithNameInData = defaultDataGroup
 				.getAllChildrenWithNameInData("childId");
 		assertEquals(allChildrenWithNameInData.size(), 1);
 		assertTrue(allChildrenWithNameInData.get(0) instanceof CoraDataAtomic);
@@ -721,7 +712,7 @@ public class CoraDataGroupTest {
 		assertTrue(childWasRemoved);
 		assertTrue(defaultDataGroup.containsChildWithNameInData("childId"));
 
-		List<DataElement> allChildrenWithNameInData = defaultDataGroup
+		List<DataChild> allChildrenWithNameInData = defaultDataGroup
 				.getAllChildrenWithNameInData("childId");
 		assertEquals(allChildrenWithNameInData.size(), 1);
 		assertTrue(allChildrenWithNameInData.get(0) instanceof CoraDataGroup);
@@ -743,7 +734,7 @@ public class CoraDataGroupTest {
 		assertFalse(childWasRemoved);
 		assertTrue(defaultDataGroup.containsChildWithNameInData("childId"));
 
-		List<DataElement> allChildrenWithNameInData = defaultDataGroup
+		List<DataChild> allChildrenWithNameInData = defaultDataGroup
 				.getAllChildrenWithNameInData("childId");
 		assertEquals(allChildrenWithNameInData.size(), 2);
 		assertTrue(allChildrenWithNameInData.get(0) instanceof CoraDataGroup);
@@ -759,7 +750,7 @@ public class CoraDataGroupTest {
 		assertTrue(childWasRemoved);
 		assertTrue(defaultDataGroup.containsChildWithNameInData("childId"));
 
-		List<DataElement> allChildrenWithNameInData = defaultDataGroup
+		List<DataChild> allChildrenWithNameInData = defaultDataGroup
 				.getAllChildrenWithNameInData("childId");
 		assertEquals(allChildrenWithNameInData.size(), 3);
 		assertTrue(allChildrenWithNameInData.get(0) instanceof CoraDataAtomic);
@@ -804,7 +795,7 @@ public class CoraDataGroupTest {
 				"someChildNameInData", "0");
 		defaultDataGroup.addChild(childGroup);
 
-		List<DataElement> children = defaultDataGroup
+		List<DataChild> children = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someChildNameInData");
 
 		assertTrue(children.isEmpty());
@@ -818,7 +809,7 @@ public class CoraDataGroupTest {
 
 		CoraDataAttribute attribute = CoraDataAttribute.withNameInDataAndValue("someName",
 				"someValue");
-		List<DataElement> children = defaultDataGroup
+		List<DataChild> children = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someOtherChildNameInData", attribute);
 
 		assertTrue(children.isEmpty());
@@ -833,7 +824,7 @@ public class CoraDataGroupTest {
 		CoraDataAttribute attribute = CoraDataAttribute.withNameInDataAndValue("someName",
 				"someValue");
 
-		List<DataElement> children = defaultDataGroup
+		List<DataChild> children = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someChildNameInData", attribute);
 
 		assertEquals(children.size(), 1);
@@ -852,7 +843,7 @@ public class CoraDataGroupTest {
 
 		defaultDataGroup.addChild(coraDataAtomic);
 
-		List<DataElement> children = defaultDataGroup
+		List<DataChild> children = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someChildNameInData");
 
 		assertEquals(children.size(), 1);
@@ -873,7 +864,7 @@ public class CoraDataGroupTest {
 		CoraDataAttribute attribute = CoraDataAttribute.withNameInDataAndValue("someName",
 				"someValue");
 
-		List<DataElement> children = defaultDataGroup
+		List<DataChild> children = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someChildNameInData", attribute);
 
 		assertEquals(children.size(), 2);
@@ -898,13 +889,13 @@ public class CoraDataGroupTest {
 		CoraDataAttribute attribute = CoraDataAttribute.withNameInDataAndValue("someName",
 				"someValue");
 
-		List<DataElement> childrenWithAttributes = defaultDataGroup
+		List<DataChild> childrenWithAttributes = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someChildNameInData", attribute);
 
 		assertEquals(childrenWithAttributes.size(), 1);
 		assertSame(childrenWithAttributes.get(0), childGroup);
 
-		List<DataElement> childrenWithoutAttributes = defaultDataGroup
+		List<DataChild> childrenWithoutAttributes = defaultDataGroup
 				.getAllChildrenWithNameInDataAndAttributes("someChildNameInData");
 
 		assertEquals(childrenWithoutAttributes.size(), 1);

@@ -24,7 +24,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -45,7 +45,7 @@ public class JsonToDataAtomicConverterTest {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataAtomicConverter jsonToDataConverter = JsonToDataAtomicConverter
 				.forJsonObject((JsonObject) jsonValue);
-		DataPart dataPart = jsonToDataConverter.toInstance();
+		Convertible dataPart = jsonToDataConverter.toInstance();
 
 		CoraDataAtomic dataAtomic = (CoraDataAtomic) dataPart;
 		return dataAtomic;

@@ -22,17 +22,17 @@ import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.copier.DataCopier;
 
 public class CoraDataRecordLinkCopier implements DataCopier {
 
-	private DataElement dataElement;
+	private DataChild dataElement;
 	private CoraDataRecordLink orignialDataRecordLink;
 	private CoraDataRecordLink dataRecordLinkCopy;
 
-	public CoraDataRecordLinkCopier(DataElement dataElement) {
+	public CoraDataRecordLinkCopier(CoraDataRecordLink dataElement) {
 		this.dataElement = dataElement;
 	}
 
@@ -49,12 +49,12 @@ public class CoraDataRecordLinkCopier implements DataCopier {
 	}
 
 	private void copyAndAddChildWithNameInData(String childNameInData) {
-		DataElement linkedRecordTypeCopy = copyChildFromOriginalLinkUsingChildNameInData(
+		DataChild linkedRecordTypeCopy = copyChildFromOriginalLinkUsingChildNameInData(
 				childNameInData);
 		dataRecordLinkCopy.addChild(linkedRecordTypeCopy);
 	}
 
-	private DataElement copyChildFromOriginalLinkUsingChildNameInData(String childNameInData) {
+	private DataChild copyChildFromOriginalLinkUsingChildNameInData(String childNameInData) {
 		CoraDataAtomicCopier atomicCopier = CoraDataAtomicCopier.usingDataAtomic(
 				orignialDataRecordLink.getFirstChildWithNameInData(childNameInData));
 		return atomicCopier.copy();

@@ -26,7 +26,7 @@ import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
@@ -35,7 +35,7 @@ public class CoraDataCopierFactoryTest {
 
 	@Test
 	public void testFactorDataAtomicCopier() {
-		DataElement dataAtomic = CoraDataAtomic.withNameInDataAndValue("aName", "aValue");
+		DataChild dataAtomic = CoraDataAtomic.withNameInDataAndValue("aName", "aValue");
 		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataAtomic);
 		assertTrue(dataCopier instanceof CoraDataAtomicCopier);
@@ -57,9 +57,8 @@ public class CoraDataCopierFactoryTest {
 
 	@Test
 	public void testFactorDataRecordLinkCopier() {
-		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId("someLinkNameInData",
-				"someLinkType", "someLinkValue");
-		CoraDataRecordLink dataRecordLink = CoraDataRecordLink.fromDataGroup(dataGroup);
+		CoraDataRecordLink dataRecordLink = CoraDataRecordLink
+				.usingNameInDataAndTypeAndId("someLinkNameInData", "someLinkType", "someLinkValue");
 
 		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataRecordLink);

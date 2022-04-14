@@ -27,9 +27,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
-import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataRecordLinkCopierTest {
 
@@ -38,11 +36,9 @@ public class CoraDataRecordLinkCopierTest {
 
 	@BeforeMethod
 	public void setUp() {
-		DataGroup dataGroup = CoraDataGroup.asLinkWithNameInDataAndTypeAndId("someLinkNameInData",
-				"someLinkType", "someLinkValue");
-		originalRecordLink = CoraDataRecordLink.fromDataGroup(dataGroup);
+		originalRecordLink = CoraDataRecordLink.usingNameInDataAndTypeAndId(
+				"someLinkNameInData", "someLinkType", "someLinkValue");
 		dataRecordLinkCopier = new CoraDataRecordLinkCopier(originalRecordLink);
-
 	}
 
 	@Test

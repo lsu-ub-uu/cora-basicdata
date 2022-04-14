@@ -22,21 +22,21 @@ import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.copier.DataCopier;
 
 public class CoraDataResourceLinkCopier implements DataCopier {
 
-	private DataElement dataElement;
+	private DataChild dataElement;
 	private CoraDataResourceLink resourceLinkCopy;
 	private CoraDataResourceLink originalResourceLink;
 
-	public CoraDataResourceLinkCopier(DataElement dataElement) {
+	public CoraDataResourceLinkCopier(DataChild dataElement) {
 		this.dataElement = dataElement;
 	}
 
 	@Override
-	public DataElement copy() {
+	public DataChild copy() {
 		originalResourceLink = (CoraDataResourceLink) dataElement;
 		resourceLinkCopy = CoraDataResourceLink.withNameInData(dataElement.getNameInData());
 		copyAndAddChildWithNameInData("streamId");
@@ -52,7 +52,7 @@ public class CoraDataResourceLinkCopier implements DataCopier {
 	private void copyAndAddChildWithNameInData(String childNameInData) {
 		CoraDataAtomicCopier atomicCopier = CoraDataAtomicCopier
 				.usingDataAtomic(originalResourceLink.getFirstChildWithNameInData(childNameInData));
-		DataElement atomicChild = atomicCopier.copy();
+		DataChild atomicChild = atomicCopier.copy();
 		resourceLinkCopy.addChild(atomicChild);
 	}
 

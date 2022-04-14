@@ -21,18 +21,18 @@ package se.uu.ub.cora.basicdata.copier;
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
 
 public class CoraDataCopierFactoryImp implements DataCopierFactory {
 
 	@Override
-	public DataCopier factorForDataElement(DataElement dataElement) {
+	public DataCopier factorForDataElement(DataChild dataElement) {
 		if (dataElement instanceof DataAtomic) {
 			return CoraDataAtomicCopier.usingDataAtomic(dataElement);
 		} else if (dataElement instanceof CoraDataRecordLink) {
-			return new CoraDataRecordLinkCopier(dataElement);
+			return new CoraDataRecordLinkCopier((CoraDataRecordLink) dataElement);
 		} else if (dataElement instanceof CoraDataResourceLink) {
 			return new CoraDataResourceLinkCopier(dataElement);
 		}

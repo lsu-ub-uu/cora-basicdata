@@ -22,8 +22,8 @@ package se.uu.ub.cora.basicdata.converter.jsontodata;
 import java.util.Map.Entry;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.data.DataElement;
-import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.Convertible;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -48,7 +48,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	}
 
 	@Override
-	public DataPart toInstance() {
+	public Convertible toInstance() {
 		try {
 			return tryToInstantiate();
 		} catch (Exception e) {
@@ -56,7 +56,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private DataPart tryToInstantiate() {
+	private Convertible tryToInstantiate() {
 		validateJsonData();
 		return convertJsonToDataAtomic();
 	}
@@ -135,7 +135,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private void possiblyAddAttributes(DataElement dataAtomic) {
+	private void possiblyAddAttributes(DataChild dataAtomic) {
 		if (hasAttributes()) {
 			JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
 			for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
@@ -144,7 +144,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private void addAttributeToGroup(DataElement dataAtomic,
+	private void addAttributeToGroup(DataChild dataAtomic,
 			Entry<String, JsonValue> attributeEntry) {
 		String value = ((JsonString) attributeEntry.getValue()).getStringValue();
 		dataAtomic.addAttributeByIdWithValue(attributeEntry.getKey(), value);

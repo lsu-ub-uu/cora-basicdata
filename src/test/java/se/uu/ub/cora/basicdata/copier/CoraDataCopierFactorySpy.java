@@ -22,17 +22,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.basicdata.data.CoraDataCopierSpy;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
 
 public class CoraDataCopierFactorySpy implements DataCopierFactory {
 
-	public List<DataElement> dataElements = new ArrayList<>();
+	public List<DataChild> dataElements = new ArrayList<>();
 	public List<DataCopier> factoredDataCopiers = new ArrayList<>();
 
 	@Override
-	public DataCopier factorForDataElement(DataElement dataElement) {
+	public DataCopier factorForDataElement(DataChild dataElement) {
 		dataElements.add(dataElement);
 		CoraDataCopierSpy dataCopier = new CoraDataCopierSpy();
 		factoredDataCopiers.add(dataCopier);

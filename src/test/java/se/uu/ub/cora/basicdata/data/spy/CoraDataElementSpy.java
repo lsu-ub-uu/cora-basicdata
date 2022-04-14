@@ -3,9 +3,9 @@ package se.uu.ub.cora.basicdata.data.spy;
 import java.util.Collection;
 
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 
-public class CoraDataElementSpy implements DataElement {
+public class CoraDataElementSpy implements DataChild {
 
 	@Override
 	public String getNameInData() {

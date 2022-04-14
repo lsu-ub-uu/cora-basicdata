@@ -32,7 +32,7 @@ public class CoraDataRecordLinkFactory implements DataRecordLinkFactory {
 	@Override
 	public DataRecordLink factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
 			String recordId) {
-		return CoraDataRecordLink.asLinkWithNameInDataAndTypeAndId(nameInData, recordType,
+		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType,
 				recordId);
 	}
 

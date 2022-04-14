@@ -78,7 +78,7 @@ public class CoraDataFactory implements DataFactory {
 	@Override
 	public DataRecordLink factorRecordLinkUsingNameInDataAndTypeAndId(String nameInData,
 			String recordType, String recordId) {
-		return CoraDataRecordLink.asLinkWithNameInDataAndTypeAndId(nameInData, recordType,
+		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType,
 				recordId);
 	}
 

@@ -21,7 +21,7 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
@@ -93,7 +93,7 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 
 	void addChildrenToGroup() {
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
-		for (DataElement dataElement : dataGroup.getChildren()) {
+		for (DataChild dataElement : dataGroup.getChildren()) {
 			Convertible convertible = (Convertible) dataElement;
 			childrenArray.addJsonObjectBuilder(
 					converterFactory.factorUsingConvertible(convertible).toJsonObjectBuilder());

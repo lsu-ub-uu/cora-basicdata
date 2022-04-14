@@ -35,7 +35,7 @@
 	<properties>
 		<json.version>3.3.0</json.version>
 		<coradata.version>7.0-SNAPSHOT</coradata.version>
-		<testutils.version>1.3.0</testutils.version>
+		<testutils.version>1.4-SNAPSHOT</testutils.version>
 	</properties>
 
 	<scm>
