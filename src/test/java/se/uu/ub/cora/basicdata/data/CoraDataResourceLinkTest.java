@@ -22,8 +22,6 @@ public class CoraDataResourceLinkTest {
 	public void setUp() {
 		resourceLink = CoraDataResourceLink.withNameInData("nameInData");
 
-		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "myStreamId");
-		resourceLink.addChild(streamId);
 	}
 
 	@Test
@@ -34,6 +32,9 @@ public class CoraDataResourceLinkTest {
 
 	@Test
 	public void testInit() {
+		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "myStreamId");
+		resourceLink.addChild(streamId);
+
 		assertEquals(resourceLink.getNameInData(), "nameInData");
 		assertNotNull(resourceLink.getAttributes());
 		assertNotNull(resourceLink.getChildren());
@@ -127,9 +128,51 @@ public class CoraDataResourceLinkTest {
 		assertEquals(dataResourceLink.getMimeType(), "someMimeType");
 	}
 
+	@Test
+	public void testStreamId() throws Exception {
+		resourceLink.setStreamId("id");
+		assertEquals(resourceLink.getStreamId(), "id");
+		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("streamId"), "id");
+	}
+
+	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
+	public void testGetStreamIdDataMissing() throws Exception {
+		assertEquals(resourceLink.getStreamId(), "");
+	}
+
+	@Test
+	public void testFileName() throws Exception {
+		resourceLink.setFileName("file");
+		assertEquals(resourceLink.getFileName(), "file");
+		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("fileName"), "file");
+	}
+
+	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
+	public void testGetFileNameDataMissing() throws Exception {
+		assertEquals(resourceLink.getFileName(), "");
+	}
+
+	@Test
+	public void testFileSize() throws Exception {
+		resourceLink.setFileSize("987654");
+		assertEquals(resourceLink.getFileSize(), "987654");
+		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("fileSize"), "987654");
+	}
+
+	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
+	public void testGetFileSizeDataMissing() throws Exception {
+		assertEquals(resourceLink.getFileSize(), "");
+	}
+
+	@Test
+	public void testMimeType() throws Exception {
+		resourceLink.setMimeType("type");
+		assertEquals(resourceLink.getMimeType(), "type");
+		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("mimeType"), "type");
+	}
+
 	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
 	public void testGetMimeTypeDataMissing() throws Exception {
-
-		assertEquals(resourceLink.getMimeType(), "someMimeType");
+		assertEquals(resourceLink.getMimeType(), "");
 	}
 }

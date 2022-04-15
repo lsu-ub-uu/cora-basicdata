@@ -36,6 +36,7 @@
 		<json.version>3.3.0</json.version>
 		<coradata.version>7.0-SNAPSHOT</coradata.version>
 		<testutils.version>1.4-SNAPSHOT</testutils.version>
+		<testspies.version>1.0-SNAPSHOT</testspies.version>
 	</properties>
 
 	<scm>
@@ -56,6 +57,12 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>testutils</artifactId>
 			<version>${testutils.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>testspies</artifactId>
+			<version>${testspies.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

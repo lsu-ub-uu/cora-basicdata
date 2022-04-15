@@ -70,8 +70,42 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 	}
 
 	@Override
+	public void setStreamId(String streamId) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", streamId));
+	}
+
+	@Override
+	public String getStreamId() {
+		return super.getFirstAtomicValueWithNameInData("streamId");
+	}
+
+	@Override
+	public void setFileName(String fileName) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("fileName", fileName));
+	}
+
+	@Override
+	public String getFileName() {
+		return super.getFirstAtomicValueWithNameInData("fileName");
+	}
+
+	@Override
+	public void setFileSize(String fileSize) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("fileSize", fileSize));
+	}
+
+	@Override
+	public String getFileSize() {
+		return super.getFirstAtomicValueWithNameInData("fileSize");
+	}
+
+	@Override
+	public void setMimeType(String mimeType) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("mimeType", mimeType));
+	}
+
+	@Override
 	public String getMimeType() {
 		return super.getFirstAtomicValueWithNameInData("mimeType");
 	}
-
 }
