@@ -1,13 +1,11 @@
-import se.uu.ub.cora.basicdata.CoraDataFactory;
 import se.uu.ub.cora.basicdata.CoraDataAtomicFactory;
 import se.uu.ub.cora.basicdata.CoraDataAttributeFactory;
+import se.uu.ub.cora.basicdata.CoraDataFactory;
 import se.uu.ub.cora.basicdata.CoraDataGroupFactory;
 import se.uu.ub.cora.basicdata.CoraDataListFactory;
 import se.uu.ub.cora.basicdata.CoraDataRecordFactory;
 import se.uu.ub.cora.basicdata.CoraDataRecordLinkFactory;
 import se.uu.ub.cora.basicdata.CoraDataResourceLinkFactory;
-
-
 import se.uu.ub.cora.basicdata.converter.datatojson.BasicDataToJsonConverterFactoryCreator;
 import se.uu.ub.cora.basicdata.converter.jsontodata.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.basicdata.copier.CoraDataCopierFactoryImp;

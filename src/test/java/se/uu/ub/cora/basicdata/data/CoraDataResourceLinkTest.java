@@ -144,7 +144,7 @@ public class CoraDataResourceLinkTest {
 	public void testFileName() throws Exception {
 		resourceLink.setFileName("file");
 		assertEquals(resourceLink.getFileName(), "file");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("fileName"), "file");
+		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filename"), "file");
 	}
 
 	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
@@ -156,7 +156,7 @@ public class CoraDataResourceLinkTest {
 	public void testFileSize() throws Exception {
 		resourceLink.setFileSize("987654");
 		assertEquals(resourceLink.getFileSize(), "987654");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("fileSize"), "987654");
+		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filesize"), "987654");
 	}
 
 	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
