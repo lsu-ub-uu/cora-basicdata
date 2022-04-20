@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.copier;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.data.CoraDataCopierSpy;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 
 public class CoraDataGroupCopierTest {
@@ -120,8 +120,8 @@ public class CoraDataGroupCopierTest {
 	}
 
 	private void assertChildIsSentToCopierUsingIndex(int index) {
-		DataElement dataElementSentToCopierFactory = copierFactory.dataElements.get(index);
-		DataElement firstChildInOrignalDataGroup = originalDataGroup.getChildren().get(index);
+		DataChild dataElementSentToCopierFactory = copierFactory.dataElements.get(index);
+		DataChild firstChildInOrignalDataGroup = originalDataGroup.getChildren().get(index);
 
 		assertSame(dataElementSentToCopierFactory, firstChildInOrignalDataGroup);
 		assertNotNull(copierFactory.dataElements.get(index));
@@ -133,10 +133,10 @@ public class CoraDataGroupCopierTest {
 				.get(index);
 		assertTrue(factoredCopier.copyWasCalled);
 
-		DataElement firstChildInCopiedGroup = dataGroupCopy.getChildren().get(index);
+		DataChild firstChildInCopiedGroup = dataGroupCopy.getChildren().get(index);
 		CoraDataCopierSpy dataCopier = (CoraDataCopierSpy) copierFactory.factoredDataCopiers
 				.get(index);
-		DataElement elementReturnedFromCopier = dataCopier.returnedElement;
+		DataChild elementReturnedFromCopier = dataCopier.returnedElement;
 
 		assertSame(firstChildInCopiedGroup, elementReturnedFromCopier);
 	}

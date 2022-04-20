@@ -19,8 +19,8 @@
 package se.uu.ub.cora.basicdata.converter.jsontodata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -41,7 +41,7 @@ public class JsonToDataRecordLinkConverter extends JsonToDataGroupConverter
 	}
 
 	@Override
-	public DataPart toInstance() {
+	public Convertible toInstance() {
 		CoraDataRecordLink recordLink = (CoraDataRecordLink) super.toInstance();
 		throwErrorIfLinkChildrenAreIncorrect(recordLink);
 		return recordLink;

@@ -39,7 +39,8 @@ public class CoraDataRecordLinkFactoryTest {
 
 	@Test
 	public void testFactorUsingNameInData() {
-		DataRecordLink factoredDataRecordLink = dataRecordLinkFactory.factorUsingNameInData(nameInData);
+		DataRecordLink factoredDataRecordLink = dataRecordLinkFactory
+				.factorUsingNameInData(nameInData);
 		assertEquals(factoredDataRecordLink.getNameInData(), nameInData);
 	}
 
@@ -48,10 +49,13 @@ public class CoraDataRecordLinkFactoryTest {
 		DataRecordLink factoredDataRecordLink = dataRecordLinkFactory
 				.factorAsLinkWithNameInDataTypeAndId(nameInData, recordType, recordId);
 		assertEquals(factoredDataRecordLink.getNameInData(), nameInData);
-		assertEquals(factoredDataRecordLink.getChildren().size(), 2);
-		assertEquals(factoredDataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
-				recordType);
-		assertEquals(factoredDataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-				recordId);
+		assertEquals(factoredDataRecordLink.getLinkedRecordType(), recordType);
+		assertEquals(factoredDataRecordLink.getLinkedRecordId(), recordId);
+
+		// assertEquals(factoredDataRecordLink.getChildren().size(), 2);
+		// assertEquals(factoredDataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
+		// recordType);
+		// assertEquals(factoredDataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
+		// recordId);
 	}
 }

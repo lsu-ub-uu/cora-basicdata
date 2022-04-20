@@ -24,7 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
-import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -52,7 +52,7 @@ public class JsonToDataAttributeConverterTest {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = JsonToDataAttributeConverter
 				.forJsonObject((JsonObject) jsonValue);
-		DataPart dataPart = jsonToDataConverter.toInstance();
+		Convertible dataPart = jsonToDataConverter.toInstance();
 		CoraDataAttribute dataAttribute = (CoraDataAttribute) dataPart;
 		return dataAttribute;
 	}

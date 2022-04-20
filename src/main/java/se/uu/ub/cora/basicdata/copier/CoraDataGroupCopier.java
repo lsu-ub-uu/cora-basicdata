@@ -17,30 +17,30 @@
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.copier;
 
 import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
 
 public class CoraDataGroupCopier implements DataCopier {
 
-	private DataElement dataElement;
+	private DataChild dataElement;
 	private DataCopierFactory copierFactory;
 	private DataGroup originalDataGroup;
 	private DataGroup dataGroupCopy;
 
-	private CoraDataGroupCopier(DataElement dataElement, DataCopierFactory copierFactory) {
+	private CoraDataGroupCopier(DataChild dataElement, DataCopierFactory copierFactory) {
 		this.dataElement = dataElement;
 		this.copierFactory = copierFactory;
 	}
 
-	public static CoraDataGroupCopier usingDataGroupAndCopierFactory(DataElement dataElement,
+	public static CoraDataGroupCopier usingDataGroupAndCopierFactory(DataChild dataElement,
 			DataCopierFactory copierFactory) {
 		return new CoraDataGroupCopier(dataElement, copierFactory);
 	}
@@ -57,9 +57,9 @@ public class CoraDataGroupCopier implements DataCopier {
 	}
 
 	private void copyChildren() {
-		for (DataElement childElement : originalDataGroup.getChildren()) {
+		for (DataChild childElement : originalDataGroup.getChildren()) {
 			DataCopier dataCopier = copierFactory.factorForDataElement(childElement);
-			DataElement copiedElement = dataCopier.copy();
+			DataChild copiedElement = dataCopier.copy();
 			dataGroupCopy.addChild(copiedElement);
 		}
 	}

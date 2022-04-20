@@ -22,7 +22,7 @@
  * package from the cora-data project.
  * <p>
  * These implementations are not expected to be accessed directly from outside this module, but
- * instead accessed through the providers found in the cora-data project, such as
- * {@link se.uu.ub.cora.data.DataGroupProvider} and its sibbling providers.
+ * instead accessed through the provider found in the cora-data project
+ * {@link se.uu.ub.cora.data.DataProvider}.
  */
 package se.uu.ub.cora.basicdata.data;

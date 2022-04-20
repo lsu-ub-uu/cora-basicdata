@@ -69,7 +69,6 @@ public class CoraDataRecordLinkTest {
 				"myLinkedRecordType");
 		assertEquals(recordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
 				"myLinkedRecordId");
-		assertNotNull(recordLink.getActions());
 	}
 
 	@Test
@@ -94,16 +93,6 @@ public class CoraDataRecordLinkTest {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("linkedPath");
 		recordLink.addChild(dataGroup);
 		assertNotNull(recordLink.getFirstChildWithNameInData("linkedPath"));
-	}
-
-	@Test
-	public void testAddAction() {
-		recordLink.addAction(Action.READ);
-
-		assertTrue(recordLink.getActions().contains(Action.READ));
-		assertFalse(recordLink.getActions().contains(Action.DELETE));
-		// small hack to get 100% coverage on enum
-		Action.valueOf(Action.READ.toString());
 	}
 
 	@Test

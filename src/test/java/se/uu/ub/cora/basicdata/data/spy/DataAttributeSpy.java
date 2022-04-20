@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,24 +16,28 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.data.spy;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
-import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.data.DataRecordLinkFactory;
+import se.uu.ub.cora.data.DataAttribute;
 
-public class CoraDataRecordLinkFactory implements DataRecordLinkFactory {
+public class DataAttributeSpy implements DataAttribute {
 
-	@Override
-	public DataRecordLink factorUsingNameInData(String nameInData) {
-		return CoraDataRecordLink.withNameInData(nameInData);
+	public String nameInData;
+	public String value;
+
+	public DataAttributeSpy(String nameInData, String value) {
+		this.nameInData = nameInData;
+		this.value = value;
 	}
 
 	@Override
-	public DataRecordLink factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
-			String recordId) {
-		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType,
-				recordId);
+	public String getNameInData() {
+		return nameInData;
+	}
+
+	@Override
+	public String getValue() {
+		return value;
 	}
 
 }

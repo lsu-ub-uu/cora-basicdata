@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 
@@ -47,9 +47,9 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	}
 
 	private void addLinkedRecordTypeAndId(DataGroup dataGroup) {
-		DataElement linkedRecordType = dataGroup.getFirstChildWithNameInData(LINKED_RECORD_TYPE);
+		DataChild linkedRecordType = dataGroup.getFirstChildWithNameInData(LINKED_RECORD_TYPE);
 		addChild(linkedRecordType);
-		DataElement linkedRecordId = dataGroup.getFirstChildWithNameInData(LINKED_RECORD_ID);
+		DataChild linkedRecordId = dataGroup.getFirstChildWithNameInData(LINKED_RECORD_ID);
 		addChild(linkedRecordId);
 	}
 
@@ -57,7 +57,7 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 		return new CoraDataRecordLink(nameInData);
 	}
 
-	public static CoraDataRecordLink asLinkWithNameInDataAndTypeAndId(String nameInData,
+	public static CoraDataRecordLink usingNameInDataAndTypeAndId(String nameInData,
 			String type, String id) {
 		CoraDataRecordLink dataRecordLink = new CoraDataRecordLink(nameInData);
 		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE, type));
@@ -68,16 +68,6 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	@Override
 	public void addAction(Action action) {
 		actions.add(action);
-	}
-
-	/**
-	 * @deprecated (on basicData 3.0.0, CoraDatRecordLink has only one READ action, use
-	 *             hasReadAction() instead) use {@linkplain #hasReadAction()} instead
-	 */
-	@Override
-	@Deprecated
-	public List<Action> getActions() {
-		return actions;
 	}
 
 	@Override

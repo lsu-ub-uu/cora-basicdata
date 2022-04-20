@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataResourceLink;
 
@@ -49,13 +49,13 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 	}
 
 	private void addResourceLinkChildren(DataGroup dataGroup) {
-		DataElement streamId = dataGroup.getFirstChildWithNameInData("streamId");
+		DataChild streamId = dataGroup.getFirstChildWithNameInData("streamId");
 		addChild(streamId);
-		DataElement fileName = dataGroup.getFirstChildWithNameInData("filename");
+		DataChild fileName = dataGroup.getFirstChildWithNameInData("filename");
 		addChild(fileName);
-		DataElement fileSize = dataGroup.getFirstChildWithNameInData("filesize");
+		DataChild fileSize = dataGroup.getFirstChildWithNameInData("filesize");
 		addChild(fileSize);
-		DataElement mimeType = dataGroup.getFirstChildWithNameInData("mimeType");
+		DataChild mimeType = dataGroup.getFirstChildWithNameInData("mimeType");
 		addChild(mimeType);
 	}
 
@@ -64,24 +64,48 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 		actions.add(action);
 	}
 
-	/**
-	 * @deprecated (on basicData 3.0.0, CoraDatRecordLink has only one READ action, use
-	 *             hasReadAction() instead) use {@linkplain #hasReadAction()} instead
-	 */
-	@Override
-	@Deprecated
-	public List<Action> getActions() {
-		return actions;
-	}
-
 	@Override
 	public boolean hasReadAction() {
 		return actions.contains(Action.READ);
 	}
 
 	@Override
+	public void setStreamId(String streamId) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", streamId));
+	}
+
+	@Override
+	public String getStreamId() {
+		return super.getFirstAtomicValueWithNameInData("streamId");
+	}
+
+	@Override
+	public void setFileName(String fileName) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("filename", fileName));
+	}
+
+	@Override
+	public String getFileName() {
+		return super.getFirstAtomicValueWithNameInData("filename");
+	}
+
+	@Override
+	public void setFileSize(String fileSize) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("filesize", fileSize));
+	}
+
+	@Override
+	public String getFileSize() {
+		return super.getFirstAtomicValueWithNameInData("filesize");
+	}
+
+	@Override
+	public void setMimeType(String mimeType) {
+		super.addChild(CoraDataAtomic.withNameInDataAndValue("mimeType", mimeType));
+	}
+
+	@Override
 	public String getMimeType() {
 		return super.getFirstAtomicValueWithNameInData("mimeType");
 	}
-
 }

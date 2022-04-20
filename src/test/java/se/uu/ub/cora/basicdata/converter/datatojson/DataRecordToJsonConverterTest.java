@@ -31,7 +31,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
-import se.uu.ub.cora.basicdata.data.DataGroupSpy;
+import se.uu.ub.cora.basicdata.data.spy.DataGroupSpy;
+import se.uu.ub.cora.basicdata.data.spy.DataRecordSpy;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;

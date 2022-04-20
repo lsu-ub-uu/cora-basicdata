@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
@@ -37,7 +38,7 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 			DataResourceLink dataResourceLink, String recordURL,
 			JsonBuilderFactory jsonBuilderFactory) {
 
-		super(converterFactory, jsonBuilderFactory, dataResourceLink);
+		super(converterFactory, jsonBuilderFactory, (DataGroup) dataResourceLink);
 		this.dataResourceLink = dataResourceLink;
 		this.recordURL = recordURL;
 		this.resourceLinkBuilderFactory = jsonBuilderFactory;

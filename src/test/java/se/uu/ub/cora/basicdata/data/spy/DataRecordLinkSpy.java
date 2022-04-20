@@ -16,45 +16,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata.data;
-
-import java.util.ArrayList;
-import java.util.List;
+package se.uu.ub.cora.basicdata.data.spy;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLink {
-
+public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
-
-	public String nameInData;
-	public List<Action> actions = new ArrayList<>();
 	public boolean hasReadAction = false;
 
-	public DataResourceLinkSpy(String nameInData) {
+	public DataRecordLinkSpy(String nameInData) {
 		super(nameInData);
 	}
 
 	@Override
 	public void addAction(Action action) {
-		MCR.addCall("action", action);
-		actions.add(action);
+		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public List<Action> getActions() {
-		MCR.addCall();
-		MCR.addReturned(actions);
-		return actions;
-	}
-
-	@Override
-	public String getNameInData() {
-		MCR.addCall();
-		return "fakeDataResourceNameInData";
 	}
 
 	@Override
@@ -65,11 +44,19 @@ public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLin
 	}
 
 	@Override
-	public String getMimeType() {
+	public String getLinkedRecordId() {
 		MCR.addCall();
-		String mimeType = "somMimeType";
-		MCR.addReturned(mimeType);
-		return mimeType;
+		String linkedRecordId = "someRecordId";
+		MCR.addReturned(linkedRecordId);
+		return linkedRecordId;
+	}
+
+	@Override
+	public String getLinkedRecordType() {
+		MCR.addCall();
+		String linkedRecordType = "someRecordType";
+		MCR.addReturned(linkedRecordType);
+		return linkedRecordType;
 	}
 
 }

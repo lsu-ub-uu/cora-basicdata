@@ -20,7 +20,7 @@
 package se.uu.ub.cora.basicdata.converter.jsontodata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
-import se.uu.ub.cora.data.DataPart;
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -40,7 +40,7 @@ public final class JsonToDataAttributeConverter implements JsonToDataConverter {
 	}
 
 	@Override
-	public DataPart toInstance() {
+	public Convertible toInstance() {
 		try {
 			return tryToInstantiate();
 		} catch (Exception e) {
@@ -48,7 +48,7 @@ public final class JsonToDataAttributeConverter implements JsonToDataConverter {
 		}
 	}
 
-	private DataPart tryToInstantiate() {
+	private Convertible tryToInstantiate() {
 		validateJsonData();
 		String nameInData = getNameInDataFromJsonObject();
 		JsonString value = (JsonString) jsonObject.getValue(nameInData);

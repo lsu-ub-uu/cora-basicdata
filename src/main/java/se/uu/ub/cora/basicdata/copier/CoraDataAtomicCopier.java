@@ -16,30 +16,30 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.copier;
 
 import java.util.Collection;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.copier.DataCopier;
 
 public class CoraDataAtomicCopier implements DataCopier {
 
-	private DataElement dataElement;
+	private DataChild dataElement;
 
-	private CoraDataAtomicCopier(DataElement dataElement) {
+	private CoraDataAtomicCopier(DataChild dataElement) {
 		this.dataElement = dataElement;
 	}
 
-	public static CoraDataAtomicCopier usingDataAtomic(DataElement dataElement) {
+	public static CoraDataAtomicCopier usingDataAtomic(DataChild dataElement) {
 		return new CoraDataAtomicCopier(dataElement);
 	}
 
 	@Override
-	public DataElement copy() {
+	public DataChild copy() {
 		CoraDataAtomic dataAtomic = (CoraDataAtomic) dataElement;
 		CoraDataAtomic dataAtomicCopy = CoraDataAtomic
 				.withNameInDataAndValue(dataAtomic.getNameInData(), dataAtomic.getValue());

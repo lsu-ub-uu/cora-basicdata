@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 
@@ -40,10 +40,10 @@ public class CoraDataGroup implements DataGroup {
 
 	private String nameInData;
 	private Set<DataAttribute> attributes = new HashSet<>();
-	private List<DataElement> children = new ArrayList<>();
+	private List<DataChild> children = new ArrayList<>();
 	private String repeatId;
-	private Predicate<DataElement> isDataAtomic = CoraDataAtomic.class::isInstance;
-	private Predicate<DataElement> isDataGroup = CoraDataGroup.class::isInstance;
+	private Predicate<DataChild> isDataAtomic = CoraDataAtomic.class::isInstance;
+	private Predicate<DataChild> isDataGroup = CoraDataGroup.class::isInstance;
 
 	public static CoraDataGroup withNameInData(String nameInData) {
 		return new CoraDataGroup(nameInData);
@@ -53,6 +53,7 @@ public class CoraDataGroup implements DataGroup {
 		this.nameInData = nameInData;
 	}
 
+	@Deprecated
 	public static DataGroup asLinkWithNameInDataAndTypeAndId(String nameInData, String type,
 			String id) {
 		DataGroup dataGroup = new CoraDataGroup(nameInData);
@@ -71,15 +72,15 @@ public class CoraDataGroup implements DataGroup {
 		return getChildrenStream().anyMatch(filterByNameInData(nameInData));
 	}
 
-	private Stream<DataElement> getChildrenStream() {
+	private Stream<DataChild> getChildrenStream() {
 		return children.stream();
 	}
 
-	private Predicate<DataElement> filterByNameInData(String childNameInData) {
+	private Predicate<DataChild> filterByNameInData(String childNameInData) {
 		return dataElement -> dataElementsNameInDataIs(dataElement, childNameInData);
 	}
 
-	private boolean dataElementsNameInDataIs(DataElement dataElement, String childNameInData) {
+	private boolean dataElementsNameInDataIs(DataChild dataElement, String childNameInData) {
 		return dataElement.getNameInData().equals(childNameInData);
 	}
 
@@ -104,7 +105,7 @@ public class CoraDataGroup implements DataGroup {
 				.map(CoraDataAtomic.class::cast);
 	}
 
-	private Stream<DataElement> getAtomicChildrenStream() {
+	private Stream<DataChild> getAtomicChildrenStream() {
 		return getChildrenStream().filter(isDataAtomic);
 	}
 
@@ -133,7 +134,7 @@ public class CoraDataGroup implements DataGroup {
 				.map(CoraDataGroup.class::cast);
 	}
 
-	private Stream<DataElement> getGroupChildrenStream() {
+	private Stream<DataChild> getGroupChildrenStream() {
 		return getChildrenStream().filter(isDataGroup);
 	}
 
@@ -150,15 +151,15 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public DataElement getFirstChildWithNameInData(String childNameInData) {
-		Optional<DataElement> optionalFirst = possiblyFindFirstChildWithNameInData(childNameInData);
+	public DataChild getFirstChildWithNameInData(String childNameInData) {
+		Optional<DataChild> optionalFirst = possiblyFindFirstChildWithNameInData(childNameInData);
 		if (optionalFirst.isPresent()) {
 			return optionalFirst.get();
 		}
 		throw new DataMissingException("Element not found for childNameInData:" + childNameInData);
 	}
 
-	private Optional<DataElement> possiblyFindFirstChildWithNameInData(String childNameInData) {
+	private Optional<DataChild> possiblyFindFirstChildWithNameInData(String childNameInData) {
 		return getChildrenStream().filter(filterByNameInData(childNameInData)).findFirst();
 	}
 
@@ -198,7 +199,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private boolean tryToRemoveChild(String childNameInData) {
-		for (DataElement dataElement : getChildren()) {
+		for (DataChild dataElement : getChildren()) {
 			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
 				getChildren().remove(dataElement);
 				return true;
@@ -223,12 +224,12 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public List<DataElement> getChildren() {
+	public List<DataChild> getChildren() {
 		return children;
 	}
 
 	@Override
-	public void addChild(DataElement dataElement) {
+	public void addChild(DataChild dataElement) {
 		children.add(dataElement);
 	}
 
@@ -256,11 +257,11 @@ public class CoraDataGroup implements DataGroup {
 				.filter(filterByAttributes(childAttributes));
 	}
 
-	private Predicate<DataElement> filterByAttributes(DataAttribute... childAttributes) {
+	private Predicate<DataChild> filterByAttributes(DataAttribute... childAttributes) {
 		return dataElement -> dataElementsHasAttributes(dataElement, childAttributes);
 	}
 
-	private boolean dataElementsHasAttributes(DataElement dataElement,
+	private boolean dataElementsHasAttributes(DataChild dataElement,
 			DataAttribute[] childAttributes) {
 		Collection<DataAttribute> attributesFromElement = dataElement.getAttributes();
 		if (differentNumberOfAttributesInRequestedAndExisting(childAttributes,
@@ -323,45 +324,46 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
-	public void addChildren(Collection<DataElement> dataElements) {
+	public void addChildren(Collection<DataChild> dataElements) {
 		children.addAll(dataElements);
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInData(String childNameInData) {
+	public List<DataChild> getAllChildrenWithNameInData(String childNameInData) {
 		return getChildrenWithNameInData(childNameInData).toList();
 
 	}
 
-	private Stream<DataElement> getChildrenWithNameInData(String childNameInData) {
+	private Stream<DataChild> getChildrenWithNameInData(String childNameInData) {
 		return getChildrenStream().filter(filterByNameInData(childNameInData))
-				.map(DataElement.class::cast);
+				.map(DataChild.class::cast);
 	}
 
 	@Override
 	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
 
-		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
+		Predicate<? super DataChild> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
 				element, childNameInData, childAttributes);
 		return getChildren().removeIf(childNameInDataMatches);
 
 	}
 
-	private boolean dataElementsNameInDataAndAttributesMatch(DataElement element,
+	private boolean dataElementsNameInDataAndAttributesMatch(DataChild element,
 			String childNameInData, DataAttribute... childAttributes) {
 		return dataElementsNameInDataIs(element, childNameInData)
 				&& dataElementsHasAttributes(element, childAttributes);
 	}
 
 	@Override
-	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String childNameInData,
+	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
-		Predicate<? super DataElement> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
+		Predicate<? super DataChild> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
 				element, childNameInData, childAttributes);
 		return getChildren().stream().filter(childNameInDataMatches).toList();
 	}
 
+	@Override
 	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
 			String childNameInData, DataAttribute... childAttributes) {
 		return getAtomicChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)

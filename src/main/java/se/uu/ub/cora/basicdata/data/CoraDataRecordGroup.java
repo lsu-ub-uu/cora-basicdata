@@ -1,6 +1,6 @@
 /*
- * Copyright 2020 Uppsala University Library
- *
+ * Copyright 2022 Olov McKie
+ * 
  * This file is part of Cora.
  *
  *     Cora is free software: you can redistribute it and/or modify
@@ -18,26 +18,16 @@
  */
 package se.uu.ub.cora.basicdata.data;
 
-import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataRecordGroup;
 
-public class DataAttributeSpy implements DataAttribute {
+public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGroup {
 
-	public String nameInData;
-	public String value;
-
-	public DataAttributeSpy(String nameInData, String value) {
-		this.nameInData = nameInData;
-		this.value = value;
+	public static CoraDataRecordGroup withNameInData(String nameInData) {
+		return new CoraDataRecordGroup(nameInData);
 	}
 
-	@Override
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
+	protected CoraDataRecordGroup(String nameInData) {
+		super(nameInData);
 	}
 
 }

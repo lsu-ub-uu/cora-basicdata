@@ -16,28 +16,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.basicdata;
+package se.uu.ub.cora.basicdata.copier;
 
-import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
-import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
-import se.uu.ub.cora.data.DataAtomic;
-import se.uu.ub.cora.data.DataElement;
+import java.util.ArrayList;
+import java.util.List;
+
+import se.uu.ub.cora.basicdata.data.CoraDataCopierSpy;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
 
-public class CoraDataCopierFactoryImp implements DataCopierFactory {
+public class CoraDataCopierFactorySpy implements DataCopierFactory {
+
+	public List<DataChild> dataElements = new ArrayList<>();
+	public List<DataCopier> factoredDataCopiers = new ArrayList<>();
 
 	@Override
-	public DataCopier factorForDataElement(DataElement dataElement) {
-		if (dataElement instanceof DataAtomic) {
-			return CoraDataAtomicCopier.usingDataAtomic(dataElement);
-		} else if (dataElement instanceof CoraDataRecordLink) {
-			return new CoraDataRecordLinkCopier(dataElement);
-		} else if (dataElement instanceof CoraDataResourceLink) {
-			return new CoraDataResourceLinkCopier(dataElement);
-		}
-		return CoraDataGroupCopier.usingDataGroupAndCopierFactory(dataElement,
-				new CoraDataCopierFactoryImp());
+	public DataCopier factorForDataElement(DataChild dataElement) {
+		dataElements.add(dataElement);
+		CoraDataCopierSpy dataCopier = new CoraDataCopierSpy();
+		factoredDataCopiers.add(dataCopier);
+		return dataCopier;
 	}
 
 }

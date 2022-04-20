@@ -26,9 +26,9 @@ import java.util.Iterator;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.Convertible;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -48,7 +48,7 @@ public class JsonToDataGroupConverterTest {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = JsonToDataGroupConverter
 				.forJsonObject((JsonObject) jsonValue);
-		DataPart dataPart = jsonToDataConverter.toInstance();
+		Convertible dataPart = jsonToDataConverter.toInstance();
 		DataGroup dataGroup = (DataGroup) dataPart;
 		return dataGroup;
 	}
@@ -135,7 +135,7 @@ public class JsonToDataGroupConverterTest {
 
 		DataGroup dataGroup = createDataGroupForJsonString(json);
 		assertEquals(dataGroup.getNameInData(), "groupNameInData");
-		Iterator<DataElement> iterator = dataGroup.getChildren().iterator();
+		Iterator<DataChild> iterator = dataGroup.getChildren().iterator();
 		CoraDataAtomic child = (CoraDataAtomic) iterator.next();
 		assertEquals(child.getNameInData(), "atomicNameInData");
 		assertEquals(child.getValue(), "atomicValue");
@@ -166,7 +166,7 @@ public class JsonToDataGroupConverterTest {
 		String attributeValue2 = dataGroup.getAttribute("attributeNameInData").getValue();
 		assertEquals(attributeValue2, "attributeValue");
 
-		Iterator<DataElement> iterator = dataGroup.getChildren().iterator();
+		Iterator<DataChild> iterator = dataGroup.getChildren().iterator();
 		CoraDataAtomic child = (CoraDataAtomic) iterator.next();
 		assertEquals(child.getNameInData(), "atomicNameInData");
 		assertEquals(child.getValue(), "atomicValue");
