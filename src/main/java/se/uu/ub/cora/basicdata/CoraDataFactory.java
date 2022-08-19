@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2022 Uppsala University Library
  * Copyright 2022 Olov McKie
  * 
  * This file is part of Cora.
@@ -78,8 +78,7 @@ public class CoraDataFactory implements DataFactory {
 	@Override
 	public DataRecordLink factorRecordLinkUsingNameInDataAndTypeAndId(String nameInData,
 			String recordType, String recordId) {
-		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType,
-				recordId);
+		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType, recordId);
 	}
 
 	@Override

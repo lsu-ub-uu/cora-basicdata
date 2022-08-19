@@ -10,14 +10,14 @@ import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class DataGroupSpy implements DataGroup {
+public class DataGroupOldSpy implements DataGroup {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public boolean throwException = false;
-	DataGroupSpy childDataGroupToReturn = null;
+	DataGroupOldSpy childDataGroupToReturn = null;
 	public boolean searchGroupDefined = false;
 
-	public DataGroupSpy(String nameInData) {
+	public DataGroupOldSpy(String nameInData) {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -117,7 +117,7 @@ public class DataGroupSpy implements DataGroup {
 			throw new DataMissingException("DME from Spy");
 		}
 		if (null == childDataGroupToReturn) {
-			childDataGroupToReturn = new DataGroupSpy("child to return");
+			childDataGroupToReturn = new DataGroupOldSpy("child to return");
 		}
 		MCR.addReturned(childDataGroupToReturn);
 		return childDataGroupToReturn;
@@ -161,12 +161,12 @@ public class DataGroupSpy implements DataGroup {
 		return null;
 	}
 
-	public void setChildDataGroupToReturn(DataGroupSpy childDataGroupToReturn) {
+	public void setChildDataGroupToReturn(DataGroupOldSpy childDataGroupToReturn) {
 		this.childDataGroupToReturn = childDataGroupToReturn;
 	}
 
 	public void setChildToThrowException() {
-		childDataGroupToReturn = new DataGroupSpy("child to return");
+		childDataGroupToReturn = new DataGroupOldSpy("child to return");
 		childDataGroupToReturn.throwException = true;
 	}
 

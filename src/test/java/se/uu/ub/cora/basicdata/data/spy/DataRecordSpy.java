@@ -32,13 +32,13 @@ public class DataRecordSpy implements DataRecord {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
-	private DataGroupSpy dataGroup;
+	private DataGroup dataGroup;
 
 	public List<Action> actions = Collections.emptyList();
 
 	public String type = "fake type";
 
-	public DataRecordSpy(DataGroupSpy dataGroup) {
+	public DataRecordSpy(DataGroup dataGroup) {
 		this.dataGroup = dataGroup;
 	}
 
