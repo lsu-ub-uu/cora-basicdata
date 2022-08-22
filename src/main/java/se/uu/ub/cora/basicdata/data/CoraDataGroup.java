@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2020 Uppsala University Library
+ * Copyright 2015, 2019, 2020, 2022 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 
@@ -69,11 +70,7 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
-		return getChildrenStream().anyMatch(filterByNameInData(nameInData));
-	}
-
-	private Stream<DataChild> getChildrenStream() {
-		return children.stream();
+		return children.stream().anyMatch(filterByNameInData(nameInData));
 	}
 
 	private Predicate<DataChild> filterByNameInData(String childNameInData) {
@@ -106,7 +103,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private Stream<DataChild> getAtomicChildrenStream() {
-		return getChildrenStream().filter(isDataAtomic);
+		return children.stream().filter(isDataAtomic);
 	}
 
 	@Override
@@ -135,7 +132,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private Stream<DataChild> getGroupChildrenStream() {
-		return getChildrenStream().filter(isDataGroup);
+		return children.stream().filter(isDataGroup);
 	}
 
 	@Override
@@ -160,7 +157,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private Optional<DataChild> possiblyFindFirstChildWithNameInData(String childNameInData) {
-		return getChildrenStream().filter(filterByNameInData(childNameInData)).findFirst();
+		return children.stream().filter(filterByNameInData(childNameInData)).findFirst();
 	}
 
 	@Override
@@ -199,9 +196,9 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private boolean tryToRemoveChild(String childNameInData) {
-		for (DataChild dataElement : getChildren()) {
+		for (DataChild dataElement : children) {
 			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
-				getChildren().remove(dataElement);
+				children.remove(dataElement);
 				return true;
 			}
 		}
@@ -335,7 +332,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private Stream<DataChild> getChildrenWithNameInData(String childNameInData) {
-		return getChildrenStream().filter(filterByNameInData(childNameInData))
+		return children.stream().filter(filterByNameInData(childNameInData))
 				.map(DataChild.class::cast);
 	}
 
@@ -345,7 +342,7 @@ public class CoraDataGroup implements DataGroup {
 
 		Predicate<? super DataChild> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
 				element, childNameInData, childAttributes);
-		return getChildren().removeIf(childNameInDataMatches);
+		return removeMatchingChildren(childNameInDataMatches);
 
 	}
 
@@ -360,7 +357,7 @@ public class CoraDataGroup implements DataGroup {
 			DataAttribute... childAttributes) {
 		Predicate<? super DataChild> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
 				element, childNameInData, childAttributes);
-		return getChildren().stream().filter(childNameInDataMatches).toList();
+		return filterChildren(childNameInDataMatches);
 	}
 
 	@Override
@@ -379,6 +376,24 @@ public class CoraDataGroup implements DataGroup {
 	private Stream<DataAtomic> getAtomicChildrenWithNameInDataStream(String childNameInData) {
 		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
 				.map(CoraDataAtomic.class::cast);
+	}
+
+	@Override
+	public List<DataChild> getAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		return filterChildren(childFilter::childMatches);
+	}
+
+	private List<DataChild> filterChildren(Predicate<? super DataChild> predicate) {
+		return children.stream().filter(predicate).toList();
+	}
+
+	@Override
+	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
+		return removeMatchingChildren(childFilter::childMatches);
+	}
+
+	private boolean removeMatchingChildren(Predicate<? super DataChild> filter) {
+		return children.removeIf(filter);
 	}
 
 }

@@ -24,7 +24,10 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
@@ -147,14 +150,18 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithListOfReadPermissions() {
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasReadPermissions",
+				(Supplier<Boolean>) () -> true);
+
+		Set<String> readPermissions = Set.of("readPermissionOne", "readPermissionTwo");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getReadPermissions",
+				(Supplier<Set<String>>) () -> readPermissions);
+
 		createDataRecordToJsonConverter();
 
-		String type = "read";
-		dataRecord.addReadPermission("readPermissionOne");
-		dataRecord.addReadPermission("readPermissionTwo");
-
 		dataRecordToJsonConverter.toJsonObjectBuilder();
-		assertTwoPermissionsAddedCorrectlyForType(type, 0);
+
+		assertTwoPermissionsAddedCorrectlyForType("read", 0);
 	}
 
 	private void assertTwoPermissionsAddedCorrectlyForType(String type, int postitionOfTypes) {
@@ -164,8 +171,8 @@ public class DataRecordToJsonConverterTest {
 		JsonArrayBuilderSpy typePermissionBuilder = getTypePermissionArrayBuilderFromSpy(
 				postitionOfTypes);
 
-		typePermissionBuilder.MCR.assertParameters("addString", 0, type + "PermissionOne");
-		typePermissionBuilder.MCR.assertParameters("addString", 1, type + "PermissionTwo");
+		assertPermissionsCalledAddString(type, typePermissionBuilder);
+
 		typePermissionBuilder.MCR.assertNumberOfCallsToMethod("addString", 2);
 
 		permissionBuilder.MCR.assertParameters("addKeyJsonArrayBuilder", postitionOfTypes, type,
@@ -173,6 +180,32 @@ public class DataRecordToJsonConverterTest {
 
 		recordBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 1, "permissions",
 				permissionBuilder);
+	}
+
+	private void assertPermissionsCalledAddString(String type,
+			JsonArrayBuilderSpy typePermissionBuilder) {
+
+		List<Object> values = getAllParameterValuesOnCallAddString(typePermissionBuilder);
+
+		assertTrue(
+				values.contains(type + "PermissionOne") && values.contains(type + "PermissionTwo"));
+	}
+
+	private List<Object> getAllParameterValuesOnCallAddString(
+			JsonArrayBuilderSpy typePermissionBuilder) {
+		List<Object> values = new ArrayList<>();
+		for (int i = 0; i <= 1; i++) {
+			Object value = getValueFromAParameter(typePermissionBuilder, i);
+			values.add(value);
+		}
+		return values;
+	}
+
+	private Object getValueFromAParameter(JsonArrayBuilderSpy typePermissionBuilder, int i) {
+		Map<String, Object> parameters = typePermissionBuilder.MCR
+				.getParametersForMethodAndCallNumber("addString", i);
+		Object value = parameters.get("value");
+		return value;
 	}
 
 	private JsonArrayBuilderSpy getTypePermissionArrayBuilderFromSpy(int postitionOfTypes) {
@@ -186,24 +219,37 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithWritePermissions() {
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasWritePermissions",
+				(Supplier<Boolean>) () -> true);
+
+		Set<String> writePermissions = Set.of("writePermissionOne", "writePermissionTwo");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getWritePermissions",
+				(Supplier<Set<String>>) () -> writePermissions);
+
 		createDataRecordToJsonConverter();
 
-		String type = "write";
-		dataRecord.addWritePermission("writePermissionOne");
-		dataRecord.addWritePermission("writePermissionTwo");
+		// dataRecord.addWritePermission("writePermissionOne");
+		// dataRecord.addWritePermission("writePermissionTwo");
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
-		assertTwoPermissionsAddedCorrectlyForType(type, 0);
+		assertTwoPermissionsAddedCorrectlyForType("write", 0);
 	}
 
 	@Test
 	public void testToJsonWithReadAndWritePermissions() {
-		createDataRecordToJsonConverter();
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasReadPermissions",
+				(Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasWritePermissions",
+				(Supplier<Boolean>) () -> true);
 
-		dataRecord.addReadPermission("readPermissionOne");
-		dataRecord.addReadPermission("readPermissionTwo");
-		dataRecord.addWritePermission("writePermissionOne");
-		dataRecord.addWritePermission("writePermissionTwo");
+		Set<String> readPermissions = Set.of("readPermissionOne", "readPermissionTwo");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getReadPermissions",
+				(Supplier<Set<String>>) () -> readPermissions);
+		Set<String> writePermissions = Set.of("writePermissionOne", "writePermissionTwo");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getWritePermissions",
+				(Supplier<Set<String>>) () -> writePermissions);
+
+		createDataRecordToJsonConverter();
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 		assertTwoPermissionsAddedCorrectlyForType("read", 0);

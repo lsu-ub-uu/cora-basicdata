@@ -24,7 +24,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.spy.DataRecordLinkSpy;
+import se.uu.ub.cora.basicdata.data.spy.DataRecordLinkOldSpy;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 
@@ -33,12 +33,12 @@ public class DataRecordLinkToJsonConverterTest {
 	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
 	String baseURL;
-	DataRecordLinkSpy dataRecordLink;
+	DataRecordLinkOldSpy dataRecordLink;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		baseURL = "https://somesystem.org/rest/records/";
-		dataRecordLink = new DataRecordLinkSpy("someNameInData");
+		dataRecordLink = new DataRecordLinkOldSpy("someNameInData");
 
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
 		converterFactory = new DataToJsonConverterFactorySpy();

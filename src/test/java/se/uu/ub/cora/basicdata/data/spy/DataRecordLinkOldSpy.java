@@ -22,11 +22,11 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
-public class DataRecordLinkSpy extends DataGroupOldSpy implements DataRecordLink {
+public class DataRecordLinkOldSpy extends DataGroupOldSpy implements DataRecordLink {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public boolean hasReadAction = false;
 
-	public DataRecordLinkSpy(String nameInData) {
+	public DataRecordLinkOldSpy(String nameInData) {
 		super(nameInData);
 	}
 
