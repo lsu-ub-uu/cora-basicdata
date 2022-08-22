@@ -28,11 +28,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataList;
-import se.uu.ub.cora.basicdata.data.spy.DataRecordSpy;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.testspies.data.DataRecordSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataListToJsonConverterTest {
