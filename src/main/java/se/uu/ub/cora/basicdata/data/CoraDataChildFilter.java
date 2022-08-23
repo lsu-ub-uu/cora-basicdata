@@ -71,10 +71,10 @@ public class CoraDataChildFilter implements DataChildFilter {
 	}
 
 	private boolean childNameMatchesAndHasSameNumberOfAttributes(DataChild child) {
-		return childNameMatches(child) && hasSameNumberOfAttributes(nrOfChildAttributes);
+		return childNameMatches(child) && hasSameNumberOfAttributes();
 	}
 
-	private boolean hasSameNumberOfAttributes(int nrOfChildAttributes) {
+	private boolean hasSameNumberOfAttributes() {
 		return filterAttributes.size() == nrOfChildAttributes;
 	}
 
@@ -85,27 +85,6 @@ public class CoraDataChildFilter implements DataChildFilter {
 	private boolean matchAnyFilterAttribute(DataAttribute dataAttribute) {
 		return filterAttributes.stream()
 				.anyMatch(filterAttribute -> filterAttribute.attributeMatches(dataAttribute));
-	}
-
-	/**
-	 * FilterAttribute is an internal class to help match filter attributes to data attributes
-	 */
-	public record FilterAttribute(String attributeName, Set<String> possibleValues) {
-
-		public boolean attributeMatches(DataAttribute dataAttribute) {
-			if (hasSameAttributeName(dataAttribute)) {
-				return isAttributeValueInPossibleValues(dataAttribute.getValue());
-			}
-			return false;
-		}
-
-		private boolean isAttributeValueInPossibleValues(String attributeValue) {
-			return possibleValues.contains(attributeValue);
-		}
-
-		private boolean hasSameAttributeName(DataAttribute dataAttribute) {
-			return attributeName.equals(dataAttribute.getNameInData());
-		}
 	}
 
 	public String onlyForTestGetChildNameInData() {

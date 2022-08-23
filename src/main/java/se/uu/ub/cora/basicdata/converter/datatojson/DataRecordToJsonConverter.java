@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,7 +16,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import java.util.Set;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -43,8 +43,6 @@ import se.uu.ub.cora.testspies.data.DataRecordSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataRecordToJsonConverterTest {
-
-	// private CoraDataRecord dataRecord;
 	private DataRecordSpy dataRecord;
 	private DataRecordToJsonConverter dataRecordToJsonConverter;
 	private JsonBuilderFactorySpy builderFactory;
@@ -59,15 +57,10 @@ public class DataRecordToJsonConverterTest {
 		converterFactory = new DataToJsonConverterFactorySpy();
 		actionsConverterSpy = new RecordActionsToJsonConverterSpy();
 		builderFactory = new JsonBuilderFactorySpy();
-
-		// dataGroup = new DataGroupOldSpy("groupNameInData");
 		dataGroup = new DataGroupSpy();
-		// dataRecord = CoraDataRecord.withDataGroup(dataGroup);
-
 		dataRecord = new DataRecordSpy();
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getDataGroup",
 				(Supplier<DataGroup>) () -> dataGroup);
-
 	}
 
 	private void createDataRecordToJsonConverter() {
@@ -228,9 +221,6 @@ public class DataRecordToJsonConverterTest {
 
 		createDataRecordToJsonConverter();
 
-		// dataRecord.addWritePermission("writePermissionOne");
-		// dataRecord.addWritePermission("writePermissionTwo");
-
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 		assertTwoPermissionsAddedCorrectlyForType("write", 0);
 	}
@@ -315,6 +305,8 @@ public class DataRecordToJsonConverterTest {
 				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
 						converterFactory, actionsConverterSpy, builderFactory, baseUrl,
 						dataRecordSpy);
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getDataGroup",
+				(Supplier<DataGroup>) () -> dataGroup);
 		return dataRecordSpy;
 	}
 
@@ -353,86 +345,82 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	private void addActionsToDataRecordSpy(DataRecordSpy dataRecordSpy) {
-		// List<Action> actionList = new ArrayList<>();
-		// actionList.add(Action.READ);
-		// actionList.add(Action.UPDATE);
-		//
-		// dataRecordSpy.actions = actionList;
 		List<Action> actionList = List.of(Action.READ, Action.UPDATE);
 
 		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getActions",
 				(Supplier<List<Action>>) () -> actionList);
 	}
 
-	//
-	// @Test
-	// public void testConvertSearchActionForRecordTypeAndSearchRecordId() throws Exception {
-	// DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-	// dataRecordSpy.type = "recordType";
-	// addSearchActionToDataRecordSpy(dataRecordSpy);
-	// dataGroup.searchGroupDefined = true;
-	//
-	// dataRecordToJsonConverter.toJsonObjectBuilder();
-	//
-	// assertSearchRecordIdIsFromDataGroupRecord(dataRecordSpy);
-	//
-	// }
-	//
-	// private void assertSearchRecordIdIsFromDataGroupRecord(DataRecordSpy dataRecordSpy) {
-	// dataRecordSpy.MCR.assertNumberOfCallsToMethod("getDataGroup", 2);
-	// DataGroupOldSpy dataGroup = (DataGroupOldSpy) dataRecordSpy.MCR
-	// .getReturnValue("getDataGroup", 1);
-	// dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
-	// DataGroupOldSpy searchGroup = (DataGroupOldSpy) dataGroup.MCR
-	// .getReturnValue("getFirstGroupWithNameInData", 0);
-	// searchGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "linkedRecordId");
-	//
-	// String searchId = (String) searchGroup.MCR
-	// .getReturnValue("getFirstAtomicValueWithNameInData", 0);
-	//
-	// ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
-	// .getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
-	// "actionsConverterData");
-	// assertSame(actionConverter.searchRecordId, searchId);
-	// }
-	//
-	// private void addSearchActionToDataRecordSpy(DataRecordSpy dataRecordSpy) {
-	// List<Action> actionList = new ArrayList<>();
-	// actionList.add(Action.SEARCH);
-	// dataRecordSpy.actions = actionList;
-	// }
-	//
-	// @Test
-	// public void testConvertSearchActionForRecordTypeAndSearchRecordIdOnlyForRecordType()
-	// throws Exception {
-	// DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-	// dataRecordSpy.type = "otherThanRecordType";
-	// addSearchActionToDataRecordSpy(dataRecordSpy);
-	// dataGroup.searchGroupDefined = true;
-	//
-	// dataRecordToJsonConverter.toJsonObjectBuilder();
-	//
-	// assertSearchRecordIdNotSet();
-	// }
-	//
-	// private void assertSearchRecordIdNotSet() {
-	// ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
-	// .getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
-	// "actionsConverterData");
-	// assertSame(actionConverter.searchRecordId, null);
-	// }
-	//
-	// @Test
-	// public void
-	// testConvertSearchActionForRecordTypeAndSearchRecordIdButNoSearchDefinedInDataGroup()
-	// throws Exception {
-	// DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-	// dataRecordSpy.type = "recordType";
-	// dataGroup.searchGroupDefined = false;
-	// addSearchActionToDataRecordSpy(dataRecordSpy);
-	//
-	// dataRecordToJsonConverter.toJsonObjectBuilder();
-	//
-	// assertSearchRecordIdNotSet();
-	// }
+	@Test
+	public void testConvertSearchActionForRecordTypeAndSearchRecordId() throws Exception {
+		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
+				(Supplier<Boolean>) () -> true);
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getType",
+				(Supplier<String>) () -> "recordType");
+		dataGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
+				(Supplier<Boolean>) () -> true, "search");
+		DataGroupSpy searchGroup = new DataGroupSpy();
+		searchGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				(Supplier<String>) () -> "someSearchId", "linkedRecordId");
+		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				(Supplier<DataGroup>) () -> searchGroup, "search");
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		assertSearchRecordIdIsFromDataGroupRecord(dataRecordSpy);
+
+	}
+
+	private void assertSearchRecordIdIsFromDataGroupRecord(DataRecordSpy dataRecordSpy) {
+		dataRecordSpy.MCR.assertNumberOfCallsToMethod("getDataGroup", 2);
+		DataGroupSpy dataGroup = (DataGroupSpy) dataRecordSpy.MCR.getReturnValue("getDataGroup", 1);
+		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
+		DataGroupSpy searchGroup = (DataGroupSpy) dataGroup.MCR
+				.getReturnValue("getFirstGroupWithNameInData", 0);
+		searchGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "linkedRecordId");
+
+		String searchId = (String) searchGroup.MCR
+				.getReturnValue("getFirstAtomicValueWithNameInData", 0);
+
+		ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
+						"actionsConverterData");
+		assertSame(actionConverter.searchRecordId, searchId);
+	}
+
+	@Test
+	public void testConvertSearchActionForRecordTypeAndSearchRecordIdOnlyForRecordType()
+			throws Exception {
+		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
+				(Supplier<Boolean>) () -> true);
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getType",
+				(Supplier<String>) () -> "otherThanRecordType");
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		assertSearchRecordIdNotSet();
+	}
+
+	private void assertSearchRecordIdNotSet() {
+		ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
+						"actionsConverterData");
+		assertSame(actionConverter.searchRecordId, null);
+	}
+
+	@Test
+	public void testConvertSearchActionForRecordTypeAndSearchRecordIdButNoSearchDefinedInDataGroup()
+			throws Exception {
+		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
+				(Supplier<Boolean>) () -> true);
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getType",
+				(Supplier<String>) () -> "recordType");
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		assertSearchRecordIdNotSet();
+	}
 }
