@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2022 Uppsala University Library
  * Copyright 2022 Olov McKie
  * 
  * This file is part of Cora.
@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
+import se.uu.ub.cora.basicdata.data.CoraDataChildFilter;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataList;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
@@ -173,6 +174,15 @@ public class CoraDataFactoryTest {
 		assertTrue(factoredDataAttribute instanceof CoraDataAttribute);
 		assertEquals(factoredDataAttribute.getNameInData(), nameInData);
 		assertEquals(factoredDataAttribute.getValue(), value);
+	}
+
+	@Test
+	public void testFactorDataChildFilterUsingNameInData() {
+		CoraDataChildFilter childFilter = (CoraDataChildFilter) dataFactory
+				.factorDataChildFilterUsingNameInData(nameInData);
+
+		assertEquals(childFilter.onlyForTestGetChildNameInData(), nameInData);
+
 	}
 
 }

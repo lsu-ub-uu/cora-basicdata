@@ -25,24 +25,45 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.spy.DataGroupSpy;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 public class CoraDataRecordTest {
 	private CoraDataRecord dataRecord;
-	private DataGroup dataGroup;
+	private DataGroupSpy dataRecordGroup;
+	private DataGroupSpy recordInfoGroup;
+	private DataGroupSpy typeLinkedGroup;
+	private DataGroupSpy searchLinkedGroup;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataGroup = CoraDataGroup.withNameInData("nameInData");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+
+		searchLinkedGroup = new DataGroupSpy();
+
+		typeLinkedGroup = new DataGroupSpy();
+		recordInfoGroup = new DataGroupSpy();
+		recordInfoGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				(Supplier<DataGroup>) () -> typeLinkedGroup, "type");
+
+		dataRecordGroup = new DataGroupSpy();
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				(Supplier<DataGroup>) () -> recordInfoGroup, "recordInfo");
+
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				(Supplier<DataGroup>) () -> searchLinkedGroup, "search");
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
+				(Supplier<Boolean>) () -> true, "search");
+
+		dataRecord = CoraDataRecord.withDataGroup(dataRecordGroup);
+
 	}
 
 	@Test
@@ -62,14 +83,15 @@ public class CoraDataRecordTest {
 
 	@Test
 	public void testGetDataGroup() {
-		String nameInData = dataRecord.getDataGroup().getNameInData();
-		assertEquals(nameInData, "nameInData");
+		assertEquals(dataRecord.getDataGroup(), dataRecordGroup);
 	}
 
 	@Test
-	public void testDataGroup() {
+	public void testSetDataGroup() {
 		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+
 		dataRecord.setDataGroup(dataGroup);
+
 		assertEquals(dataRecord.getDataGroup(), dataGroup);
 	}
 
@@ -156,57 +178,45 @@ public class CoraDataRecordTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record id not known")
 	public void testGetIdNoRecordInfoDataGroup() throws Exception {
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataGroup.throwException = true;
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		dataRecordGroup.MRV.setThrowException("getFirstGroupWithNameInData",
+				new DataMissingException("DME from Spy"), "recordInfo");
 
 		dataRecord.getId();
 	}
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record id not known")
-
 	public void testGetIdNoIdDataGroup() throws Exception {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		recordInfoGroup.MRV.setThrowException("getFirstAtomicValueWithNameInData",
+				new DataMissingException("DME from Spy"), "id");
 
 		dataRecord.getId();
 	}
 
 	@Test
 	public void testGetId() throws Exception {
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
-
 		String recordId = dataRecord.getId();
 
-		dataGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
-		DataGroupSpy recordInfo = (DataGroupSpy) dataGroup.MCR
-				.getReturnValue("getFirstGroupWithNameInData", 0);
+		assertIdFetchedFromIdInRecordInfo(recordId);
+	}
 
-		recordInfo.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "id");
-
-		recordInfo.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0, recordId);
-
+	private void assertIdFetchedFromIdInRecordInfo(String recordId) {
+		dataRecordGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
+		recordInfoGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "id");
+		recordInfoGroup.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0, recordId);
 	}
 
 	@Test
 	public void testGetType() throws Exception {
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 
 		String returnType = dataRecord.getType();
 
-		dataGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
-		DataGroupSpy recordInfo = (DataGroupSpy) dataGroup.MCR
-				.getReturnValue("getFirstGroupWithNameInData", 0);
+		dataRecordGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "recordInfo");
+		recordInfoGroup.MCR.assertParameters("getFirstGroupWithNameInData", 0, "type");
 
-		recordInfo.MCR.assertParameters("getFirstGroupWithNameInData", 0, "type");
-
-		DataGroupSpy typeGroup = (DataGroupSpy) recordInfo.MCR
+		DataGroupSpy typeGroup = (DataGroupSpy) recordInfoGroup.MCR
 				.getReturnValue("getFirstGroupWithNameInData", 0);
 		typeGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "linkedRecordId");
-
 		typeGroup.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0, returnType);
 
 	}
@@ -221,9 +231,8 @@ public class CoraDataRecordTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record type not known")
 	public void testGetTypeNoRecordInfoDataGroup() throws Exception {
-		DataGroupSpy dataGroup = new DataGroupSpy("nameInData");
-		dataGroup.throwException = true;
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		dataRecordGroup.MRV.setThrowException("getFirstGroupWithNameInData",
+				new DataMissingException("DME from Spy"), "recordInfo");
 
 		dataRecord.getType();
 	}
@@ -232,8 +241,8 @@ public class CoraDataRecordTest {
 			+ "Record type not known")
 
 	public void testGetTypeNoLinkedTypeDataGroup() throws Exception {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		recordInfoGroup.MRV.setThrowException("getFirstGroupWithNameInData",
+				new DataMissingException("DME from Spy"), "type");
 
 		dataRecord.getType();
 	}
@@ -242,13 +251,8 @@ public class CoraDataRecordTest {
 			+ "Record type not known")
 
 	public void testGetTypeNoLinkedRecordIdAtomicGroup() throws Exception {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
-		DataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(CoraDataGroup.withNameInData("type"));
-
-		dataGroup.addChild(recordInfo);
-
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		typeLinkedGroup.MRV.setThrowException("getFirstAtomicValueWithNameInData",
+				new DataMissingException("DME from Spy"), "linkedRecordId");
 
 		dataRecord.getType();
 	}
@@ -289,72 +293,57 @@ public class CoraDataRecordTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "No searchId exists")
 	public void testGetSearchIdNotSearchOrRecordType() {
-		DataGroup dataGroup = createDataGroup("someOtherType", "someId");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		dataRecordGroup.MRV.setThrowException("getFirstGroupWithNameInData",
+				new DataMissingException("DME from Spy"), "linkedRecordId");
+
 		dataRecord.getSearchId();
 	}
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record id not known")
-	public void testGetSearchIdForSearchButNoSearchId() {
-		CoraDataGroup dataGroup = createDataGroup("search", "searchId");
-		removeSearchId(dataGroup);
+	public void testGetIdForSearchButNoId() {
+		typeLinkedGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				(Supplier<String>) () -> "search", "linkedRecordId");
+		recordInfoGroup.MRV.setThrowException("getFirstAtomicValueWithNameInData",
+				new DataMissingException("DME from Spy"), "id");
 
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
 		dataRecord.getSearchId();
-	}
-
-	private void removeSearchId(CoraDataGroup dataGroup) {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
-		recordInfo.removeFirstChildWithNameInData("id");
 	}
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "No searchId exists")
 	public void testGetSearchIdForRecordTypeButNoSearchId() {
-		CoraDataGroup dataGroup = createDataGroup("recordType", "someId");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		recordInfoGroup.MRV.setThrowException("getFirstAtomicValueWithNameInData",
+				new DataMissingException("DME from Spy"), "id");
+
 		dataRecord.getSearchId();
 	}
 
 	@Test
 	public void testGetSearchIdForSearch() {
-		CoraDataGroup dataGroup = createDataGroup("search", "someSearchId");
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		typeLinkedGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				(Supplier<String>) () -> "search", "linkedRecordId");
+
 		String searchId = dataRecord.getSearchId();
-		assertEquals(searchId, "someSearchId");
+
+		assertIdFetchedFromIdInRecordInfo(searchId);
+	}
+
+	private void assertSearchIdFetchedFromIdInSearchGroup(String searchId) {
+		dataRecordGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
+		dataRecordGroup.MCR.assertParameters("getFirstGroupWithNameInData", 1, "search");
+		searchLinkedGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0,
+				"linkedRecordId");
+		searchLinkedGroup.MCR.assertReturn("getFirstAtomicValueWithNameInData", 0, searchId);
 	}
 
 	@Test
 	public void testGetSearchIdForRecordType() {
-		DataGroup dataGroup = createDataGroup("recordType", "someRecordType");
-		addSearchDataGroup(dataGroup);
-		dataRecord = CoraDataRecord.withDataGroup(dataGroup);
+		typeLinkedGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
+				(Supplier<String>) () -> "recordType", "linkedRecordId");
 
 		String searchId = dataRecord.getSearchId();
-		assertEquals(searchId, "someLinkedSearch");
+		assertSearchIdFetchedFromIdInSearchGroup(searchId);
 	}
 
-	private void addSearchDataGroup(DataGroup dataGroup) {
-		DataGroup searchDataGroup = CoraDataGroup.withNameInData("search");
-		searchDataGroup.addChild(
-				CoraDataAtomic.withNameInDataAndValue("linkedRecordId", "someLinkedSearch"));
-		dataGroup.addChild(searchDataGroup);
-	}
-
-	private CoraDataGroup createDataGroup(String type, String id) {
-		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("searchOrRecordType");
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("id", id));
-
-		addType(type, recordInfo);
-		dataGroup.addChild(recordInfo);
-		return dataGroup;
-	}
-
-	private void addType(String type, CoraDataGroup recordInfo) {
-		CoraDataGroup typeGroup = CoraDataGroup.withNameInData("type");
-		typeGroup.addChild(CoraDataAtomic.withNameInDataAndValue("linkedRecordId", type));
-		recordInfo.addChild(typeGroup);
-	}
 }

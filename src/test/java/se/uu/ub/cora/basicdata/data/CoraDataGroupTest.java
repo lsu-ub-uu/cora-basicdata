@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -39,6 +40,9 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
+import se.uu.ub.cora.testspies.data.DataAtomicSpy;
+import se.uu.ub.cora.testspies.data.DataChildFilterSpy;
+import se.uu.ub.cora.testspies.data.DataGroupSpy;
 
 public class CoraDataGroupTest {
 
@@ -900,6 +904,100 @@ public class CoraDataGroupTest {
 
 		assertEquals(childrenWithoutAttributes.size(), 1);
 		assertSame(childrenWithoutAttributes.get(0), childGroup2);
+	}
+
+	@Test
+	public void testGetAllChildrenMatchingFilter_noChildren() throws Exception {
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+
+		List<DataChild> matchingChildren = defaultDataGroup
+				.getAllChildrenMatchingFilter(childFilter);
+
+		childFilter.MCR.assertMethodNotCalled("childMatches");
+		assertEquals(matchingChildren.size(), 0);
+	}
+
+	@Test
+	public void testGetAllChildrenMatchingFilter_oneChild() throws Exception {
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild);
+
+		List<DataChild> matchingChildren = defaultDataGroup
+				.getAllChildrenMatchingFilter(childFilter);
+
+		childFilter.MCR.assertParameters("childMatches", 0, atomicChild);
+		assertEquals(matchingChildren.size(), 1);
+		assertSame(matchingChildren.get(0), atomicChild);
+	}
+
+	@Test
+	public void testGetAllChildrenMatchingFilter_twoChildMatchesOneDoNot() throws Exception {
+		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild);
+		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild2);
+		DataGroupSpy groupChild = new DataGroupSpy();
+		defaultDataGroup.addChild(groupChild);
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches",
+				(Supplier<Boolean>) () -> false, atomicChild);
+
+		List<DataChild> matchingChildren = defaultDataGroup
+				.getAllChildrenMatchingFilter(childFilter);
+
+		childFilter.MCR.assertParameters("childMatches", 0, atomicChild);
+		childFilter.MCR.assertParameters("childMatches", 1, atomicChild2);
+		childFilter.MCR.assertParameters("childMatches", 2, groupChild);
+		assertEquals(matchingChildren.size(), 2);
+		assertSame(matchingChildren.get(0), atomicChild2);
+		assertSame(matchingChildren.get(1), groupChild);
+	}
+
+	@Test
+	public void testRemoveAllChildrenMatchingFilter_noChildren() throws Exception {
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+
+		boolean childRemoved = defaultDataGroup.removeAllChildrenMatchingFilter(childFilter);
+
+		childFilter.MCR.assertMethodNotCalled("childMatches");
+		assertFalse(childRemoved);
+	}
+
+	@Test
+	public void testRemoveAllChildrenMatchingFilter_oneChild() throws Exception {
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild);
+
+		boolean childRemoved = defaultDataGroup.removeAllChildrenMatchingFilter(childFilter);
+
+		childFilter.MCR.assertParameters("childMatches", 0, atomicChild);
+		assertTrue(childRemoved);
+		assertEquals(defaultDataGroup.getChildren().size(), 0);
+	}
+
+	@Test
+	public void testRemoveAllChildrenMatchingFilter_twoChildMatchesOneDoNot() throws Exception {
+		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild);
+		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild2);
+		DataGroupSpy groupChild = new DataGroupSpy();
+		defaultDataGroup.addChild(groupChild);
+		DataChildFilterSpy childFilter = new DataChildFilterSpy();
+		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches",
+				(Supplier<Boolean>) () -> false, atomicChild);
+
+		boolean childRemoved = defaultDataGroup.removeAllChildrenMatchingFilter(childFilter);
+
+		assertTrue(childRemoved);
+		childFilter.MCR.assertParameters("childMatches", 0, atomicChild);
+		childFilter.MCR.assertParameters("childMatches", 1, atomicChild2);
+		childFilter.MCR.assertParameters("childMatches", 2, groupChild);
+		List<DataChild> childrenLeft = defaultDataGroup.getChildren();
+		assertEquals(childrenLeft.size(), 1);
+		assertSame(childrenLeft.get(0), atomicChild);
 	}
 
 }

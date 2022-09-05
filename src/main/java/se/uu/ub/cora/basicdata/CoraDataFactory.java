@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2022 Uppsala University Library
  * Copyright 2022 Olov McKie
  * 
  * This file is part of Cora.
@@ -21,6 +21,7 @@ package se.uu.ub.cora.basicdata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataAtomic;
 import se.uu.ub.cora.basicdata.data.CoraDataAttribute;
+import se.uu.ub.cora.basicdata.data.CoraDataChildFilter;
 import se.uu.ub.cora.basicdata.data.CoraDataGroup;
 import se.uu.ub.cora.basicdata.data.CoraDataList;
 import se.uu.ub.cora.basicdata.data.CoraDataRecord;
@@ -29,6 +30,7 @@ import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataChildFilter;
 import se.uu.ub.cora.data.DataFactory;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
@@ -78,8 +80,7 @@ public class CoraDataFactory implements DataFactory {
 	@Override
 	public DataRecordLink factorRecordLinkUsingNameInDataAndTypeAndId(String nameInData,
 			String recordType, String recordId) {
-		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType,
-				recordId);
+		return CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, recordType, recordId);
 	}
 
 	@Override
@@ -103,4 +104,8 @@ public class CoraDataFactory implements DataFactory {
 		return CoraDataAttribute.withNameInDataAndValue(nameInData, value);
 	}
 
+	@Override
+	public DataChildFilter factorDataChildFilterUsingNameInData(String childNameInData) {
+		return CoraDataChildFilter.usingNameInData(childNameInData);
+	}
 }
