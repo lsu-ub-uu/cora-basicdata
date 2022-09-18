@@ -68,6 +68,16 @@ public class CoraDataFactory implements DataFactory {
 	}
 
 	@Override
+	public DataGroup factorGroupFromDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		CoraDataGroup group = CoraDataGroup.withNameInData(dataRecordGroup.getNameInData());
+		group.addChildren(dataRecordGroup.getChildren());
+		for (DataAttribute attribute : dataRecordGroup.getAttributes()) {
+			group.addAttributeByIdWithValue(attribute.getNameInData(), attribute.getValue());
+		}
+		return group;
+	}
+
+	@Override
 	public DataGroup factorGroupUsingNameInData(String nameInData) {
 		return CoraDataGroup.withNameInData(nameInData);
 	}
@@ -108,4 +118,5 @@ public class CoraDataFactory implements DataFactory {
 	public DataChildFilter factorDataChildFilterUsingNameInData(String childNameInData) {
 		return CoraDataChildFilter.usingNameInData(childNameInData);
 	}
+
 }

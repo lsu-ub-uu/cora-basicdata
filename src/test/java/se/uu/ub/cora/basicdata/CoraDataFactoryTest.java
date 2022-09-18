@@ -106,6 +106,25 @@ public class CoraDataFactoryTest {
 	}
 
 	@Test
+	public void testFactorGroupFromDataRecordGroup() {
+		DataRecordGroup dataRecordGroup = CoraDataRecordGroup.withNameInData(nameInData);
+		dataRecordGroup.addChild(CoraDataAtomic.withNameInDataAndValue("atomic", "aValue"));
+		dataRecordGroup.addAttributeByIdWithValue("attribute", "atValue");
+
+		DataGroup factoredDataGroup = dataFactory.factorGroupFromDataRecordGroup(dataRecordGroup);
+
+		assertTrue(factoredDataGroup instanceof CoraDataGroup);
+		assertEquals(factoredDataGroup.getNameInData(), nameInData);
+		assertSame(factoredDataGroup.getChildren().size(), dataRecordGroup.getChildren().size());
+		assertSame(factoredDataGroup.getFirstChildWithNameInData("atomic"),
+				dataRecordGroup.getFirstChildWithNameInData("atomic"));
+		Collection<DataAttribute> attributes = factoredDataGroup.getAttributes();
+		assertEquals(attributes.size(), 1);
+		DataAttribute attribute = factoredDataGroup.getAttribute("attribute");
+		assertEquals(attribute.getValue(), "atValue");
+	}
+
+	@Test
 	public void testFactorGroupUsingNameInData() {
 		DataGroup factoredDataGroup = dataFactory.factorGroupUsingNameInData(nameInData);
 		assertTrue(factoredDataGroup instanceof CoraDataGroup);
