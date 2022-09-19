@@ -40,6 +40,7 @@ import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroupTest {
 
@@ -901,4 +902,168 @@ public class CoraDataRecordGroupTest {
 		assertSame(childrenWithoutAttributes.get(0), childGroup2);
 	}
 
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Group not found for childNameInData:recordInfo")
+	public void testGetType_NoRecordInfo() throws Exception {
+		defaultRecordGroup.getType();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Element not found for childNameInData:type")
+	public void testGetType_NoTypeLink() throws Exception {
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData("recordInfo"));
+
+		defaultRecordGroup.getType();
+	}
+
+	@Test
+	public void testGetType() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo
+				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("type", "", "someTypeId"));
+
+		assertEquals(defaultRecordGroup.getType(), "someTypeId");
+	}
+
+	@Test
+	public void testSetType() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo
+				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("type", "", "someTypeId"));
+
+		defaultRecordGroup.setType("someOtherTypeId");
+
+		assertEquals(defaultRecordGroup.getType(), "someOtherTypeId");
+	}
+
+	@Test
+	public void testSetType_NoType() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+
+		defaultRecordGroup.setType("someOtherTypeId");
+
+		assertEquals(defaultRecordGroup.getType(), "someOtherTypeId");
+		DataRecordLink dataDividerLink = (DataRecordLink) recordInfo
+				.getFirstChildWithNameInData("type");
+		assertEquals(dataDividerLink.getLinkedRecordType(), "recordType");
+	}
+
+	@Test
+	public void testSetType_NoRecordInfo() throws Exception {
+		defaultRecordGroup.setType("someOtherTypeId");
+
+		assertEquals(defaultRecordGroup.getType(), "someOtherTypeId");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Group not found for childNameInData:recordInfo")
+	public void testGetId_NoRecordInfo() throws Exception {
+		defaultRecordGroup.getId();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Atomic value not found for childNameInData:id")
+	public void testGetId_NoIdLink() throws Exception {
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData("recordInfo"));
+
+		defaultRecordGroup.getId();
+	}
+
+	@Test
+	public void testGetId() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("id", "someId"));
+
+		assertEquals(defaultRecordGroup.getId(), "someId");
+	}
+
+	@Test
+	public void testSetId() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("id", "", "someIdId"));
+
+		defaultRecordGroup.setId("someOtherId");
+
+		assertEquals(defaultRecordGroup.getId(), "someOtherId");
+	}
+
+	@Test
+	public void testSetId_NoId() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+
+		defaultRecordGroup.setId("someOtherId");
+
+		assertEquals(defaultRecordGroup.getId(), "someOtherId");
+		DataAtomic id = (DataAtomic) recordInfo.getFirstChildWithNameInData("id");
+		assertEquals(id.getValue(), "someOtherId");
+	}
+
+	@Test
+	public void testSetId_NoRecordInfo() throws Exception {
+		defaultRecordGroup.setId("someOtherId");
+
+		assertEquals(defaultRecordGroup.getId(), "someOtherId");
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Group not found for childNameInData:recordInfo")
+	public void testGetDataDivider_NoRecordInfo() throws Exception {
+		defaultRecordGroup.getDataDivider();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Element not found for childNameInData:dataDivider")
+	public void testGetDataDivider_NoDataDividerLink() throws Exception {
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData("recordInfo"));
+
+		defaultRecordGroup.getDataDivider();
+	}
+
+	@Test
+	public void testGetDataDivider() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("dataDivider", "",
+				"someDataDividerId"));
+
+		assertEquals(defaultRecordGroup.getDataDivider(), "someDataDividerId");
+	}
+
+	@Test
+	public void testSetDataDivider() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("dataDivider", "",
+				"someDataDividerId"));
+
+		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
+
+		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
+	}
+
+	@Test
+	public void testSetDataDivider_NoDataDivider() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		defaultRecordGroup.addChild(recordInfo);
+
+		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
+
+		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
+		DataRecordLink dataDividerLink = (DataRecordLink) recordInfo
+				.getFirstChildWithNameInData("dataDivider");
+		assertEquals(dataDividerLink.getLinkedRecordType(), "system");
+	}
+
+	@Test
+	public void testSetDataDivider_NoRecordInfo() throws Exception {
+		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
+
+		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
+	}
 }

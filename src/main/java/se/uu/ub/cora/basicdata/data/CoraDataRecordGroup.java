@@ -1,5 +1,6 @@
 /*
  * Copyright 2022 Olov McKie
+ * Copyright 2022 Uppsala University Library
  * 
  * This file is part of Cora.
  *
@@ -18,9 +19,16 @@
  */
 package se.uu.ub.cora.basicdata.data;
 
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGroup {
+
+	private static final String ID = "id";
+	private static final String DATA_DIVIDER = "dataDivider";
+	private static final String TYPE = "type";
+	private static final String RECORD_INFO = "recordInfo";
 
 	public static CoraDataRecordGroup withNameInData(String nameInData) {
 		return new CoraDataRecordGroup(nameInData);
@@ -28,6 +36,60 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 
 	protected CoraDataRecordGroup(String nameInData) {
 		super(nameInData);
+	}
+
+	@Override
+	public String getType() {
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		DataRecordLink typeLink = (DataRecordLink) recordInfo.getFirstChildWithNameInData(TYPE);
+		return typeLink.getLinkedRecordId();
+	}
+
+	@Override
+	public void setType(String type) {
+		ensureRecordInfoExists();
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		recordInfo.removeAllChildrenMatchingFilter(CoraDataChildFilter.usingNameInData(TYPE));
+		recordInfo
+				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(TYPE, "recordType", type));
+	}
+
+	private void ensureRecordInfoExists() {
+		if (!this.containsChildWithNameInData(RECORD_INFO)) {
+			this.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
+		}
+	}
+
+	@Override
+	public String getId() {
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		return recordInfo.getFirstAtomicValueWithNameInData(ID);
+	}
+
+	@Override
+	public void setId(String id) {
+		ensureRecordInfoExists();
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		recordInfo.removeAllChildrenMatchingFilter(CoraDataChildFilter.usingNameInData(ID));
+		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue(ID, id));
+	}
+
+	@Override
+	public String getDataDivider() {
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		DataRecordLink typeLink = (DataRecordLink) recordInfo
+				.getFirstChildWithNameInData(DATA_DIVIDER);
+		return typeLink.getLinkedRecordId();
+	}
+
+	@Override
+	public void setDataDivider(String dataDivider) {
+		ensureRecordInfoExists();
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		recordInfo
+				.removeAllChildrenMatchingFilter(CoraDataChildFilter.usingNameInData(DATA_DIVIDER));
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(DATA_DIVIDER, "system",
+				dataDivider));
 	}
 
 }
