@@ -27,7 +27,7 @@
 	</parent>
 
 	<artifactId>basicdata</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Basic data</name>
@@ -43,7 +43,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-basicdata.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-basicdata.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-basicdata.git</url>
-	  <tag>release/5.0</tag>
+	  <tag>basicdata-5.0.0</tag>
   </scm>
 
 	<dependencies>
