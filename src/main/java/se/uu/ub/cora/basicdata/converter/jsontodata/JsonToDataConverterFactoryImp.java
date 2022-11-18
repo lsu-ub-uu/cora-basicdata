@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -35,26 +35,25 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	private static final int NUM_OF_RECORDLINK_CHILDREN_ONE_OPTIONAL = 3;
 	private static final int MAX_NUM_OF_RECORDLINK_CHILDREN = 4;
 	private static final int NUM_OF_RESOURCELINK_CHILDREN = 4;
-	private JsonObject jsonObject;
 
 	@Override
 	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
 		if (!(jsonValue instanceof JsonObject)) {
 			throw new JsonParseException("Json value is not an object, can not convert");
 		}
-		jsonObject = (JsonObject) jsonValue;
+		JsonObject jsonObject = (JsonObject) jsonValue;
 
-		if (isGroup()) {
-			return createConverterForGroupOrLink();
+		if (isGroup(jsonObject)) {
+			return createConverterForGroupOrLink(jsonObject);
 		}
-		if (isAtomicData()) {
+		if (isAtomicData(jsonObject)) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
 
-	private JsonToDataConverter createConverterForGroupOrLink() {
-		List<String> foundNames = extractChildNames();
+	private JsonToDataConverter createConverterForGroupOrLink(JsonObject jsonObject) {
+		List<String> foundNames = extractChildNames(jsonObject);
 		if (isRecordLink(foundNames)) {
 			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
 		}
@@ -93,7 +92,7 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 				&& (foundNames.contains("linkedPath") || foundNames.contains("linkedRepeatId"));
 	}
 
-	private List<String> extractChildNames() {
+	private List<String> extractChildNames(JsonObject jsonObject) {
 		JsonArray childrenArray = jsonObject.getValueAsJsonArray("children");
 		List<String> foundNames = new ArrayList<>();
 		for (JsonValue child : childrenArray) {
@@ -107,11 +106,11 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		return child.getValueAsJsonString("name").getStringValue();
 	}
 
-	private boolean isAtomicData() {
+	private boolean isAtomicData(JsonObject jsonObject) {
 		return jsonObject.containsKey("value");
 	}
 
-	private boolean isGroup() {
+	private boolean isGroup(JsonObject jsonObject) {
 		return jsonObject.containsKey("children");
 	}
 
