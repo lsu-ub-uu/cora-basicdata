@@ -35,10 +35,10 @@ record FilterAttribute(String attributeName, Set<String> possibleValues) {
 	}
 
 	private boolean isAttributeValueInPossibleValues(String attributeValue) {
-		return possibleValues.contains(attributeValue);
+		return possibleValues().contains(attributeValue);
 	}
 
 	private boolean hasSameAttributeName(DataAttribute dataAttribute) {
-		return attributeName.equals(dataAttribute.getNameInData());
+		return attributeName().equals(dataAttribute.getNameInData());
 	}
 }
