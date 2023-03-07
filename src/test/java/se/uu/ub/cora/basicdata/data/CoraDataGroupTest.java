@@ -346,13 +346,17 @@ public class CoraDataGroupTest {
 
 	@Test
 	public void testGetAllGroupsWithNameInData() {
-		defaultDataGroup
-				.addChild(CoraDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		CoraDataAtomic atomic = CoraDataAtomic.withNameInDataAndValue("childNameInData",
+				"atomicValue");
+		defaultDataGroup.addChild(atomic);
 		addTwoGroupChildrenWithSameNameInData(defaultDataGroup);
 
 		List<DataGroup> groupsFound = defaultDataGroup
 				.getAllGroupsWithNameInData("childNameInData");
 		assertEquals(groupsFound.size(), 2);
+		List<DataGroup> groupsFound2 = ((CoraDataGroup) defaultDataGroup)
+				.getChildrenOfTypeWithNameAndAttributes(DataGroup.class, "childNameInData");
+		assertEquals(groupsFound2.size(), 2);
 	}
 
 	private void addTwoGroupChildrenWithSameNameInData(DataGroup parentDataGroup) {
@@ -998,6 +1002,23 @@ public class CoraDataGroupTest {
 		List<DataChild> childrenLeft = defaultDataGroup.getChildren();
 		assertEquals(childrenLeft.size(), 1);
 		assertSame(childrenLeft.get(0), atomicChild);
+	}
+
+	@Test
+	public void testGetChildrenOfTypeWithNameInDataAndAttributes() {
+		CoraDataAtomic atomic = CoraDataAtomic.withNameInDataAndValue("childNameInData",
+				"atomicValue");
+		defaultDataGroup.addChild(atomic);
+		addTwoGroupChildrenWithSameNameInData(defaultDataGroup);
+
+		List<DataAtomic> atomicsFound = ((CoraDataGroup) defaultDataGroup)
+				.getChildrenOfTypeWithNameAndAttributes(DataAtomic.class, "childNameInData");
+		assertEquals(atomicsFound.size(), 1);
+		assertSame(atomicsFound.get(0), atomic);
+		List<DataChild> childrenFound = ((CoraDataGroup) defaultDataGroup)
+				.getChildrenOfTypeWithNameAndAttributes(DataChild.class, "childNameInData");
+		assertEquals(childrenFound.size(), 3);
+		assertSame(atomicsFound.get(0), atomic);
 	}
 
 }

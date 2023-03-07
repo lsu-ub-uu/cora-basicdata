@@ -396,4 +396,21 @@ public class CoraDataGroup implements DataGroup {
 		return children.removeIf(filter);
 	}
 
+	public <T extends DataChild> List<T> getChildrenOfTypeWithNameAndAttributes(Class<T> type,
+			String childNameInData, DataAttribute... childAttributes) {
+		return getChildrenOfTypeWithNameInDataStream(type, childNameInData, childAttributes)
+				.toList();
+	}
+
+	private <T> Stream<T> getChildrenOfTypeWithNameInDataStream(Class<T> type,
+			String childNameInData, DataAttribute... childAttributes) {
+		// return getChildrenOfTypeStream(type).filter(filterByNameInData(childNameInData))
+		// .map(type::cast);
+		return getChildrenOfTypeStream(type).filter(filterByNameInData(childNameInData))
+				.filter(filterByAttributes(childAttributes)).map(type::cast);
+	}
+
+	private <T> Stream<DataChild> getChildrenOfTypeStream(Class<T> type) {
+		return children.stream().filter(type::isInstance);
+	}
 }
