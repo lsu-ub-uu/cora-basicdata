@@ -1011,9 +1011,14 @@ public class CoraDataGroupTest {
 		defaultDataGroup.addChild(atomic);
 		addTwoGroupChildrenWithSameNameInData(defaultDataGroup);
 
+		List<DataGroup> groupsFound = ((CoraDataGroup) defaultDataGroup)
+				.getChildrenOfTypeWithNameAndAttributes(DataGroup.class, "childNameInData");
+		assertEquals(groupsFound.size(), 2);
+
 		List<DataAtomic> atomicsFound = ((CoraDataGroup) defaultDataGroup)
 				.getChildrenOfTypeWithNameAndAttributes(DataAtomic.class, "childNameInData");
 		assertEquals(atomicsFound.size(), 1);
+
 		assertSame(atomicsFound.get(0), atomic);
 		List<DataChild> childrenFound = ((CoraDataGroup) defaultDataGroup)
 				.getChildrenOfTypeWithNameAndAttributes(DataChild.class, "childNameInData");
