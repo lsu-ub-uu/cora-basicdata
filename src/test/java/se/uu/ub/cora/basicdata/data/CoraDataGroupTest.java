@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2019, 2022 Uppsala University Library
+ * Copyright 2023 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
@@ -113,6 +115,23 @@ public class CoraDataGroupTest {
 			+ "Attribute with id someAttributeId not found.")
 	public void testGetAttributeDoesNotExist() {
 		defaultDataGroup.getAttribute("someAttributeId");
+	}
+
+	@Test
+	public void testGetAttributeValueNoAttribute() throws Exception {
+		Optional<String> attributeValue = defaultDataGroup.getAttributeValue("attributeNameInData");
+
+		assertTrue(attributeValue.isEmpty());
+	}
+
+	@Test
+	public void testGetAttributeValueAttributeExists() throws Exception {
+		defaultDataGroup.addAttributeByIdWithValue("someAttributeName", "someValue");
+
+		Optional<String> attributeValue = defaultDataGroup.getAttributeValue("someAttributeName");
+
+		assertTrue(attributeValue.isPresent());
+		assertEquals(attributeValue.get(), "someValue");
 	}
 
 	@Test

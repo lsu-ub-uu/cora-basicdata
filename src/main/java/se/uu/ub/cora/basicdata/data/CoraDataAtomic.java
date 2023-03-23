@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2022 Uppsala University Library
+ * Copyright 2023 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -22,6 +23,7 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 import se.uu.ub.cora.data.DataAtomic;
@@ -113,6 +115,16 @@ public final class CoraDataAtomic implements DataAtomic {
 	@Override
 	public String getRepeatId() {
 		return repeatId;
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(nameInData)) {
+				return Optional.of(dataAttribute.getValue());
+			}
+		}
+		return Optional.empty();
 	}
 
 }
