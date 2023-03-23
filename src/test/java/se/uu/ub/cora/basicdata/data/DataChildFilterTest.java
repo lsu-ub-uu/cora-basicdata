@@ -30,8 +30,8 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChildFilter;
-import se.uu.ub.cora.testspies.data.DataAttributeSpy;
-import se.uu.ub.cora.testspies.data.DataChildSpy;
+import se.uu.ub.cora.data.spies.DataAttributeSpy;
+import se.uu.ub.cora.data.spies.DataChildSpy;
 
 public class DataChildFilterTest {
 

@@ -34,7 +34,7 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
-import se.uu.ub.cora.testspies.data.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 
 public class CoraDataRecordTest {
 	private CoraDataRecord dataRecord;

@@ -34,9 +34,10 @@
 
 	<properties>
 		<json.version>3.7.0</json.version>
+<!--		<coradata.version>7.7-SNAPSHOT</coradata.version>-->
 		<coradata.version>7.6.0</coradata.version>
+		<coradata-spies.version>1.5-SNAPSHOT</coradata-spies.version>
 		<testutils.version>1.9.0</testutils.version>
-		<testspies.version>1.2.0</testspies.version>
 	</properties>
 
 	<scm>
@@ -61,12 +62,6 @@
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>testspies</artifactId>
-			<version>${testspies.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
 			<scope>provided</scope>
@@ -75,6 +70,11 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>coradata</artifactId>
 			<version>${coradata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>coradata-spies</artifactId>
+			<version>${coradata-spies.version}</version>
 		</dependency>
 	</dependencies>
 </project>
