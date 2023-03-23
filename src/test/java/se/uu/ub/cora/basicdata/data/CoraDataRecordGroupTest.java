@@ -44,6 +44,8 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroupTest {
 
+	private static final String RECORD_INFO = "recordInfo";
+	private static final String VALIDATION_TYPE = "validationType";
 	private DataRecordGroup defaultRecordGroup;
 
 	@BeforeMethod
@@ -911,14 +913,14 @@ public class CoraDataRecordGroupTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Element not found for childNameInData:type")
 	public void testGetType_NoTypeLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData("recordInfo"));
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
 
 		defaultRecordGroup.getType();
 	}
 
 	@Test
 	public void testGetType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 		recordInfo
 				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("type", "", "someTypeId"));
@@ -928,7 +930,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testSetType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 		recordInfo
 				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("type", "", "someTypeId"));
@@ -940,7 +942,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testSetType_NoType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 
 		defaultRecordGroup.setType("someOtherTypeId");
@@ -967,14 +969,14 @@ public class CoraDataRecordGroupTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Atomic value not found for childNameInData:id")
 	public void testGetId_NoIdLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData("recordInfo"));
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
 
 		defaultRecordGroup.getId();
 	}
 
 	@Test
 	public void testGetId() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("id", "someId"));
 
@@ -983,7 +985,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testSetId() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("id", "", "someIdId"));
 
@@ -994,7 +996,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testSetId_NoId() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 
 		defaultRecordGroup.setId("someOtherId");
@@ -1020,14 +1022,14 @@ public class CoraDataRecordGroupTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Element not found for childNameInData:dataDivider")
 	public void testGetDataDivider_NoDataDividerLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData("recordInfo"));
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
 
 		defaultRecordGroup.getDataDivider();
 	}
 
 	@Test
 	public void testGetDataDivider() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("dataDivider", "",
 				"someDataDividerId"));
@@ -1037,7 +1039,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testSetDataDivider() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("dataDivider", "",
 				"someDataDividerId"));
@@ -1049,7 +1051,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testSetDataDivider_NoDataDivider() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData("recordInfo");
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
 		defaultRecordGroup.addChild(recordInfo);
 
 		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
@@ -1067,8 +1069,59 @@ public class CoraDataRecordGroupTest {
 		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
 	}
 
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Group not found for childNameInData:recordInfo")
+	public void testGetValidationType_NoRecordInfo() throws Exception {
+		defaultRecordGroup.getValidationType();
+	}
+
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Element not found for childNameInData:validationType")
+	public void testGetValidationType_NoValidationTypeLink() throws Exception {
+		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
+
+		defaultRecordGroup.getValidationType();
+	}
+
 	@Test
-	public void testImplementMethods() throws Exception {
-		assertTrue(false);
+	public void testGetValidationType() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE, "",
+				"someValidationTypeId"));
+
+		assertEquals(defaultRecordGroup.getValidationType(), "someValidationTypeId");
+	}
+
+	@Test
+	public void testSetValidationType() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
+		defaultRecordGroup.addChild(recordInfo);
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE, "",
+				"someValidationTypeId"));
+
+		defaultRecordGroup.setValidationType("someOtherValidationTypeId");
+
+		assertEquals(defaultRecordGroup.getValidationType(), "someOtherValidationTypeId");
+	}
+
+	@Test
+	public void testSetValidationType_NoValidationType() throws Exception {
+		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
+		defaultRecordGroup.addChild(recordInfo);
+
+		defaultRecordGroup.setValidationType("someOtherValidationTypeId");
+
+		assertEquals(defaultRecordGroup.getValidationType(), "someOtherValidationTypeId");
+		DataRecordLink ValidationTypeLink = (DataRecordLink) recordInfo
+				.getFirstChildWithNameInData(VALIDATION_TYPE);
+		assertEquals(ValidationTypeLink.getLinkedRecordType(), VALIDATION_TYPE);
+	}
+
+	@Test
+	public void testSetValidationType_NoRecordInfo() throws Exception {
+		defaultRecordGroup.setValidationType("someOtherValidationTypeId");
+
+		assertEquals(defaultRecordGroup.getValidationType(), "someOtherValidationTypeId");
 	}
 }

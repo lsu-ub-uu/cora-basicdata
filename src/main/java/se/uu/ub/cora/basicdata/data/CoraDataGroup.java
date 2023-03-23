@@ -399,7 +399,12 @@ public class CoraDataGroup implements DataGroup {
 	@Override
 	public <T> boolean containsChildOfTypeAndName(Class<T> type, String name) {
 		// TODO Auto-generated method stub
-		return false;
+		// return false;
+		// return children.stream().anyMatch(filterByNameInData(nameInData));
+		// return getAtomicChildrenStream().filter(filterByNameInData(name))
+		// .map(CoraDataAtomic.class::cast);
+		// return children.stream().anyMatch(filterByNameInData(nameInData));
+		return children.stream().filter(filterByNameInData(name)).anyMatch(type::isInstance);
 	}
 
 	@Override
@@ -435,5 +440,4 @@ public class CoraDataGroup implements DataGroup {
 		}
 		return Optional.empty();
 	}
-
 }

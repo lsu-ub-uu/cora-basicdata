@@ -1020,6 +1020,52 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
+	public void testContainsChildOfTypeAndName() throws Exception {
+		addTestChildrenToDefaultGroup();
+
+		assertFalse(defaultDataGroup.containsChildOfTypeAndName(DataAtomic.class, ""));
+		assertTrue(defaultDataGroup.containsChildOfTypeAndName(DataAtomic.class, "atomic1"));
+		assertFalse(defaultDataGroup.containsChildOfTypeAndName(DataGroup.class, ""));
+		assertTrue(defaultDataGroup.containsChildOfTypeAndName(DataGroup.class, "group1"));
+	}
+
+	private void addTestChildrenToDefaultGroup() {
+		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild);
+		atomicChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic1");
+
+		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild2);
+		atomicChild2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
+
+		DataAtomicSpy atomicChild3 = new DataAtomicSpy();
+		defaultDataGroup.addChild(atomicChild3);
+		atomicChild3.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
+
+		DataGroupSpy groupChild = new DataGroupSpy();
+		defaultDataGroup.addChild(groupChild);
+		groupChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group1");
+
+		DataGroupSpy groupChild2 = new DataGroupSpy();
+		defaultDataGroup.addChild(groupChild2);
+		groupChild2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group2");
+
+		DataGroupSpy groupChild3 = new DataGroupSpy();
+		defaultDataGroup.addChild(groupChild3);
+		groupChild3.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group2");
+	}
+
+	@Test
+	public void testGetFirstChildOfTypeAndName() throws Exception {
+		addTestChildrenToDefaultGroup();
+
+		// assertFalse(defaultDataGroup.containsChildOfTypeAndName(DataAtomic.class, ""));
+		// assertTrue(defaultDataGroup.containsChildOfTypeAndName(DataAtomic.class, "atomic1"));
+		// assertFalse(defaultDataGroup.containsChildOfTypeAndName(DataGroup.class, ""));
+		// assertTrue(defaultDataGroup.containsChildOfTypeAndName(DataGroup.class, "group1"));
+	}
+
+	@Test
 	public void testImplementMethods() throws Exception {
 		assertTrue(false);
 	}
