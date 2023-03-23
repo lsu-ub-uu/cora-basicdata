@@ -1019,4 +1019,8 @@ public class CoraDataGroupTest {
 		assertSame(childrenLeft.get(0), atomicChild);
 	}
 
+	@Test
+	public void testImplementMethods() throws Exception {
+		assertTrue(false);
+	}
 }

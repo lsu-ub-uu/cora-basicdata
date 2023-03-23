@@ -1066,4 +1066,9 @@ public class CoraDataRecordGroupTest {
 
 		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
 	}
+
+	@Test
+	public void testImplementMethods() throws Exception {
+		assertTrue(false);
+	}
 }

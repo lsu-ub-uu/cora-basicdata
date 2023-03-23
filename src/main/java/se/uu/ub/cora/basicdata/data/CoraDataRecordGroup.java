@@ -92,4 +92,16 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 				dataDivider));
 	}
 
+	@Override
+	public String getValidationType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setValidationType(String validationType) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
