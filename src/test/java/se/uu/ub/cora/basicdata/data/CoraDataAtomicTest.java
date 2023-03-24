@@ -114,6 +114,8 @@ public class CoraDataAtomicTest {
 
 	@Test
 	public void testGetAttributeValueAttributeExists() throws Exception {
+		dataAtomic.addAttributeByIdWithValue("someAttributeName3", "someValue");
+		dataAtomic.addAttributeByIdWithValue("someAttributeName2", "someValue");
 		dataAtomic.addAttributeByIdWithValue("someAttributeName", "someValue");
 
 		Optional<String> attributeValue = dataAtomic.getAttributeValue("someAttributeName");

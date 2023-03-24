@@ -398,37 +398,42 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public <T> boolean containsChildOfTypeAndName(Class<T> type, String name) {
-		// TODO Auto-generated method stub
-		// return false;
-		// return children.stream().anyMatch(filterByNameInData(nameInData));
-		// return getAtomicChildrenStream().filter(filterByNameInData(name))
-		// .map(CoraDataAtomic.class::cast);
-		// return children.stream().anyMatch(filterByNameInData(nameInData));
 		return children.stream().filter(filterByNameInData(name)).anyMatch(type::isInstance);
 	}
 
 	@Override
 	public <T extends DataChild> T getFirstChildOfTypeAndName(Class<T> type, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<T> optionalFirst = getOptionalFirstChildOfTypeAndName(type, name);
+		if (optionalFirst.isPresent()) {
+			return optionalFirst.get();
+		}
+		throw new DataMissingException("Child of type: " + type.getSimpleName() + " and name: "
+				+ name + " not found as child.");
+	}
+
+	private <T extends DataChild> Optional<T> getOptionalFirstChildOfTypeAndName(Class<T> type,
+			String name) {
+		return children.stream().filter(filterByNameInData(name)).map(type::cast).findFirst();
 	}
 
 	@Override
 	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return children.stream().filter(filterByNameInData(name)).map(type::cast).toList();
 	}
 
 	@Override
-	public <T> boolean removeFirstChildWithTypeAndName(Class<T> type, String name) {
-		// TODO Auto-generated method stub
+	public <T extends DataChild> boolean removeFirstChildWithTypeAndName(Class<T> type,
+			String name) {
+		Optional<T> optionalFirst = getOptionalFirstChildOfTypeAndName(type, name);
+		if (optionalFirst.isPresent()) {
+			return children.remove(optionalFirst.get());
+		}
 		return false;
 	}
 
 	@Override
-	public <T> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
-		// TODO Auto-generated method stub
-		return false;
+	public <T extends DataChild> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
+		return children.removeAll(getChildrenOfTypeAndName(type, name));
 	}
 
 	@Override
