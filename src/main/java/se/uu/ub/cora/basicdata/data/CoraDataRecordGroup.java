@@ -25,6 +25,7 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGroup {
 
+	private static final String VALIDATION_TYPE = "validationType";
 	private static final String ID = "id";
 	private static final String DATA_DIVIDER = "dataDivider";
 	private static final String TYPE = "type";
@@ -92,4 +93,21 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 				dataDivider));
 	}
 
+	@Override
+	public String getValidationType() {
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		DataRecordLink typeLink = (DataRecordLink) recordInfo
+				.getFirstChildWithNameInData(VALIDATION_TYPE);
+		return typeLink.getLinkedRecordId();
+	}
+
+	@Override
+	public void setValidationType(String validationType) {
+		ensureRecordInfoExists();
+		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
+		recordInfo.removeAllChildrenMatchingFilter(
+				CoraDataChildFilter.usingNameInData(VALIDATION_TYPE));
+		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE,
+				VALIDATION_TYPE, validationType));
+	}
 }

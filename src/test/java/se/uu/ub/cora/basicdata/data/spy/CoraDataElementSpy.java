@@ -1,6 +1,7 @@
 package se.uu.ub.cora.basicdata.data.spy;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
@@ -47,6 +48,12 @@ public class CoraDataElementSpy implements DataChild {
 	public Collection<DataAttribute> getAttributes() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }

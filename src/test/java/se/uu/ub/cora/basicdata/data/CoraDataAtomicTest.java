@@ -1,5 +1,6 @@
 /*
  * Copyright 2015, 2022 Uppsala University Library
+ * Copyright 2023 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -24,6 +25,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -101,6 +103,25 @@ public class CoraDataAtomicTest {
 			+ "Attribute with id someAttributeId not found.")
 	public void testGetAttributeDoesNotExist() {
 		dataAtomic.getAttribute("someAttributeId");
+	}
+
+	@Test
+	public void testGetAttributeValueNoAttribute() throws Exception {
+		Optional<String> attributeValue = dataAtomic.getAttributeValue("attributeNameInData");
+
+		assertTrue(attributeValue.isEmpty());
+	}
+
+	@Test
+	public void testGetAttributeValueAttributeExists() throws Exception {
+		dataAtomic.addAttributeByIdWithValue("someAttributeName3", "someValue");
+		dataAtomic.addAttributeByIdWithValue("someAttributeName2", "someValue");
+		dataAtomic.addAttributeByIdWithValue("someAttributeName", "someValue");
+
+		Optional<String> attributeValue = dataAtomic.getAttributeValue("someAttributeName");
+
+		assertTrue(attributeValue.isPresent());
+		assertEquals(attributeValue.get(), "someValue");
 	}
 
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright 2015, 2019, 2020, 2022 Uppsala University Library
- * Copyright 2016 Olov McKie
+ * Copyright 2016, 2023 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -396,4 +396,53 @@ public class CoraDataGroup implements DataGroup {
 		return children.removeIf(filter);
 	}
 
+	@Override
+	public <T> boolean containsChildOfTypeAndName(Class<T> type, String name) {
+		return children.stream().filter(filterByNameInData(name)).anyMatch(type::isInstance);
+	}
+
+	@Override
+	public <T extends DataChild> T getFirstChildOfTypeAndName(Class<T> type, String name) {
+		Optional<T> optionalFirst = getOptionalFirstChildOfTypeAndName(type, name);
+		if (optionalFirst.isPresent()) {
+			return optionalFirst.get();
+		}
+		throw new DataMissingException("Child of type: " + type.getSimpleName() + " and name: "
+				+ name + " not found as child.");
+	}
+
+	private <T extends DataChild> Optional<T> getOptionalFirstChildOfTypeAndName(Class<T> type,
+			String name) {
+		return children.stream().filter(filterByNameInData(name)).map(type::cast).findFirst();
+	}
+
+	@Override
+	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
+		return children.stream().filter(filterByNameInData(name)).map(type::cast).toList();
+	}
+
+	@Override
+	public <T extends DataChild> boolean removeFirstChildWithTypeAndName(Class<T> type,
+			String name) {
+		Optional<T> optionalFirst = getOptionalFirstChildOfTypeAndName(type, name);
+		if (optionalFirst.isPresent()) {
+			return children.remove(optionalFirst.get());
+		}
+		return false;
+	}
+
+	@Override
+	public <T extends DataChild> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
+		return children.removeAll(getChildrenOfTypeAndName(type, name));
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(nameInData)) {
+				return Optional.of(dataAttribute.getValue());
+			}
+		}
+		return Optional.empty();
+	}
 }
