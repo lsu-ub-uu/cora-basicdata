@@ -65,32 +65,6 @@ public class CoraDataResourceLinkCopierTest {
 	}
 
 	@Test
-	public void testCopyCompleteResourceLink() {
-		CoraDataResourceLink resourceLinkCopy = (CoraDataResourceLink) dataResourceLinkCopier
-				.copy();
-		CoraDataAtomic streamId = (CoraDataAtomic) resourceLinkCopy
-				.getFirstChildWithNameInData("streamId");
-		assertEquals(streamId.getValue(),
-				originalResourceLink.getFirstAtomicValueWithNameInData("streamId"));
-
-		CoraDataAtomic filename = (CoraDataAtomic) resourceLinkCopy
-				.getFirstChildWithNameInData("filename");
-		assertEquals(filename.getValue(),
-				originalResourceLink.getFirstAtomicValueWithNameInData("filename"));
-
-		CoraDataAtomic filesize = (CoraDataAtomic) resourceLinkCopy
-				.getFirstChildWithNameInData("filesize");
-		assertEquals(filesize.getValue(),
-				originalResourceLink.getFirstAtomicValueWithNameInData("filesize"));
-
-		CoraDataAtomic mimeType = (CoraDataAtomic) resourceLinkCopy
-				.getFirstChildWithNameInData("mimeType");
-		assertEquals(mimeType.getValue(),
-				originalResourceLink.getFirstAtomicValueWithNameInData("mimeType"));
-
-	}
-
-	@Test
 	public void testCopyDataAssertNoRepeatId() {
 		CoraDataResourceLink dataGroupCopy = (CoraDataResourceLink) dataResourceLinkCopier.copy();
 		assertNull(dataGroupCopy.getRepeatId());

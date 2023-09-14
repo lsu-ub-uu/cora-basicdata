@@ -39,21 +39,10 @@ public class CoraDataResourceLinkCopier implements DataCopier {
 	public DataChild copy() {
 		originalResourceLink = (CoraDataResourceLink) dataElement;
 		resourceLinkCopy = CoraDataResourceLink.withNameInData(dataElement.getNameInData());
-		copyAndAddChildWithNameInData("streamId");
-		copyAndAddChildWithNameInData("filename");
-		copyAndAddChildWithNameInData("filesize");
-		copyAndAddChildWithNameInData("mimeType");
 		possiblyCopyRepeatId();
 		possiblyCopyAttributes();
 
 		return resourceLinkCopy;
-	}
-
-	private void copyAndAddChildWithNameInData(String childNameInData) {
-		CoraDataAtomicCopier atomicCopier = CoraDataAtomicCopier
-				.usingDataAtomic(originalResourceLink.getFirstChildWithNameInData(childNameInData));
-		DataChild atomicChild = atomicCopier.copy();
-		resourceLinkCopy.addChild(atomicChild);
 	}
 
 	private void possiblyCopyRepeatId() {
