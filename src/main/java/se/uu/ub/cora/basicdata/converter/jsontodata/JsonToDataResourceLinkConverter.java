@@ -20,15 +20,13 @@ package se.uu.ub.cora.basicdata.converter.jsontodata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.Convertible;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
-import se.uu.ub.cora.json.parser.JsonParseException;
 
 public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
 		implements JsonToDataConverter {
 
-	private static final int NUM_OF_RESOURCELINK_CHILDREN = 4;
+	private static final int NUM_OF_RESOURCELINK_CHILDREN = 0;
 
 	private JsonToDataResourceLinkConverter(JsonObject jsonObject) {
 		super(jsonObject);
@@ -37,28 +35,19 @@ public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
 	@Override
 	public Convertible toInstance() {
 		CoraDataResourceLink resourceLink = (CoraDataResourceLink) super.toInstance();
-		throwErrorIfLinkChildrenAreIncorrect(resourceLink);
+		// throwErrorIfLinkChildrenAreIncorrect(resourceLink);
 		return resourceLink;
 	}
 
-	private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
-		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
-			throw new JsonParseException(
-					"ResourceLinkData must and can only contain children with name "
-							+ "streamId and filename and filesize and mimeType");
-		}
-	}
+	// private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
+	// if (incorrectNumberOfChildren(recordLink)) {
+	// throw new JsonParseException("ResourceLinkData must not have any children");
+	// }
+	// }
 
-	private boolean incorrectNumberOfChildren(DataGroup recordLink) {
-		return recordLink.getChildren().size() != NUM_OF_RESOURCELINK_CHILDREN;
-	}
-
-	private boolean incorrectChildren(DataGroup recordLink) {
-		return !recordLink.containsChildWithNameInData("streamId")
-				|| !recordLink.containsChildWithNameInData("filename")
-				|| !recordLink.containsChildWithNameInData("filesize")
-				|| !recordLink.containsChildWithNameInData("mimeType");
-	}
+	// private boolean incorrectNumberOfChildren(DataGroup recordLink) {
+	// return recordLink.getChildren().size() != NUM_OF_RESOURCELINK_CHILDREN;
+	// }
 
 	public static JsonToDataResourceLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataResourceLinkConverter(jsonObject);

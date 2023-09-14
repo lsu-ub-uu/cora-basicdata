@@ -34,13 +34,22 @@ public class JsonToDataResourceLinkConverterTest {
 
 	@Test
 	public void testToInstance() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
+		String json = "{\"children\":[],\"name\":\"someResourceLink\"}";
 		CoraDataResourceLink resourceLink = (CoraDataResourceLink) getConverterdLink(json);
 		assertEquals(resourceLink.getNameInData(), "someResourceLink");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("streamId"), "aStreamId");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filename"), "aFilename");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filesize"), "12345");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("mimeType"), "application/png");
+	}
+
+	@Test
+	public void testName() throws Exception {
+		String json = "{\n" + "  \"children\": [\n" + "    {\n"
+				+ "      \"name\": \"resourceId\",\n"
+				+ "      \"value\": \"binary:3216882709379211\"\n" + "    },\n" + "    {\n"
+				+ "      \"name\": \"resourceLink\"\n" + "    },\n" + "    {\n"
+				+ "      \"name\": \"fileSize\",\n" + "      \"value\": \"110104\"\n" + "    },\n"
+				+ "    {\n" + "      \"name\": \"mimeType\",\n"
+				+ "      \"value\": \"application/octet-stream\"\n" + "    }\n" + "  ],\n"
+				+ "  \"name\": \"master\"\n" + "}";
+		CoraDataResourceLink resourceLink = (CoraDataResourceLink) getConverterdLink(json);
 	}
 
 	private DataLink getConverterdLink(String json) {
@@ -55,7 +64,7 @@ public class JsonToDataResourceLinkConverterTest {
 
 	@Test
 	public void testToClassWithRepeatId() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"repeatId\":\"0\",\"name\":\"someResourceLink\"}";
+		String json = "{\"children\":[],\"repeatId\":\"0\",\"name\":\"someResourceLink\"}";
 		DataLink dataLink = getConverterdLink(json);
 		assertEquals(dataLink.getNameInData(), "someResourceLink");
 		assertEquals(dataLink.getRepeatId(), "0");
@@ -63,7 +72,7 @@ public class JsonToDataResourceLinkConverterTest {
 
 	@Test
 	public void testToClassWithAttribute() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"attributes\":{\"type\":\"someType\"},\"name\":\"someResourceLink\"}";
+		String json = "{\"children\":[],\"attributes\":{\"type\":\"someType\"},\"name\":\"someResourceLink\"}";
 		DataLink dataLink = getConverterdLink(json);
 
 		assertEquals(dataLink.getNameInData(), "someResourceLink");
@@ -96,38 +105,4 @@ public class JsonToDataResourceLinkConverterTest {
 		getConverterdLink(json);
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoStreamId() {
-		String json = "{\"children\":[{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoStreamIdButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"NOTstreamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoFilenameButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"NOTfilename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoFilesizeButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"NOTfilesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoMimeTypeButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"NOTmimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
 }

@@ -34,7 +34,7 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	private static final int NUM_OF_RECORDLINK_CHILDREN = 2;
 	private static final int NUM_OF_RECORDLINK_CHILDREN_ONE_OPTIONAL = 3;
 	private static final int MAX_NUM_OF_RECORDLINK_CHILDREN = 4;
-	private static final int NUM_OF_RESOURCELINK_CHILDREN = 4;
+	private static final int NUM_OF_RESOURCELINK_CHILDREN = 0;
 
 	@Override
 	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
