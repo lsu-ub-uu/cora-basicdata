@@ -166,16 +166,13 @@ public class BasicDataToJsonConverterFactoryTest {
 
 	@Test
 	public void testDataResourceLinkNoUrl() throws Exception {
-		DataGroupToJsonConverter dataToJsonConverter = (DataGroupToJsonConverter) converterFactory
+		DataResourceLinkToJsonConverter dataToJsonConverter = (DataResourceLinkToJsonConverter) converterFactory
 				.factorUsingConvertible(dataResourceLink);
 
 		JsonBuilderFactory jsonBuilderFactory = dataToJsonConverter.jsonBuilderFactory;
 		assertSame(jsonBuilderFactory, builderFactory);
 		assertFalse(dataToJsonConverter instanceof DataResourceLinkToJsonConverter);
 	}
-
-	// TODO: Implement Converter for DataList add test
-	// TODO: Implement Converter for DataRecord add test
 
 	@Test
 	public void testDataGroupWithUrl() {
