@@ -56,4 +56,10 @@ public class CoraDataElementSpy implements DataChild {
 		return Optional.empty();
 	}
 
+	@Override
+	public boolean hasRepeatId() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

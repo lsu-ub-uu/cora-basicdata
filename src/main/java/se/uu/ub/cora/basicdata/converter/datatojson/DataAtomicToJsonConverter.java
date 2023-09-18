@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019 Uppsala University Library
+ * Copyright 2015, 2019, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -52,13 +52,9 @@ public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 	}
 
 	private void possiblyAddRepeatId(JsonObjectBuilder jsonObjectBuilder) {
-		if (hasNonEmptyRepeatId()) {
+		if (dataAtomic.hasRepeatId()) {
 			jsonObjectBuilder.addKeyString("repeatId", dataAtomic.getRepeatId());
 		}
-	}
-
-	private boolean hasNonEmptyRepeatId() {
-		return dataAtomic.getRepeatId() != null && !"".equals(dataAtomic.getRepeatId());
 	}
 
 	private void possiblyAddAttributes(JsonObjectBuilder jsonObjectBuilder) {

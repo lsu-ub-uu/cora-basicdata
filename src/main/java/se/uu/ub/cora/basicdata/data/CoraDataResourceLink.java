@@ -77,6 +77,11 @@ public final class CoraDataResourceLink implements DataResourceLink {
 	}
 
 	@Override
+	public boolean hasRepeatId() {
+		return repeatId != null && !"".equals(repeatId);
+	}
+
+	@Override
 	public String getRepeatId() {
 		return repeatId;
 	}

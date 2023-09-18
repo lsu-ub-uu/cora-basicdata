@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Uppsala University Library
+ * Copyright 2020, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,44 +18,32 @@
  */
 package se.uu.ub.cora.basicdata.copier;
 
-import java.util.Collection;
-
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
-import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.copier.DataCopier;
 
 public class CoraDataResourceLinkCopier implements DataCopier {
 
-	private DataChild dataElement;
-	private CoraDataResourceLink resourceLinkCopy;
 	private CoraDataResourceLink originalResourceLink;
+	private CoraDataResourceLink resourceLinkCopy;
 
-	public CoraDataResourceLinkCopier(DataChild dataElement) {
-		this.dataElement = dataElement;
+	public CoraDataResourceLinkCopier(DataResourceLink originalResourceLink) {
+		this.originalResourceLink = (CoraDataResourceLink) originalResourceLink;
 	}
 
 	@Override
 	public DataChild copy() {
-		originalResourceLink = (CoraDataResourceLink) dataElement;
-		resourceLinkCopy = CoraDataResourceLink.withNameInData(dataElement.getNameInData());
+		resourceLinkCopy = CoraDataResourceLink.withNameInDataAndMimeType(
+				originalResourceLink.getNameInData(), originalResourceLink.getMimeType());
 		possiblyCopyRepeatId();
-		possiblyCopyAttributes();
 
 		return resourceLinkCopy;
 	}
 
 	private void possiblyCopyRepeatId() {
-		if (originalResourceLink.getRepeatId() != null) {
+		if (originalResourceLink.hasRepeatId()) {
 			resourceLinkCopy.setRepeatId(originalResourceLink.getRepeatId());
-		}
-	}
-
-	private void possiblyCopyAttributes() {
-		Collection<DataAttribute> attributes = originalResourceLink.getAttributes();
-		for (DataAttribute attribute : attributes) {
-			resourceLinkCopy.addAttributeByIdWithValue(attribute.getNameInData(),
-					attribute.getValue());
 		}
 	}
 

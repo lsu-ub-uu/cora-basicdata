@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -52,7 +52,6 @@ public class CoraDataCopierFactoryTest {
 
 		CoraDataGroupCopier dataGroupCopier = (CoraDataGroupCopier) dataCopier;
 		assertTrue(dataGroupCopier.getCopierFactory() instanceof CoraDataCopierFactoryImp);
-
 	}
 
 	@Test
@@ -67,25 +66,11 @@ public class CoraDataCopierFactoryTest {
 
 	@Test
 	public void testFactorDataResourceLinkCopier() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("master");
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", "binary:456"));
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("filename", "someImage.png"));
-		dataGroup.addChild(CoraDataAtomic.withNameInDataAndValue("filesize", "44196"));
-		dataGroup.addChild(
-				CoraDataAtomic.withNameInDataAndValue("mimeType", "application/octet-stream"));
-
-		// CoraDataResourceLink resourceLink = CoraDataResourceLink.withNameInData("master");
-		// resourceLink.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", "binary:456"));
-		// resourceLink.addChild(CoraDataAtomic.withNameInDataAndValue("filename",
-		// "someImage.png"));
-		// resourceLink.addChild(CoraDataAtomic.withNameInDataAndValue("filesize", "44196"));
-		// resourceLink.addChild(
-		// CoraDataAtomic.withNameInDataAndValue("mimeType", "application/octet-stream"));
-
-		CoraDataResourceLink dataRecordLink = CoraDataResourceLink.fromDataGroup(dataGroup);
+		CoraDataResourceLink resourceLink = CoraDataResourceLink
+				.withNameInDataAndMimeType("thumbnail", "image/jpeg");
 
 		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
-		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(dataRecordLink);
+		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(resourceLink);
 		assertTrue(dataCopier instanceof CoraDataResourceLinkCopier);
 	}
 }

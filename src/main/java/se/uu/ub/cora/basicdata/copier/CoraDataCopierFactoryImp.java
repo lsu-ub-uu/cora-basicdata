@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,6 +22,7 @@ import se.uu.ub.cora.basicdata.data.CoraDataRecordLink;
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataChild;
+import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.copier.DataCopier;
 import se.uu.ub.cora.data.copier.DataCopierFactory;
 
@@ -34,7 +35,7 @@ public class CoraDataCopierFactoryImp implements DataCopierFactory {
 		} else if (dataElement instanceof CoraDataRecordLink) {
 			return new CoraDataRecordLinkCopier((CoraDataRecordLink) dataElement);
 		} else if (dataElement instanceof CoraDataResourceLink) {
-			return new CoraDataResourceLinkCopier(dataElement);
+			return new CoraDataResourceLinkCopier((DataResourceLink) dataElement);
 		}
 		return CoraDataGroupCopier.usingDataGroupAndCopierFactory(dataElement,
 				new CoraDataCopierFactoryImp());
