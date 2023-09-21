@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import java.util.Optional;
+
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
@@ -34,7 +36,7 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 public class BasicDataToJsonConverterFactory implements DataToJsonConverterFactory {
 	JsonBuilderFactory builderFactory;
 	String baseUrl;
-	String recordUrl;
+	Optional<String> recordUrl;
 
 	/**
 	 * withoutActionLinksUsingBuilderFactory will factor {@link DataToJsonConverter}s that does not
@@ -51,15 +53,17 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 
 	BasicDataToJsonConverterFactory(JsonBuilderFactory factory) {
 		this.builderFactory = factory;
+		recordUrl = Optional.empty();
 	}
 
 	@Override
 	public DataToJsonConverter factorUsingConvertible(Convertible convertible) {
-		if (convertible instanceof DataList) {
+		if (isDataList(convertible)) {
 			return DataListToJsonConverter.usingJsonFactoryForDataList(this, builderFactory,
 					(DataList) convertible);
 		}
-		if (convertible instanceof DataRecord) {
+
+		if (isDataRecord(convertible)) {
 			RecordActionsToJsonConverter actionsConverter = RecordActionsToJsonConverterImp
 					.usingConverterFactoryAndBuilderFactoryAndBaseUrl(this, builderFactory,
 							baseUrl);
@@ -74,17 +78,30 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 					.usingConverterFactoryAndJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(this,
 							builderFactory, (DataRecordLink) convertible, baseUrl);
 		}
+
 		if (isDataResourceLinkAndHasRecordUrl(convertible)) {
+
 			return DataResourceLinkToJsonConverter
 					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
 							builderFactory, (DataResourceLink) convertible, recordUrl);
+			// TODO add new method without recordUrl
 
 		}
-		if (convertible instanceof DataGroup) {
+
+		if (isDataResourceLinkAndHasNoRecordUrl(convertible)) {
+
+			return DataResourceLinkToJsonConverter
+					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
+							builderFactory, (DataResourceLink) convertible, recordUrl);
+			// TODO add new method without recordUrl
+
+		}
+
+		if (isDataGroup(convertible)) {
 			return DataGroupToJsonConverter.usingConverterFactoryAndBuilderFactoryAndDataGroup(this,
 					builderFactory, (DataGroup) convertible);
 		}
-		if (convertible instanceof DataAtomic) {
+		if (isDataAtomic(convertible)) {
 			return DataAtomicToJsonConverter.usingJsonBuilderFactoryAndDataAtomic(builderFactory,
 					(DataAtomic) convertible);
 		}
@@ -92,8 +109,28 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 				(DataAttribute) convertible);
 	}
 
+	private boolean isDataList(Convertible convertible) {
+		return convertible instanceof DataList;
+	}
+
+	private boolean isDataRecord(Convertible convertible) {
+		return convertible instanceof DataRecord;
+	}
+
+	private boolean isDataAtomic(Convertible convertible) {
+		return convertible instanceof DataAtomic;
+	}
+
+	private boolean isDataGroup(Convertible convertible) {
+		return convertible instanceof DataGroup;
+	}
+
 	private boolean isDataResourceLinkAndHasRecordUrl(Convertible convertible) {
-		return (convertible instanceof DataResourceLink) && (recordUrl != null);
+		return (convertible instanceof DataResourceLink) && (recordUrl.isPresent());
+	}
+
+	private boolean isDataResourceLinkAndHasNoRecordUrl(Convertible convertible) {
+		return (convertible instanceof DataResourceLink) && (recordUrl.isEmpty());
 	}
 
 	private boolean isDataRecordLinkAndHasBaseUrl(Convertible convertible) {
@@ -104,7 +141,6 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 	public DataToJsonConverter factorUsingBaseUrlAndConvertible(String baseUrl,
 			Convertible convertible) {
 		this.baseUrl = baseUrl;
-
 		return factorUsingConvertible(convertible);
 	}
 
@@ -112,7 +148,7 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl,
 			String recordUrl, Convertible convertible) {
 		this.baseUrl = baseUrl;
-		this.recordUrl = recordUrl;
+		this.recordUrl = Optional.of(recordUrl);
 
 		return factorUsingConvertible(convertible);
 	}

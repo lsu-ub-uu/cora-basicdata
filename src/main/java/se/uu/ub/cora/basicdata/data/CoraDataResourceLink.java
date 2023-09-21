@@ -1,5 +1,5 @@
-/*
- * Copyright 2015, 2016 Uppsala University Library
+/**
+ * Copyright 2015, 2016, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,44 +19,36 @@
 package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataChild;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataResourceLink;
 
-public final class CoraDataResourceLink extends CoraDataGroup implements DataResourceLink {
+public final class CoraDataResourceLink implements DataResourceLink {
+
+	private static final String MIME_TYPE_GENERIC = "application/octet-stream";
+	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
 
 	private List<Action> actions = new ArrayList<>();
+	private String nameInData;
+	private String mimeType;
+	private String repeatId;
 
 	public static CoraDataResourceLink withNameInData(String nameInData) {
-		return new CoraDataResourceLink(nameInData);
+		return new CoraDataResourceLink(nameInData, MIME_TYPE_GENERIC);
 	}
 
-	private CoraDataResourceLink(String nameInData) {
-		super(nameInData);
+	public static CoraDataResourceLink withNameInDataAndMimeType(String nameInData,
+			String mimeType) {
+		return new CoraDataResourceLink(nameInData, mimeType);
 	}
 
-	public static CoraDataResourceLink fromDataGroup(DataGroup dataGroup) {
-		return new CoraDataResourceLink(dataGroup);
-	}
-
-	private CoraDataResourceLink(DataGroup dataGroup) {
-		super(dataGroup.getNameInData());
-		addResourceLinkChildren(dataGroup);
-		setRepeatId(dataGroup.getRepeatId());
-	}
-
-	private void addResourceLinkChildren(DataGroup dataGroup) {
-		DataChild streamId = dataGroup.getFirstChildWithNameInData("streamId");
-		addChild(streamId);
-		DataChild fileName = dataGroup.getFirstChildWithNameInData("filename");
-		addChild(fileName);
-		DataChild fileSize = dataGroup.getFirstChildWithNameInData("filesize");
-		addChild(fileSize);
-		DataChild mimeType = dataGroup.getFirstChildWithNameInData("mimeType");
-		addChild(mimeType);
+	private CoraDataResourceLink(String nameInData, String mimeType) {
+		this.nameInData = nameInData;
+		this.mimeType = mimeType;
 	}
 
 	@Override
@@ -70,42 +62,58 @@ public final class CoraDataResourceLink extends CoraDataGroup implements DataRes
 	}
 
 	@Override
-	public void setStreamId(String streamId) {
-		super.addChild(CoraDataAtomic.withNameInDataAndValue("streamId", streamId));
-	}
-
-	@Override
-	public String getStreamId() {
-		return super.getFirstAtomicValueWithNameInData("streamId");
-	}
-
-	@Override
-	public void setFileName(String fileName) {
-		super.addChild(CoraDataAtomic.withNameInDataAndValue("filename", fileName));
-	}
-
-	@Override
-	public String getFileName() {
-		return super.getFirstAtomicValueWithNameInData("filename");
-	}
-
-	@Override
-	public void setFileSize(String fileSize) {
-		super.addChild(CoraDataAtomic.withNameInDataAndValue("filesize", fileSize));
-	}
-
-	@Override
-	public String getFileSize() {
-		return super.getFirstAtomicValueWithNameInData("filesize");
-	}
-
-	@Override
 	public void setMimeType(String mimeType) {
-		super.addChild(CoraDataAtomic.withNameInDataAndValue("mimeType", mimeType));
+		this.mimeType = mimeType;
 	}
 
 	@Override
 	public String getMimeType() {
-		return super.getFirstAtomicValueWithNameInData("mimeType");
+		return mimeType;
 	}
+
+	@Override
+	public void setRepeatId(String repeatId) {
+		this.repeatId = repeatId;
+	}
+
+	@Override
+	public boolean hasRepeatId() {
+		return repeatId != null && !"".equals(repeatId);
+	}
+
+	@Override
+	public String getRepeatId() {
+		return repeatId;
+	}
+
+	@Override
+	public String getNameInData() {
+		return nameInData;
+	}
+
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		return false;
+	}
+
+	@Override
+	public DataAttribute getAttribute(String attributeId) {
+		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+	}
+
 }

@@ -34,7 +34,7 @@
 
 	<properties>
 		<json.version>3.8.0</json.version>
-		<coradata.version>7.7.0</coradata.version>
+		<coradata.version>8.0-SNAPSHOT</coradata.version>
 		<coradata-spies.version>1.5.0</coradata-spies.version>
 		<testutils.version>1.10.0</testutils.version>
 	</properties>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,43 +18,39 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
-import se.uu.ub.cora.data.DataGroup;
+import java.util.Optional;
+
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
-		implements DataToJsonConverter {
+public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 
-	private DataResourceLink dataResourceLink;
-	String recordURL;
-	JsonBuilderFactory resourceLinkBuilderFactory;
-	private static final String READ = "read";
 	private static final String GET = "GET";
+	private static final String READ = "read";
+	private DataResourceLink dataResourceLink;
+	private Optional<String> recordURL;
+	private DataToJsonConverterFactory converterFactory;
+	protected JsonBuilderFactory jsonBuilderFactory;
+	private JsonObjectBuilder jsonObjectBuilder;
 
 	private DataResourceLinkToJsonConverter(DataToJsonConverterFactory converterFactory,
-			DataResourceLink dataResourceLink, String recordURL,
+			DataResourceLink dataResourceLink, Optional<String> recordURL,
 			JsonBuilderFactory jsonBuilderFactory) {
-
-		super(converterFactory, jsonBuilderFactory, (DataGroup) dataResourceLink);
+		this.converterFactory = converterFactory;
 		this.dataResourceLink = dataResourceLink;
 		this.recordURL = recordURL;
-		this.resourceLinkBuilderFactory = jsonBuilderFactory;
+		this.jsonBuilderFactory = jsonBuilderFactory;
 	}
 
 	public static DataResourceLinkToJsonConverter usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 			DataToJsonConverterFactory converterFactory, JsonBuilderFactory factory,
-			DataResourceLink convertible, String recordUrl) {
+			DataResourceLink convertible, Optional<String> recordUrl) {
 
 		return new DataResourceLinkToJsonConverter(converterFactory, convertible, recordUrl,
 				factory);
-	}
-
-	@Override
-	void hookForSubclassesToImplementExtraConversion() {
-		possiblyAddActionLink();
 	}
 
 	private void possiblyAddActionLink() {
@@ -64,23 +60,63 @@ public class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter
 	}
 
 	private void createReadActionLink() {
-		JsonObjectBuilder actionLinksObject = resourceLinkBuilderFactory.createObjectBuilder();
-
-		JsonObjectBuilder internalLinkBuilder = buildInternalLinkBuilder();
-		actionLinksObject.addKeyJsonObjectBuilder(READ, internalLinkBuilder);
-
-		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+		JsonObjectBuilder actionLinksObject = jsonBuilderFactory.createObjectBuilder();
+		JsonObjectBuilder readAction = buildReadAction();
+		actionLinksObject.addKeyJsonObjectBuilder(READ, readAction);
+		jsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
 	}
 
-	private JsonObjectBuilder buildInternalLinkBuilder() {
-		String url = recordURL + "/" + dataResourceLink.getNameInData();
+	private JsonObjectBuilder buildReadAction() {
+		String url = recordURL.get() + "/" + dataResourceLink.getNameInData();
 		String mimeType = dataResourceLink.getMimeType();
-		JsonObjectBuilder internalLinkBuilder = resourceLinkBuilderFactory.createObjectBuilder();
-		internalLinkBuilder.addKeyString("rel", READ);
-		internalLinkBuilder.addKeyString("url", url);
-		internalLinkBuilder.addKeyString("requestMethod", GET);
-		internalLinkBuilder.addKeyString("accept", mimeType);
-		return internalLinkBuilder;
+		JsonObjectBuilder readAction = jsonBuilderFactory.createObjectBuilder();
+		readAction.addKeyString("rel", READ);
+		readAction.addKeyString("url", url);
+		readAction.addKeyString("requestMethod", GET);
+		readAction.addKeyString("accept", mimeType);
+		return readAction;
+	}
+
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		jsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		addNameInDataAndMimeType();
+		possiblyAddRepeatId();
+		possiblyAddActionLink();
+		return jsonObjectBuilder;
+	}
+
+	private void addNameInDataAndMimeType() {
+		jsonObjectBuilder.addKeyString("name", dataResourceLink.getNameInData());
+		jsonObjectBuilder.addKeyString("mimeType", dataResourceLink.getMimeType());
+	}
+
+	private void possiblyAddRepeatId() {
+		if (dataResourceLink.hasRepeatId()) {
+			jsonObjectBuilder.addKeyString("repeatId", dataResourceLink.getRepeatId());
+		}
+	}
+
+	@Override
+	public String toJsonCompactFormat() {
+		return toJsonObjectBuilder().toJsonFormattedString();
+	}
+
+	@Override
+	public String toJson() {
+		return toJsonObjectBuilder().toJsonFormattedPrettyString();
+	}
+
+	Object onlyForTestGetConverterFactory() {
+		return converterFactory;
+	}
+
+	JsonBuilderFactory onlyForTestGetJsonBuilderFactory() {
+		return jsonBuilderFactory;
+	}
+
+	Optional<String> onlyForTestGetRecordUrl() {
+		return recordURL;
 	}
 
 }

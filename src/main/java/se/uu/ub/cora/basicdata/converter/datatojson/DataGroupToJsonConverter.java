@@ -74,13 +74,9 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 	}
 
 	private void possiblyAddRepeatId() {
-		if (hasNonEmptyRepeatId()) {
+		if (dataGroup.hasRepeatId()) {
 			dataGroupJsonObjectBuilder.addKeyString("repeatId", dataGroup.getRepeatId());
 		}
-	}
-
-	private boolean hasNonEmptyRepeatId() {
-		return dataGroup.getRepeatId() != null && !"".equals(dataGroup.getRepeatId());
 	}
 
 	private void addAttributesToGroup() {

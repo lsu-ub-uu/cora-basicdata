@@ -108,6 +108,11 @@ public final class CoraDataAtomic implements DataAtomic {
 	}
 
 	@Override
+	public boolean hasRepeatId() {
+		return repeatId != null && !"".equals(repeatId);
+	}
+
+	@Override
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
 	}

@@ -1,44 +1,66 @@
+/**
+ * Copyright 2015, 2016, 2023 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.uu.ub.cora.basicdata.data;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.DataResourceLink;
 
 public class CoraDataResourceLinkTest {
 
+	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
+	private static final String SOME_NAME_IN_DATA = "someNameInData";
+	private static final String MIME_TYPE_GENERIC = "application/octet-stream";
+	private static final String SOME_MIME_TYPE = "someMimeType";
 	CoraDataResourceLink resourceLink;
 
 	@BeforeMethod
 	public void setUp() {
-		resourceLink = CoraDataResourceLink.withNameInData("nameInData");
+		resourceLink = CoraDataResourceLink.withNameInData(SOME_NAME_IN_DATA);
 
 	}
 
 	@Test
-	public void testCorrectType() {
+	public void testConstructWithNameInData() {
 		assertTrue(resourceLink instanceof DataLink);
 		assertTrue(resourceLink instanceof DataResourceLink);
+		assertEquals(resourceLink.getNameInData(), SOME_NAME_IN_DATA);
+		assertEquals(resourceLink.getMimeType(), MIME_TYPE_GENERIC);
 	}
 
 	@Test
-	public void testInit() {
-		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "myStreamId");
-		resourceLink.addChild(streamId);
+	public void testConstructWithNameInDataAnd() throws Exception {
+		resourceLink = CoraDataResourceLink.withNameInDataAndMimeType(SOME_NAME_IN_DATA,
+				SOME_MIME_TYPE);
 
-		assertEquals(resourceLink.getNameInData(), "nameInData");
-		assertNotNull(resourceLink.getAttributes());
-		assertNotNull(resourceLink.getChildren());
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("streamId"), "myStreamId");
+		assertTrue(resourceLink instanceof DataLink);
+		assertTrue(resourceLink instanceof DataResourceLink);
+		assertEquals(resourceLink.getNameInData(), SOME_NAME_IN_DATA);
+		assertEquals(resourceLink.getMimeType(), SOME_MIME_TYPE);
 	}
 
 	@Test
@@ -48,61 +70,20 @@ public class CoraDataResourceLinkTest {
 	}
 
 	@Test
-	public void testFromDataGroup() {
-		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
-
-		CoraDataResourceLink dataResourceLink = CoraDataResourceLink
-				.fromDataGroup(dataGroupResourceLink);
-
-		assertCorrectFromDataResourceLink(dataResourceLink);
-		assertNull(dataResourceLink.getRepeatId());
-	}
-
-	private DataGroup createResourceLinkAsDataGroup() {
-		DataGroup dataGroupRecordLink = CoraDataGroup.withNameInData("nameInData");
-
-		CoraDataAtomic fileName = CoraDataAtomic.withNameInDataAndValue("filename", "someFileName");
-		dataGroupRecordLink.addChild(fileName);
-
-		CoraDataAtomic streamId = CoraDataAtomic.withNameInDataAndValue("streamId", "someStreamId");
-		dataGroupRecordLink.addChild(streamId);
-		CoraDataAtomic filesize = CoraDataAtomic.withNameInDataAndValue("filesize", "567");
-		dataGroupRecordLink.addChild(filesize);
-		CoraDataAtomic mimeType = CoraDataAtomic.withNameInDataAndValue("mimeType", "someMimeType");
-		dataGroupRecordLink.addChild(mimeType);
-		return dataGroupRecordLink;
-	}
-
-	private void assertCorrectFromDataResourceLink(CoraDataResourceLink resourceLink) {
-		assertEquals(resourceLink.getNameInData(), "nameInData");
-
-		CoraDataAtomic convertedFileName = (CoraDataAtomic) resourceLink
-				.getFirstChildWithNameInData("filename");
-		assertEquals(convertedFileName.getValue(), "someFileName");
-
-		CoraDataAtomic convertedStreamId = (CoraDataAtomic) resourceLink
-				.getFirstChildWithNameInData("streamId");
-		assertEquals(convertedStreamId.getValue(), "someStreamId");
-
-		CoraDataAtomic convertedFilesize = (CoraDataAtomic) resourceLink
-				.getFirstChildWithNameInData("filesize");
-		assertEquals(convertedFilesize.getValue(), "567");
-
-		CoraDataAtomic convertedMimeType = (CoraDataAtomic) resourceLink
-				.getFirstChildWithNameInData("mimeType");
-		assertEquals(convertedMimeType.getValue(), "someMimeType");
+	public void testHasRepeatIdNotSet() throws Exception {
+		assertFalse(resourceLink.hasRepeatId());
 	}
 
 	@Test
-	public void testFromDataGroupWithRepeatId() {
-		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
-		dataGroupResourceLink.setRepeatId("2");
+	public void testHasRepeatIdSetToEmpty() throws Exception {
+		resourceLink.setRepeatId("");
+		assertFalse(resourceLink.hasRepeatId());
+	}
 
-		CoraDataResourceLink dataResourceLink = CoraDataResourceLink
-				.fromDataGroup(dataGroupResourceLink);
-
-		assertCorrectFromDataResourceLink(dataResourceLink);
-		assertEquals(dataResourceLink.getRepeatId(), "2");
+	@Test
+	public void testHasRepeatIdSet() throws Exception {
+		resourceLink.setRepeatId("3");
+		assertTrue(resourceLink.hasRepeatId());
 	}
 
 	@Test
@@ -119,60 +100,33 @@ public class CoraDataResourceLinkTest {
 	}
 
 	@Test
-	public void testGetMimeType() throws Exception {
-		DataGroup dataGroupResourceLink = createResourceLinkAsDataGroup();
-
-		CoraDataResourceLink dataResourceLink = CoraDataResourceLink
-				.fromDataGroup(dataGroupResourceLink);
-
-		assertEquals(dataResourceLink.getMimeType(), "someMimeType");
-	}
-
-	@Test
-	public void testStreamId() throws Exception {
-		resourceLink.setStreamId("id");
-		assertEquals(resourceLink.getStreamId(), "id");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("streamId"), "id");
-	}
-
-	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
-	public void testGetStreamIdDataMissing() throws Exception {
-		assertEquals(resourceLink.getStreamId(), "");
-	}
-
-	@Test
-	public void testFileName() throws Exception {
-		resourceLink.setFileName("file");
-		assertEquals(resourceLink.getFileName(), "file");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filename"), "file");
-	}
-
-	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
-	public void testGetFileNameDataMissing() throws Exception {
-		assertEquals(resourceLink.getFileName(), "");
-	}
-
-	@Test
-	public void testFileSize() throws Exception {
-		resourceLink.setFileSize("987654");
-		assertEquals(resourceLink.getFileSize(), "987654");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filesize"), "987654");
-	}
-
-	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
-	public void testGetFileSizeDataMissing() throws Exception {
-		assertEquals(resourceLink.getFileSize(), "");
-	}
-
-	@Test
 	public void testMimeType() throws Exception {
-		resourceLink.setMimeType("type");
-		assertEquals(resourceLink.getMimeType(), "type");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("mimeType"), "type");
+		resourceLink.setMimeType("someMimeType");
+		assertEquals(resourceLink.getMimeType(), "someMimeType");
 	}
 
-	@Test(expectedExceptions = se.uu.ub.cora.data.DataMissingException.class)
-	public void testGetMimeTypeDataMissing() throws Exception {
-		assertEquals(resourceLink.getMimeType(), "");
+	@Test
+	public void testHasAttributes() throws Exception {
+		assertFalse(resourceLink.hasAttributes());
+	}
+
+	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
+	public void testGetAttribute() {
+		resourceLink.getAttribute("someAttribute");
+	}
+
+	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
+	public void testAddAttributeByIdWithValue() {
+		resourceLink.addAttributeByIdWithValue("someNameInData", "someValue");
+	}
+
+	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
+	public void testAttributes() throws Exception {
+		resourceLink.getAttributes();
+	}
+
+	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
+	public void testAttributeValue() throws Exception {
+		resourceLink.getAttributeValue("someValue");
 	}
 }

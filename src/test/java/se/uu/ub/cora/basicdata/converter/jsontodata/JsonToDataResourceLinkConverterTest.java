@@ -34,100 +34,81 @@ public class JsonToDataResourceLinkConverterTest {
 
 	@Test
 	public void testToInstance() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		CoraDataResourceLink resourceLink = (CoraDataResourceLink) getConverterdLink(json);
-		assertEquals(resourceLink.getNameInData(), "someResourceLink");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("streamId"), "aStreamId");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filename"), "aFilename");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("filesize"), "12345");
-		assertEquals(resourceLink.getFirstAtomicValueWithNameInData("mimeType"), "application/png");
+		String json = """
+				{
+				  "name": "master",
+				  "mimeType": "application/vnd.uub.record+json"
+				}
+				""";
+		CoraDataResourceLink resourceLink = getConverterdLink(json);
+
+		assertEquals(resourceLink.getNameInData(), "master");
+		assertEquals(resourceLink.getMimeType(), "application/vnd.uub.record+json");
 	}
 
-	private DataLink getConverterdLink(String json) {
+	private CoraDataResourceLink getConverterdLink(String json) {
 		OrgJsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataResourceLinkConverter converter = JsonToDataResourceLinkConverter
 				.forJsonObject((JsonObject) jsonValue);
 
-		DataLink dataLink = (DataLink) converter.toInstance();
+		CoraDataResourceLink dataLink = (CoraDataResourceLink) converter.toInstance();
 		return dataLink;
 	}
 
 	@Test
 	public void testToClassWithRepeatId() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"repeatId\":\"0\",\"name\":\"someResourceLink\"}";
-		DataLink dataLink = getConverterdLink(json);
-		assertEquals(dataLink.getNameInData(), "someResourceLink");
-		assertEquals(dataLink.getRepeatId(), "0");
-	}
+		String json = """
+				{
+				  "name": "master",
+				  "mimeType": "application/vnd.uub.record+json",
+				  "repeatId":"0"
+				}
+				""";
 
-	@Test
-	public void testToClassWithAttribute() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"attributes\":{\"type\":\"someType\"},\"name\":\"someResourceLink\"}";
-		DataLink dataLink = getConverterdLink(json);
-
-		assertEquals(dataLink.getNameInData(), "someResourceLink");
-		String attributeValue = dataLink.getAttribute("type").getValue();
-		assertEquals(attributeValue, "someType");
-	}
-
-	@Test
-	public void testToClassWithRepeatIdAndAttribute() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"repeatId\":\"0\",\"attributes\":{\"type\":\"someType\"},\"name\":\"someResourceLink\"}";
 		DataLink dataLink = getConverterdLink(json);
 
-		assertEquals(dataLink.getNameInData(), "someResourceLink");
-		String attributeValue = dataLink.getAttribute("type").getValue();
-		assertEquals(attributeValue, "someType");
+		assertEquals(dataLink.getNameInData(), "master");
 		assertEquals(dataLink.getRepeatId(), "0");
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: Group data can only contain keys: name, children and attributes")
-	public void testToClassWithRepeatIdAndAttributeAndExtra() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"repeatId\":\"0\",\"attributes\":{\"type\":\"someType\"}, \"extra\":\"extraValue\", \"name\":\"someResourceLink\"}";
+			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
+	public void testExceptionIfTooManyFields() {
+		String json = """
+				{
+				  "name": "master",
+				  "mimeType": "application/vnd.uub.record+json",
+				  "repeatId":"0",
+				  "someOther": "someOther"
+				}
+				""";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: Group data must contain name and children, and may contain attributes or repeatId")
-	public void testToClassWithIncorrectAttributeNameInData() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"NOTattributes\":{\"type\":\"someType\"},\"name\":\"someResourceLink\"}";
+			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
+	public void testExceptionIfTooManyFields2() {
+		String json = """
+				{
+				  "name": "master",
+				  "mimeType": "application/vnd.uub.record+json",
+				  "someOther": "someOther"
+				}
+				""";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoStreamId() {
-		String json = "{\"children\":[{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoStreamIdButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"NOTstreamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoFilenameButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"NOTfilename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoFilesizeButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"NOTfilesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
-	public void testToClassWithNoMimeTypeButOtherChild() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"NOTmimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
+			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
+	public void testExceptionIfTooManyFields3() {
+		String json = """
+				{
+				  "nameSpecial": "master",
+				  "mimeType": "application/vnd.uub.record+json",
+				  "someOther": "someOther"
+				}
+				""";
 		getConverterdLink(json);
 	}
 }

@@ -34,7 +34,6 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	private static final int NUM_OF_RECORDLINK_CHILDREN = 2;
 	private static final int NUM_OF_RECORDLINK_CHILDREN_ONE_OPTIONAL = 3;
 	private static final int MAX_NUM_OF_RECORDLINK_CHILDREN = 4;
-	private static final int NUM_OF_RESOURCELINK_CHILDREN = 4;
 
 	@Override
 	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
@@ -49,6 +48,9 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		if (isAtomicData(jsonObject)) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
+		if (isResourceLink(jsonObject)) {
+			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
+		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
 
@@ -57,17 +59,11 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		if (isRecordLink(foundNames)) {
 			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
 		}
-		if (isResourceLink(foundNames)) {
-			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
-		}
-
 		return JsonToDataGroupConverter.forJsonObject(jsonObject);
 	}
 
-	private boolean isResourceLink(List<String> foundNames) {
-		return foundNames.size() == NUM_OF_RESOURCELINK_CHILDREN && foundNames.contains("streamId")
-				&& foundNames.contains("filename") && foundNames.contains("filesize")
-				&& foundNames.contains("mimeType");
+	private boolean isResourceLink(JsonObject jsonObject) {
+		return jsonObject.containsKey("name") && jsonObject.containsKey("mimeType");
 	}
 
 	private boolean isRecordLink(List<String> foundNames) {

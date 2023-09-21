@@ -231,6 +231,11 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
+	public boolean hasRepeatId() {
+		return repeatId != null && !"".equals(repeatId);
+	}
+
+	@Override
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
 	}
@@ -445,4 +450,5 @@ public class CoraDataGroup implements DataGroup {
 		}
 		return Optional.empty();
 	}
+
 }

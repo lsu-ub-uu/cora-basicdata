@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,53 +20,82 @@ package se.uu.ub.cora.basicdata.converter.jsontodata;
 
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
 import se.uu.ub.cora.data.Convertible;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 
-public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
-		implements JsonToDataConverter {
+public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 
-	private static final int NUM_OF_RESOURCELINK_CHILDREN = 4;
+	private static final int MAX_JSON_KEYS_WITHOUT_REPEAT_ID = 2;
+	private static final int MAX_JSON_KEYS_WITH_REPEAT_ID = 3;
+	private static final String PARSING_ERROR_MSG = "Error parsing jsonObject: ResourceLink must "
+			+ "contain name, mimeType and repeatId.";
+	private JsonObject resourceLinkAsJson;
 
-	private JsonToDataResourceLinkConverter(JsonObject jsonObject) {
-		super(jsonObject);
+	private JsonToDataResourceLinkConverter(JsonObject resourceLinkAsJson) {
+		this.resourceLinkAsJson = resourceLinkAsJson;
 	}
 
 	@Override
 	public Convertible toInstance() {
-		CoraDataResourceLink resourceLink = (CoraDataResourceLink) super.toInstance();
-		throwErrorIfLinkChildrenAreIncorrect(resourceLink);
-		return resourceLink;
+		validateJson();
+		return createResourceLinkFromJson();
 	}
 
-	private void throwErrorIfLinkChildrenAreIncorrect(DataGroup recordLink) {
-		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
-			throw new JsonParseException(
-					"ResourceLinkData must and can only contain children with name "
-							+ "streamId and filename and filesize and mimeType");
+	private void validateJson() {
+		if (validateJsonKeys()) {
+			throw new JsonParseException(PARSING_ERROR_MSG);
 		}
 	}
 
-	private boolean incorrectNumberOfChildren(DataGroup recordLink) {
-		return recordLink.getChildren().size() != NUM_OF_RESOURCELINK_CHILDREN;
+	private boolean validateJsonKeys() {
+		return exceedeFieldsRepeatIdExists() || exceedeFieldsRepeatIdNotExists()
+				|| nameAndMimeTypeNotExists();
 	}
 
-	private boolean incorrectChildren(DataGroup recordLink) {
-		return !recordLink.containsChildWithNameInData("streamId")
-				|| !recordLink.containsChildWithNameInData("filename")
-				|| !recordLink.containsChildWithNameInData("filesize")
-				|| !recordLink.containsChildWithNameInData("mimeType");
+	private boolean exceedeFieldsRepeatIdNotExists() {
+		return resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITHOUT_REPEAT_ID
+				&& !repeatIdExists();
+	}
+
+	private boolean exceedeFieldsRepeatIdExists() {
+		return resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITH_REPEAT_ID
+				&& repeatIdExists();
+	}
+
+	private CoraDataResourceLink createResourceLinkFromJson() {
+		CoraDataResourceLink resourceLink = createResourceLinkWithNameAndMimeType();
+		possiblySetRepeatId(resourceLink);
+		return resourceLink;
+	}
+
+	private CoraDataResourceLink createResourceLinkWithNameAndMimeType() {
+		String nameInData = getValueAsStringFromJsonObject("name");
+		String mimeType = getValueAsStringFromJsonObject("mimeType");
+		return CoraDataResourceLink.withNameInDataAndMimeType(nameInData, mimeType);
+	}
+
+	private void possiblySetRepeatId(CoraDataResourceLink resourceLink) {
+		if (repeatIdExists()) {
+			String repeatId = getValueAsStringFromJsonObject("repeatId");
+			resourceLink.setRepeatId(repeatId);
+		}
+	}
+
+	private boolean nameAndMimeTypeNotExists() {
+		return !resourceLinkAsJson.containsKey("name")
+				|| !resourceLinkAsJson.containsKey("mimeType");
+	}
+
+	private boolean repeatIdExists() {
+		return resourceLinkAsJson.containsKey("repeatId");
+	}
+
+	private String getValueAsStringFromJsonObject(String key) {
+		return resourceLinkAsJson.getValueAsJsonString(key).getStringValue();
 	}
 
 	public static JsonToDataResourceLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataResourceLinkConverter(jsonObject);
 	}
-
-	@Override
-	protected void createInstanceOfDataElement(String nameInData) {
-		dataGroup = CoraDataResourceLink.withNameInData(nameInData);
-	}
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,52 +18,126 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
+
+import java.util.Optional;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.spy.DataResourceLinkSpy;
-import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataResourceLinkToJsonConverterTest {
 
-	DataResourceLinkToJsonConverter resourceLinkToJsonConverter;
+	DataResourceLinkToJsonConverter converter;
 	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
-	String recordURL;
+	Optional<String> recordURL;
 	private DataResourceLinkSpy dataResourceLink;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		recordURL = "https://somesystem.org/rest/records/someRecordType/someRecordId";
-		dataResourceLink = new DataResourceLinkSpy("someNameInData");
-
+		dataResourceLink = new DataResourceLinkSpy();
 		jsonBuilderFactorySpy = new JsonBuilderFactorySpy();
-
 		converterFactory = new DataToJsonConverterFactorySpy();
-		resourceLinkToJsonConverter = DataResourceLinkToJsonConverter
-				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(converterFactory,
-						jsonBuilderFactorySpy, dataResourceLink, recordURL);
 
+		constructWithRecordUrl();
+	}
+
+	private void constructWithRecordUrl() {
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "master");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getMimeType",
+				() -> "application/octet-stream");
+
+		recordURL = Optional.of("https://somesystem.org/rest/records/someRecordType/someRecordId");
+		converter = DataResourceLinkToJsonConverter
+				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+						converterFactory, new OrgJsonBuilderFactoryAdapter(), dataResourceLink,
+						recordURL);
+	}
+
+	@Test
+	public void testToJson() {
+		String json = converter.toJson();
+
+		String expectedJson = """
+				{
+				    "name": "master",
+				    "mimeType": "application/octet-stream"
+				}""";
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testToJson2() {
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "thumbnail");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "image/jpeg");
+
+		String json = converter.toJson();
+
+		String expectedJson = """
+				{
+				    "name": "thumbnail",
+				    "mimeType": "image/jpeg"
+				}""";
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testJsonWithRepeatId() throws Exception {
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "1");
+
+		String json = converter.toJson();
+
+		String expectedJson = """
+				{
+				    "repeatId": "1",
+				    "name": "master",
+				    "mimeType": "application/octet-stream"
+				}""";
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testToJsonCompactFormatWithoutRepeatId() {
+		String json = converter.toJsonCompactFormat();
+
+		String expectedJson = """
+				{"name":"master","mimeType":"application/octet-stream"}""";
+
+		assertEquals(json, expectedJson);
+	}
+
+	@Test
+	public void testToJsonCompactFormatWithRepeatId() {
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "1");
+
+		String json = converter.toJsonCompactFormat();
+
+		String expectedJson = """
+				{"repeatId":"1","name":"master","mimeType":"application/octet-stream"}""";
+		assertEquals(json, expectedJson);
 	}
 
 	@Test
 	public void testConverterFactorySetInParent() throws Exception {
-		assertSame(resourceLinkToJsonConverter.converterFactory, converterFactory);
-	}
+		constructWithRecordUrl();
 
-	@Test
-	public void testResourceLinkConverterExtendsGroupConverter() throws Exception {
-		assertTrue(resourceLinkToJsonConverter instanceof DataGroupToJsonConverter);
-		assertTrue(resourceLinkToJsonConverter instanceof DataToJsonConverter);
+		assertSame(converter.onlyForTestGetConverterFactory(), converterFactory);
 	}
 
 	@Test
 	public void testNoActions() throws Exception {
-		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
+		converter = DataResourceLinkToJsonConverter
+				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
+
+		converter.toJsonObjectBuilder();
 
 		assertJsonBuilderNotUsed();
 	}
@@ -79,12 +153,14 @@ public class DataResourceLinkToJsonConverterTest {
 
 	@Test
 	public void testActionLinksBuilderAddedToMainBuilder() throws Exception {
-		dataResourceLink.hasReadAction = true;
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
+		converter = DataResourceLinkToJsonConverter
+				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
 
-		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
+		converter.toJsonObjectBuilder();
 
 		dataResourceLink.MCR.assertParameters("hasReadAction", 0);
-
 		assertActionLinksBuilderAddedToMainBuilder();
 	}
 
@@ -99,9 +175,12 @@ public class DataResourceLinkToJsonConverterTest {
 
 	@Test
 	public void testActionAddedToActionBuilder() throws Exception {
-		dataResourceLink.hasReadAction = true;
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
+		converter = DataResourceLinkToJsonConverter
+				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
 
-		resourceLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
+		converter.toJsonObjectBuilder();
 
 		JsonObjectBuilderSpy actionLinksBuilderSpy = getActionsBuilder();
 		JsonObjectBuilderSpy internalLinkBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
@@ -111,7 +190,7 @@ public class DataResourceLinkToJsonConverterTest {
 
 		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 0, "rel", "read");
 		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 1, "url",
-				recordURL + "/" + dataResourceLink.getNameInData());
+				recordURL.get() + "/" + dataResourceLink.getNameInData());
 		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 2, "requestMethod", "GET");
 		String mimeType = (String) dataResourceLink.MCR.getReturnValue("getMimeType", 0);
 		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 3, "accept", mimeType);
@@ -122,5 +201,29 @@ public class DataResourceLinkToJsonConverterTest {
 	private JsonObjectBuilderSpy getActionsBuilder() {
 		return (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
 				.getReturnValue("createObjectBuilder", 1);
+	}
+
+	@Test
+	public void testJsonWithActions() throws Exception {
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
+		converter = DataResourceLinkToJsonConverter
+				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
+						converterFactory, new OrgJsonBuilderFactoryAdapter(), dataResourceLink,
+						recordURL);
+
+		String json = converter.toJson();
+
+		String excpectedJson = """
+				{
+				    "actionLinks": {"read": {
+				        "requestMethod": "GET",
+				        "rel": "read",
+				        "url": "https://somesystem.org/rest/records/someRecordType/someRecordId/master",
+				        "accept": "application/octet-stream"
+				    }},
+				    "name": "master",
+				    "mimeType": "application/octet-stream"
+				}""";
+		assertEquals(json, excpectedJson);
 	}
 }

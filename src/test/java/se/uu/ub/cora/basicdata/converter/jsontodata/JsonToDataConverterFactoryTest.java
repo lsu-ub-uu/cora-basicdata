@@ -206,10 +206,18 @@ public class JsonToDataConverterFactoryTest {
 
 	@Test
 	public void testFactorOnJsonStringCompleteSetupFactorsDataResourceLink() {
-		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"soundBinary:18269669168741\"},{\"name\":\"filename\",\"value\":\"adele.png\"},{\"name\":\"filesize\",\"value\":\"8\"},{\"name\":\"mimeType\",\"value\":\"application/octet-stream\"}],\"name\":\"master\"}";
+		String json = """
+				{
+				  "name": "master",
+				  "mimeType": "application/vnd.uub.record+json",
+				  "repeatId":"0"
+				}
+				""";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
+
+		System.err.println(jsonToDataConverter.getClass().getName());
 		assertTrue(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
 	}
 

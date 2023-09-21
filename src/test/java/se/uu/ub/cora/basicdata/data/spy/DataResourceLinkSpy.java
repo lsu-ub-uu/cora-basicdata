@@ -18,93 +18,98 @@
  */
 package se.uu.ub.cora.basicdata.data.spy;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.data.spies.DataAttributeSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class DataResourceLinkSpy extends DataGroupOldSpy implements DataResourceLink {
+public class DataResourceLinkSpy implements DataResourceLink {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public String nameInData;
-	public List<Action> actions = new ArrayList<>();
-	public boolean hasReadAction = false;
-
-	public DataResourceLinkSpy(String nameInData) {
-		super(nameInData);
+	public DataResourceLinkSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "fakeDataResourceNameInData");
+		MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> false);
+		MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "someMimeType");
+		MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
+		MRV.setDefaultReturnValuesSupplier("getRepeatId", String::new);
+		MRV.setDefaultReturnValuesSupplier("hasAttributes", () -> false);
+		MRV.setDefaultReturnValuesSupplier("getAttribute", DataAttributeSpy::new);
+		MRV.setDefaultReturnValuesSupplier("getAttributeValue", () -> Optional.empty());
+		MRV.setDefaultReturnValuesSupplier("getAttributes", () -> Collections.emptySet());
 	}
 
 	@Override
 	public void addAction(Action action) {
 		MCR.addCall("action", action);
-		actions.add(action);
-
 	}
 
 	@Override
 	public String getNameInData() {
-		MCR.addCall();
-		return "fakeDataResourceNameInData";
+		return (String) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public boolean hasReadAction() {
-		MCR.addCall();
-		MCR.addReturned(hasReadAction);
-		return hasReadAction;
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public String getMimeType() {
-		MCR.addCall();
-		String mimeType = "somMimeType";
-		MCR.addReturned(mimeType);
-		return mimeType;
-	}
-
-	@Override
-	public void setStreamId(String streamId) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getStreamId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setFileName(String fileName) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getFileName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setFileSize(String fileSize) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public String getFileSize() {
-		// TODO Auto-generated method stub
-		return null;
+		return (String) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public void setMimeType(String mimeType) {
-		// TODO Auto-generated method stub
+		MCR.addCall("mimeType", mimeType);
+	}
 
+	@Override
+	public boolean hasRepeatId() {
+		return (boolean) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public void setRepeatId(String repeatId) {
+		MCR.addCall("repeatId", repeatId);
+	}
+
+	@Override
+	public String getRepeatId() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		MCR.addCall("nameInData", nameInData, "value", value);
+	}
+
+	@Override
+	public boolean hasAttributes() {
+		return (boolean) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public DataAttribute getAttribute(String nameInData) {
+		return (DataAttribute) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public Collection<DataAttribute> getAttributes() {
+		return (Collection<DataAttribute>) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public Optional<String> getAttributeValue(String nameInData) {
+		return (Optional<String>) MCR.addCallAndReturnFromMRV();
 	}
 
 }
