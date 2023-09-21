@@ -74,6 +74,30 @@ public class JsonToDataResourceLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
+	public void testExceptionMimeTypeNotExist() {
+		String json = """
+				{
+				  "name": "master",
+				  "repeatId":"0"
+				}
+				""";
+		getConverterdLink(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
+	public void testExceptionNameNotExist() {
+		String json = """
+				{
+				  "mimeType": "application/vnd.uub.record+json",
+				  "repeatId":"0"
+				}
+				""";
+		getConverterdLink(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
 	public void testExceptionIfTooManyFields() {
 		String json = """
 				{

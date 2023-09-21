@@ -54,13 +54,13 @@ public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 	}
 
 	private boolean exceedeFieldsRepeatIdNotExists() {
-		return resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITHOUT_REPEAT_ID
-				&& !repeatIdExists();
+		return !repeatIdExists()
+				&& resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITHOUT_REPEAT_ID;
 	}
 
 	private boolean exceedeFieldsRepeatIdExists() {
-		return resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITH_REPEAT_ID
-				&& repeatIdExists();
+		return repeatIdExists()
+				&& resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITH_REPEAT_ID;
 	}
 
 	private CoraDataResourceLink createResourceLinkFromJson() {
