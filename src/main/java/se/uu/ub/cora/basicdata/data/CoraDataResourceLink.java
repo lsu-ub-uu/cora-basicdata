@@ -29,17 +29,12 @@ import se.uu.ub.cora.data.DataResourceLink;
 
 public final class CoraDataResourceLink implements DataResourceLink {
 
-	private static final String MIME_TYPE_GENERIC = "application/octet-stream";
 	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
 
 	private List<Action> actions = new ArrayList<>();
 	private String nameInData;
 	private String mimeType;
 	private String repeatId;
-
-	public static CoraDataResourceLink withNameInData(String nameInData) {
-		return new CoraDataResourceLink(nameInData, MIME_TYPE_GENERIC);
-	}
 
 	public static CoraDataResourceLink withNameInDataAndMimeType(String nameInData,
 			String mimeType) {

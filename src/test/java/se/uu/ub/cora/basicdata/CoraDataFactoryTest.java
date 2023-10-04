@@ -52,6 +52,7 @@ public class CoraDataFactoryTest {
 	private DataFactory dataFactory;
 	private String containDataOfType = "someType";
 	private String nameInData = "nameInData";
+	private String mimeType = "someMimeType";
 	private String recordType = "someRecordType";
 	private String recordId = "someRecordId";
 	private String value = "someValue";
@@ -147,20 +148,15 @@ public class CoraDataFactoryTest {
 		assertEquals(factoredDataRecordLink.getNameInData(), nameInData);
 		assertEquals(factoredDataRecordLink.getLinkedRecordType(), recordType);
 		assertEquals(factoredDataRecordLink.getLinkedRecordId(), recordId);
-
-		// assertEquals(factoredDataRecordLink.getChildren().size(), 2);
-		// assertEquals(factoredDataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordType"),
-		// recordType);
-		// assertEquals(factoredDataRecordLink.getFirstAtomicValueWithNameInData("linkedRecordId"),
-		// recordId);
 	}
 
 	@Test
 	public void testFactorResourceLinkUsingNameInData() {
 		DataResourceLink factoredDataResourceLink = dataFactory
-				.factorResourceLinkUsingNameInData(nameInData);
+				.factorResourceLinkUsingNameInDataAndMimeType(nameInData, mimeType);
 		assertTrue(factoredDataResourceLink instanceof CoraDataResourceLink);
 		assertEquals(factoredDataResourceLink.getNameInData(), nameInData);
+		assertEquals(factoredDataResourceLink.getMimeType(), mimeType);
 	}
 
 	@Test

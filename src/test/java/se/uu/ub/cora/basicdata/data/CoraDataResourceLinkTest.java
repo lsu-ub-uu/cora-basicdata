@@ -34,29 +34,18 @@ public class CoraDataResourceLinkTest {
 
 	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
 	private static final String SOME_NAME_IN_DATA = "someNameInData";
-	private static final String MIME_TYPE_GENERIC = "application/octet-stream";
 	private static final String SOME_MIME_TYPE = "someMimeType";
 	CoraDataResourceLink resourceLink;
 
 	@BeforeMethod
 	public void setUp() {
-		resourceLink = CoraDataResourceLink.withNameInData(SOME_NAME_IN_DATA);
+		resourceLink = CoraDataResourceLink.withNameInDataAndMimeType(SOME_NAME_IN_DATA,
+				SOME_MIME_TYPE);
 
 	}
 
 	@Test
 	public void testConstructWithNameInData() {
-		assertTrue(resourceLink instanceof DataLink);
-		assertTrue(resourceLink instanceof DataResourceLink);
-		assertEquals(resourceLink.getNameInData(), SOME_NAME_IN_DATA);
-		assertEquals(resourceLink.getMimeType(), MIME_TYPE_GENERIC);
-	}
-
-	@Test
-	public void testConstructWithNameInDataAnd() throws Exception {
-		resourceLink = CoraDataResourceLink.withNameInDataAndMimeType(SOME_NAME_IN_DATA,
-				SOME_MIME_TYPE);
-
 		assertTrue(resourceLink instanceof DataLink);
 		assertTrue(resourceLink instanceof DataResourceLink);
 		assertEquals(resourceLink.getNameInData(), SOME_NAME_IN_DATA);
