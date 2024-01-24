@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -357,4 +358,30 @@ public class CoraDataRecordTest {
 		dataRecord.getSearchId();
 	}
 
+	@Test
+	public void testGetProtocolsNoProtocolsAdded() throws Exception {
+		Set<String> protocols = dataRecord.getProtocols();
+		assertEquals(protocols, Collections.emptyList());
+	}
+
+	@Test
+	public void testGetProtocolsSeveralProtocolsAdded() throws Exception {
+
+		dataRecord.addProtocol("someProtocol");
+		dataRecord.addProtocol("someOtherProtocol");
+
+		Set<String> protocols = dataRecord.getProtocols();
+		assertEquals(protocols.size(), 2);
+		assertTrue(protocols.contains("someProtocol"));
+		assertTrue(protocols.contains("someOtherProtocol"));
+	}
+
+	@Test
+	public void testAddProtocolsCannotAddedDuplicatedProtocols() throws Exception {
+		dataRecord.addProtocol("sameProtocol");
+		dataRecord.addProtocol("sameProtocol");
+
+		Set<String> protocols = dataRecord.getProtocols();
+		assertEquals(protocols.size(), 1);
+	}
 }

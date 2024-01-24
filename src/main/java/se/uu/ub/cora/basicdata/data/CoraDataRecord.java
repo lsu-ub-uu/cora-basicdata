@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2019, 2020, 2022 Uppsala University Library
+ * Copyright 2015, 2016, 2019, 2020, 2022, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -36,6 +36,7 @@ public final class CoraDataRecord implements DataRecord {
 	private List<Action> actions = new ArrayList<>();
 	private Set<String> readPermissions = new LinkedHashSet<>();
 	private Set<String> writePermissions = new LinkedHashSet<>();
+	private Set<String> protocols = new LinkedHashSet<>();
 
 	public static CoraDataRecord withDataGroup(DataGroup dataGroup) {
 		return new CoraDataRecord(dataGroup);
@@ -160,6 +161,16 @@ public final class CoraDataRecord implements DataRecord {
 	private String extractSearchId() {
 		DataGroup search = dataGroup.getFirstGroupWithNameInData(SEARCH);
 		return search.getFirstAtomicValueWithNameInData("linkedRecordId");
+	}
+
+	@Override
+	public void addProtocol(String protocol) {
+		protocols.add(protocol);
+	}
+
+	@Override
+	public Set<String> getProtocols() {
+		return protocols;
 	}
 
 }
