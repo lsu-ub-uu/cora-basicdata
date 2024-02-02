@@ -61,6 +61,7 @@ public class DataRecordToJsonConverterTest {
 		dataRecord = new DataRecordSpy();
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getDataGroup",
 				(Supplier<DataGroup>) () -> dataGroup);
+
 	}
 
 	private void createDataRecordToJsonConverter() {
@@ -114,7 +115,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	private JsonObjectBuilderSpy getRecordBuilderFromSpy() {
-		return (JsonObjectBuilderSpy) builderFactory.MCR.getReturnValue("createObjectBuilder", 0);
+		return getRecordJsonObjectBuilder();
 	}
 
 	@Test
@@ -292,41 +293,28 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testConvertActionsNoActions() throws Exception {
-		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
+		createDataRecordToJsonConverter();
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
-		dataRecordSpy.MCR.assertMethodNotCalled("getActions");
-	}
-
-	private DataRecordSpy createDataRecordToJsonConverterUsingDataRecordSpy() {
-		DataRecordSpy dataRecordSpy = new DataRecordSpy();
-		dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
-						converterFactory, actionsConverterSpy, builderFactory, baseUrl,
-						dataRecordSpy);
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getDataGroup",
-				(Supplier<DataGroup>) () -> dataGroup);
-		return dataRecordSpy;
+		dataRecord.MCR.assertMethodNotCalled("getActions");
 	}
 
 	@Test
 	public void testConvertActionsAllTypes() throws Exception {
-		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
-				(Supplier<Boolean>) () -> true);
+		createDataRecordToJsonConverter();
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
 
-		addActionsToDataRecordSpy(dataRecordSpy);
+		addActionsToDataRecordSpy(dataRecord);
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		actionsConverterSpy.MCR.assertParameters("toJsonObjectBuilder", 0);
-		assertActionConverterData(dataRecordSpy);
+		assertActionConverterData(dataRecord);
 
 		JsonObjectBuilderSpy actionLinksBuilder = (JsonObjectBuilderSpy) actionsConverterSpy.MCR
 				.getReturnValue("toJsonObjectBuilder", 0);
-		JsonObjectBuilderSpy recordBuilder = (JsonObjectBuilderSpy) builderFactory.MCR
-				.getReturnValue("createObjectBuilder", 0);
+		JsonObjectBuilderSpy recordBuilder = getRecordJsonObjectBuilder();
 
 		recordBuilder.MCR.assertNumberOfCallsToMethod("addKeyJsonObjectBuilder", 2);
 		recordBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 1, "actionLinks",
@@ -353,10 +341,9 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testConvertSearchActionForRecordTypeAndSearchRecordId() throws Exception {
-		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
-				(Supplier<Boolean>) () -> true);
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getType",
+		createDataRecordToJsonConverter();
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getType",
 				(Supplier<String>) () -> "recordType");
 		dataGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
 				(Supplier<Boolean>) () -> true, "search");
@@ -368,7 +355,7 @@ public class DataRecordToJsonConverterTest {
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
-		assertSearchRecordIdIsFromDataGroupRecord(dataRecordSpy);
+		assertSearchRecordIdIsFromDataGroupRecord(dataRecord);
 
 	}
 
@@ -392,10 +379,9 @@ public class DataRecordToJsonConverterTest {
 	@Test
 	public void testConvertSearchActionForRecordTypeAndSearchRecordIdOnlyForRecordType()
 			throws Exception {
-		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
-				(Supplier<Boolean>) () -> true);
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getType",
+		createDataRecordToJsonConverter();
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getType",
 				(Supplier<String>) () -> "otherThanRecordType");
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
@@ -413,14 +399,89 @@ public class DataRecordToJsonConverterTest {
 	@Test
 	public void testConvertSearchActionForRecordTypeAndSearchRecordIdButNoSearchDefinedInDataGroup()
 			throws Exception {
-		DataRecordSpy dataRecordSpy = createDataRecordToJsonConverterUsingDataRecordSpy();
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("hasActions",
-				(Supplier<Boolean>) () -> true);
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getType",
+		createDataRecordToJsonConverter();
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getType",
 				(Supplier<String>) () -> "recordType");
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		assertSearchRecordIdNotSet();
+	}
+
+	@Test
+	public void testHasProtocolsIIIF() throws Exception {
+		createDataRecordToJsonConverter();
+
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getProtocols", () -> Set.of("iiif"));
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 4);
+		JsonObjectBuilderSpy iiifBody = assertIIIFBodyAndReturnIt();
+		JsonObjectBuilderSpy iiifHeader = assertIIIFHeaderAndReturnIt(iiifBody);
+		JsonArrayBuilderSpy protocolsHeader = assertProtocolsAndReturnIt(iiifHeader);
+		assertOtherProtocols(protocolsHeader);
+
+	}
+
+	private JsonObjectBuilderSpy assertIIIFBodyAndReturnIt() {
+		JsonObjectBuilderSpy iiifBody = (JsonObjectBuilderSpy) builderFactory.MCR
+				.getReturnValue("createObjectBuilder", 1);
+		iiifBody.MCR.assertParameters("addKeyString", 0, "server", "veryDummyURL");
+		iiifBody.MCR.assertParameters("addKeyString", 1, "identifier", "someId");
+
+		return iiifBody;
+	}
+
+	private JsonObjectBuilderSpy assertIIIFHeaderAndReturnIt(JsonObjectBuilderSpy iiifBody) {
+		JsonObjectBuilderSpy iiifHeader = (JsonObjectBuilderSpy) builderFactory.MCR
+				.getReturnValue("createObjectBuilder", 2);
+		iiifHeader.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "iiif", iiifBody);
+		return iiifHeader;
+	}
+
+	private JsonArrayBuilderSpy assertProtocolsAndReturnIt(JsonObjectBuilderSpy iiifHeader) {
+		JsonArrayBuilderSpy protocolsHeader = (JsonArrayBuilderSpy) builderFactory.MCR
+				.getReturnValue("createArrayBuilder", 0);
+		protocolsHeader.MCR.assertParameters("addJsonObjectBuilder", 0, iiifHeader);
+		return protocolsHeader;
+	}
+
+	private void assertOtherProtocols(JsonArrayBuilderSpy protocolsHeader) {
+		JsonObjectBuilderSpy recordJsonObjectBuilder = getRecordJsonObjectBuilder();
+		recordJsonObjectBuilder.MCR.assertParameters("addKeyJsonArrayBuilder", 0, "otherProtocols",
+				protocolsHeader);
+	}
+
+	private JsonObjectBuilderSpy getRecordJsonObjectBuilder() {
+		return (JsonObjectBuilderSpy) builderFactory.MCR.getReturnValue("createObjectBuilder", 0);
+	}
+
+	@Test
+	public void testDoNotAddprotocolsIfDoNotExist() throws Exception {
+		createDataRecordToJsonConverter();
+
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
+
+	}
+
+	@Test
+	public void testProtocolsDifferentThanIIIFOtherProtocolsNotAdded() throws Exception {
+		createDataRecordToJsonConverter();
+
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getProtocols", () -> Set.of("someProtocol"));
+
+		dataRecordToJsonConverter.toJsonObjectBuilder();
+
+		JsonObjectBuilderSpy recordJsonObjectBuilder = getRecordJsonObjectBuilder();
+		recordJsonObjectBuilder.MCR.assertNumberOfCallsToMethod("addKeyJsonArrayBuilder", 0);
+
 	}
 }

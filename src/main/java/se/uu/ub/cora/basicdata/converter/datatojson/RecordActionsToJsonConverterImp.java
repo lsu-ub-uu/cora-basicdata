@@ -88,6 +88,16 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 		}
 	}
 
+	private void setStandardForAction(Action action) {
+		currentLowerCaseAction = action.name().toLowerCase();
+		currentLinkBuilder = builderFactory.createObjectBuilder();
+		currentRequestMethod = "GET";
+		String urlForActionsOnThisRecord = baseUrl + recordType + "/" + recordId;
+		currentUrl = urlForActionsOnThisRecord;
+		currentAccept = APPLICATION_VND_UUB_RECORD_JSON;
+		mainBuilder.addKeyJsonObjectBuilder(currentLowerCaseAction, currentLinkBuilder);
+	}
+
 	private void possiblyCreateActionsForAll(Action action) {
 		if (action == Action.READ) {
 			addStandardParametersToCurrentLinkBuilder();
@@ -175,16 +185,6 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 		addStandardParametersToCurrentLinkBuilder();
 		currentLinkBuilder.addKeyString(ACCEPT, currentAccept);
 		currentLinkBuilder.addKeyString(CONTENT_TYPE, "application/vnd.uub.workorder+json");
-	}
-
-	private void setStandardForAction(Action action) {
-		currentLowerCaseAction = action.name().toLowerCase();
-		currentLinkBuilder = builderFactory.createObjectBuilder();
-		currentRequestMethod = "GET";
-		String urlForActionsOnThisRecord = baseUrl + recordType + "/" + recordId;
-		currentUrl = urlForActionsOnThisRecord;
-		currentAccept = APPLICATION_VND_UUB_RECORD_JSON;
-		mainBuilder.addKeyJsonObjectBuilder(currentLowerCaseAction, currentLinkBuilder);
 	}
 
 	private void createBody() {

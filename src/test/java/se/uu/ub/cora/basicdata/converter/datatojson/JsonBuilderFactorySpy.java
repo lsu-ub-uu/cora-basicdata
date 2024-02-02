@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,25 +22,27 @@ import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class JsonBuilderFactorySpy implements JsonBuilderFactory {
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public JsonBuilderFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("createArrayBuilder", JsonArrayBuilderSpy::new);
+		MRV.setDefaultReturnValuesSupplier("createObjectBuilder", JsonObjectBuilderSpy::new);
+	}
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
-		JsonArrayBuilderSpy out = new JsonArrayBuilderSpy();
-		MCR.addCall();
-		MCR.addReturned(out);
-		return out;
+		return (JsonArrayBuilder) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		MCR.addCall();
-		JsonObjectBuilderSpy jsonObjectBuilderSpy = new JsonObjectBuilderSpy();
-		MCR.addReturned(jsonObjectBuilderSpy);
-		return jsonObjectBuilderSpy;
+		return (JsonObjectBuilder) MCR.addCallAndReturnFromMRV();
 	}
 
 }
