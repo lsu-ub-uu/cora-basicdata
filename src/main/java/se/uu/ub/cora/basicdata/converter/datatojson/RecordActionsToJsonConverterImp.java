@@ -216,4 +216,5 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 		currentLinkBuilder.addKeyString("url", currentUrl);
 		currentLinkBuilder.addKeyString("requestMethod", currentRequestMethod);
 	}
+
 }

@@ -27,6 +27,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -37,6 +38,7 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 //import se.uu.ub.cora.basicdata.data.spy.DataRecordSpy;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.ExternalUrls;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordSpy;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
@@ -48,9 +50,11 @@ public class DataRecordToJsonConverterTest {
 	private JsonBuilderFactorySpy builderFactory;
 
 	private DataToJsonConverterFactorySpy converterFactory;
-	private String baseUrl = "some/base/url/";
 	private DataGroupSpy dataGroup;
 	private RecordActionsToJsonConverterSpy actionsConverterSpy;
+	private String baseUrl = "some/base/url/";
+	private String iiifBaseUrl = "someIiifBaseUrl";
+	private Optional<ExternalUrls> externalUrls;
 
 	@BeforeMethod
 	public void setUp() {
@@ -62,12 +66,22 @@ public class DataRecordToJsonConverterTest {
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getDataGroup",
 				(Supplier<DataGroup>) () -> dataGroup);
 
+		externalUrls = createExternalUrls();
+
+	}
+
+	private Optional<ExternalUrls> createExternalUrls() {
+		ExternalUrls externalUrls = new ExternalUrls();
+		externalUrls.setBaseUrl(baseUrl);
+		externalUrls.setIfffUrl(iiifBaseUrl);
+		return Optional.of(externalUrls);
 	}
 
 	private void createDataRecordToJsonConverter() {
 		dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
-						converterFactory, actionsConverterSpy, builderFactory, baseUrl, dataRecord);
+				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndDataRecordAndBaseUrlAndIiifUrl(
+						dataRecord, converterFactory, actionsConverterSpy, builderFactory,
+						externalUrls);
 	}
 
 	@Test
@@ -80,8 +94,9 @@ public class DataRecordToJsonConverterTest {
 	public void testConverterFactoryUsedToCreateConverterForMainDataGroupNoBaseUrl()
 			throws Exception {
 		dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
-						converterFactory, actionsConverterSpy, builderFactory, null, dataRecord);
+				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndDataRecordAndBaseUrlAndIiifUrl(
+						dataRecord, converterFactory, actionsConverterSpy, builderFactory,
+						Optional.empty());
 
 		JsonObjectBuilder returnedJsonObjectBuilder = dataRecordToJsonConverter
 				.toJsonObjectBuilder();
@@ -265,7 +280,7 @@ public class DataRecordToJsonConverterTest {
 		MethodCallRecorder MCR = new MethodCallRecorder();
 
 		DataRecordToJsonConverterForTest(JsonBuilderFactorySpy builderFactory) {
-			super(null, null, builderFactory, null, null);
+			super(null, null, builderFactory, Optional.empty(), null);
 		}
 
 		@Override
@@ -429,7 +444,7 @@ public class DataRecordToJsonConverterTest {
 	private JsonObjectBuilderSpy assertIIIFBodyAndReturnIt() {
 		JsonObjectBuilderSpy iiifBody = (JsonObjectBuilderSpy) builderFactory.MCR
 				.getReturnValue("createObjectBuilder", 1);
-		iiifBody.MCR.assertParameters("addKeyString", 0, "server", "veryDummyURL");
+		iiifBody.MCR.assertParameters("addKeyString", 0, "server", iiifBaseUrl);
 		iiifBody.MCR.assertParameters("addKeyString", 1, "identifier", "someId");
 
 		return iiifBody;
