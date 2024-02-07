@@ -39,10 +39,10 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	private JsonObjectBuilder recordJsonObjectBuilder;
 	private Optional<ExternalUrls> externalUrls;
 
-	public static DataRecordToJsonConverter usingConverterFactoryAndActionsConverterAndBuilderFactoryAndDataRecordAndBaseUrlAndIiifUrl(
-			DataRecord dataRecord,
-			DataToJsonConverterFactory converterFactory, RecordActionsToJsonConverter actionsConverter,
-			JsonBuilderFactory builderFactory, Optional<ExternalUrls> externalUrls) {
+	public static DataRecordToJsonConverter usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
+			DataRecord dataRecord, DataToJsonConverterFactory converterFactory,
+			RecordActionsToJsonConverter actionsConverter, JsonBuilderFactory builderFactory,
+			Optional<ExternalUrls> externalUrls) {
 		return new DataRecordToJsonConverter(converterFactory, actionsConverter, builderFactory,
 				externalUrls, dataRecord);
 	}
@@ -204,9 +204,7 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	private void addIiifProtocol(String protocol) {
 		if ("iiif".equals(protocol)) {
 			JsonObjectBuilder iifProtocol = createIIIF();
-			JsonArrayBuilder protocols = builderFactory.createArrayBuilder();
-			protocols.addJsonObjectBuilder(iifProtocol);
-			recordJsonObjectBuilder.addKeyJsonArrayBuilder("otherProtocols", protocols);
+			recordJsonObjectBuilder.addKeyJsonObjectBuilder("otherProtocols", iifProtocol);
 		}
 	}
 

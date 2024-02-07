@@ -79,7 +79,7 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 			}
 
 			return DataRecordToJsonConverter
-					.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndDataRecordAndBaseUrlAndIiifUrl(
+					.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
 							(DataRecord) convertible, this, actionsConverter, builderFactory,
 							externalUrls);
 		}

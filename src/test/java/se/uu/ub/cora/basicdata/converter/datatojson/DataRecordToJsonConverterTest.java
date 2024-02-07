@@ -79,7 +79,7 @@ public class DataRecordToJsonConverterTest {
 
 	private void createDataRecordToJsonConverter() {
 		dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndDataRecordAndBaseUrlAndIiifUrl(
+				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
 						dataRecord, converterFactory, actionsConverterSpy, builderFactory,
 						externalUrls);
 	}
@@ -94,7 +94,7 @@ public class DataRecordToJsonConverterTest {
 	public void testConverterFactoryUsedToCreateConverterForMainDataGroupNoBaseUrl()
 			throws Exception {
 		dataRecordToJsonConverter = DataRecordToJsonConverter
-				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndDataRecordAndBaseUrlAndIiifUrl(
+				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
 						dataRecord, converterFactory, actionsConverterSpy, builderFactory,
 						Optional.empty());
 
@@ -435,9 +435,8 @@ public class DataRecordToJsonConverterTest {
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 4);
 		JsonObjectBuilderSpy iiifBody = assertIIIFBodyAndReturnIt();
-		JsonObjectBuilderSpy iiifHeader = assertIIIFHeaderAndReturnIt(iiifBody);
-		JsonArrayBuilderSpy protocolsHeader = assertProtocolsAndReturnIt(iiifHeader);
-		assertOtherProtocols(protocolsHeader);
+		JsonObjectBuilderSpy iiifProtocol = assertIIIFProtocolAndReturnIt(iiifBody);
+		assertOtherProtocols(iiifProtocol);
 
 	}
 
@@ -450,24 +449,17 @@ public class DataRecordToJsonConverterTest {
 		return iiifBody;
 	}
 
-	private JsonObjectBuilderSpy assertIIIFHeaderAndReturnIt(JsonObjectBuilderSpy iiifBody) {
-		JsonObjectBuilderSpy iiifHeader = (JsonObjectBuilderSpy) builderFactory.MCR
+	private JsonObjectBuilderSpy assertIIIFProtocolAndReturnIt(JsonObjectBuilderSpy iiifBody) {
+		JsonObjectBuilderSpy iiifProtocol = (JsonObjectBuilderSpy) builderFactory.MCR
 				.getReturnValue("createObjectBuilder", 2);
-		iiifHeader.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "iiif", iiifBody);
-		return iiifHeader;
+		iiifProtocol.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "iiif", iiifBody);
+		return iiifProtocol;
 	}
 
-	private JsonArrayBuilderSpy assertProtocolsAndReturnIt(JsonObjectBuilderSpy iiifHeader) {
-		JsonArrayBuilderSpy protocolsHeader = (JsonArrayBuilderSpy) builderFactory.MCR
-				.getReturnValue("createArrayBuilder", 0);
-		protocolsHeader.MCR.assertParameters("addJsonObjectBuilder", 0, iiifHeader);
-		return protocolsHeader;
-	}
-
-	private void assertOtherProtocols(JsonArrayBuilderSpy protocolsHeader) {
+	private void assertOtherProtocols(JsonObjectBuilderSpy iiifHeader) {
 		JsonObjectBuilderSpy recordJsonObjectBuilder = getRecordJsonObjectBuilder();
-		recordJsonObjectBuilder.MCR.assertParameters("addKeyJsonArrayBuilder", 0, "otherProtocols",
-				protocolsHeader);
+		recordJsonObjectBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 1, "otherProtocols",
+				iiifHeader);
 	}
 
 	private JsonObjectBuilderSpy getRecordJsonObjectBuilder() {
