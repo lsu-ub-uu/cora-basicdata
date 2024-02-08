@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021, 2022 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2022, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,12 +18,14 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import java.util.Optional;
 import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.data.converter.ExternalUrls;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
@@ -33,25 +35,25 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactory builderFactory;
 	RecordActionsToJsonConverter actionsConverter;
-	String baseUrl;
 	DataRecord dataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
+	private Optional<ExternalUrls> externalUrls;
 
-	public static DataRecordToJsonConverter usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
-			DataToJsonConverterFactory converterFactory,
+	public static DataRecordToJsonConverter usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
+			DataRecord dataRecord, DataToJsonConverterFactory converterFactory,
 			RecordActionsToJsonConverter actionsConverter, JsonBuilderFactory builderFactory,
-			String baseUrl, DataRecord dataRecord) {
+			Optional<ExternalUrls> externalUrls) {
 		return new DataRecordToJsonConverter(converterFactory, actionsConverter, builderFactory,
-				baseUrl, dataRecord);
+				externalUrls, dataRecord);
 	}
 
 	DataRecordToJsonConverter(DataToJsonConverterFactory converterFactory,
 			RecordActionsToJsonConverter actionsConverter, JsonBuilderFactory builderFactory,
-			String baseUrl, DataRecord dataRecord) {
+			Optional<ExternalUrls> externalUrls, DataRecord dataRecord) {
 		this.converterFactory = converterFactory;
 		this.actionsConverter = actionsConverter;
 		this.builderFactory = builderFactory;
-		this.baseUrl = baseUrl;
+		this.externalUrls = externalUrls;
 		this.dataRecord = dataRecord;
 		recordJsonObjectBuilder = builderFactory.createObjectBuilder();
 	}
@@ -66,7 +68,31 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 		convertMainDataGroup();
 		possiblyConvertPermissions();
 		possiblyConvertActions();
+		possiblyConvertProtocols();
 		return createTopLevelJsonObjectWithRecordAsChild();
+	}
+
+	private void convertMainDataGroup() {
+		DataToJsonConverter dataToJsonConverter;
+		dataToJsonConverter = createConverterForMainDataGroup();
+
+		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
+		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
+	}
+
+	private DataToJsonConverter createConverterForMainDataGroup() {
+		if (actionLinksShouldBeCreated()) {
+			String recordUrl = externalUrls.get().getBaseUrl() + dataRecord.getType() + "/"
+					+ dataRecord.getId();
+			return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(
+					externalUrls.get().getBaseUrl(), recordUrl, dataRecord.getDataGroup());
+		}
+		return converterFactory.factorUsingConvertible(dataRecord.getDataGroup());
+
+	}
+
+	private boolean actionLinksShouldBeCreated() {
+		return externalUrls.isPresent();
 	}
 
 	private void possiblyConvertActions() {
@@ -94,6 +120,10 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 		}
 	}
 
+	private boolean thisRecordIsRecordType() {
+		return "recordType".equals(dataRecord.getType());
+	}
+
 	private void possiblySetSearchRecordIdIfDefinedInDataGroup(
 			ActionsConverterData actionsConverterData, DataGroup dataGroup) {
 		if (dataGroup.containsChildWithNameInData("search")) {
@@ -101,32 +131,6 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 			actionsConverterData.searchRecordId = searchGroup
 					.getFirstAtomicValueWithNameInData("linkedRecordId");
 		}
-	}
-
-	private boolean thisRecordIsRecordType() {
-		return "recordType".equals(dataRecord.getType());
-	}
-
-	private void convertMainDataGroup() {
-		DataToJsonConverter dataToJsonConverter;
-		dataToJsonConverter = createConverterForMainDataGroup();
-
-		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
-		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
-	}
-
-	private DataToJsonConverter createConverterForMainDataGroup() {
-		if (actionLinksShouldBeCreated()) {
-			String recordUrl = baseUrl + dataRecord.getType() + "/" + dataRecord.getId();
-			return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(baseUrl, recordUrl,
-					dataRecord.getDataGroup());
-		}
-		return converterFactory.factorUsingConvertible(dataRecord.getDataGroup());
-
-	}
-
-	private boolean actionLinksShouldBeCreated() {
-		return baseUrl != null;
 	}
 
 	private void possiblyConvertPermissions() {
@@ -185,9 +189,46 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 		return rootWrappingJsonObjectBuilder;
 	}
 
+	private void possiblyConvertProtocols() {
+		possiblyAddIiifProtocol();
+	}
+
+	private void possiblyAddIiifProtocol() {
+		if (!dataRecord.getProtocols().isEmpty()) {
+			for (String protocol : dataRecord.getProtocols()) {
+				addIiifProtocol(protocol);
+			}
+		}
+	}
+
+	private void addIiifProtocol(String protocol) {
+		if ("iiif".equals(protocol)) {
+			JsonObjectBuilder iifProtocol = createIIIF();
+			recordJsonObjectBuilder.addKeyJsonObjectBuilder("otherProtocols", iifProtocol);
+		}
+	}
+
+	private JsonObjectBuilder createIIIF() {
+		JsonObjectBuilder iiifBody = createIIIBody();
+		JsonObjectBuilder iifProtocol = builderFactory.createObjectBuilder();
+		iifProtocol.addKeyJsonObjectBuilder("iiif", iiifBody);
+		return iifProtocol;
+	}
+
+	private JsonObjectBuilder createIIIBody() {
+		JsonObjectBuilder iiidBody = builderFactory.createObjectBuilder();
+		iiidBody.addKeyString("server", externalUrls.get().getIfffUrl());
+		iiidBody.addKeyString("identifier", dataRecord.getId());
+		return iiidBody;
+	}
+
 	@Override
 	public String toJsonCompactFormat() {
 		return toJsonObjectBuilder().toJsonFormattedString();
+	}
+
+	public Optional<ExternalUrls> onlyForTestGetOptionalExternalUrls() {
+		return externalUrls;
 	}
 
 }

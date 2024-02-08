@@ -31,12 +31,13 @@ import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.data.converter.ExternalUrls;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 
 public class BasicDataToJsonConverterFactory implements DataToJsonConverterFactory {
 	JsonBuilderFactory builderFactory;
-	String baseUrl;
-	Optional<String> recordUrl;
+	private Optional<ExternalUrls> externalUrls;
+	private Optional<String> recordUrl;
 
 	/**
 	 * withoutActionLinksUsingBuilderFactory will factor {@link DataToJsonConverter}s that does not
@@ -53,6 +54,7 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 
 	BasicDataToJsonConverterFactory(JsonBuilderFactory factory) {
 		this.builderFactory = factory;
+		externalUrls = Optional.empty();
 		recordUrl = Optional.empty();
 	}
 
@@ -64,19 +66,29 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 		}
 
 		if (isDataRecord(convertible)) {
-			RecordActionsToJsonConverter actionsConverter = RecordActionsToJsonConverterImp
-					.usingConverterFactoryAndBuilderFactoryAndBaseUrl(this, builderFactory,
-							baseUrl);
+			RecordActionsToJsonConverter actionsConverter;
+			if (externalUrls.isPresent()) {
+				actionsConverter = RecordActionsToJsonConverterImp
+						.usingConverterFactoryAndBuilderFactoryAndBaseUrl(this, builderFactory,
+								externalUrls.get().getBaseUrl());
+
+			} else {
+				actionsConverter = RecordActionsToJsonConverterImp
+						.usingConverterFactoryAndBuilderFactoryAndBaseUrl(this, builderFactory,
+								null);
+			}
+
 			return DataRecordToJsonConverter
-					.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndBaseUrlAndDataRecord(
-							this, actionsConverter, builderFactory, baseUrl,
-							(DataRecord) convertible);
+					.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
+							(DataRecord) convertible, this, actionsConverter, builderFactory,
+							externalUrls);
 		}
 
 		if (isDataRecordLinkAndHasBaseUrl(convertible)) {
 			return DataRecordLinkToJsonConverter
 					.usingConverterFactoryAndJsonBuilderFactoryAndDataRecordLinkAndBaseUrl(this,
-							builderFactory, (DataRecordLink) convertible, baseUrl);
+							builderFactory, (DataRecordLink) convertible,
+							externalUrls.get().getBaseUrl());
 		}
 
 		if (isDataResourceLinkAndHasRecordUrl(convertible)) {
@@ -84,8 +96,6 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 			return DataResourceLinkToJsonConverter
 					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
 							builderFactory, (DataResourceLink) convertible, recordUrl);
-			// TODO add new method without recordUrl
-
 		}
 
 		if (isDataResourceLinkAndHasNoRecordUrl(convertible)) {
@@ -93,8 +103,6 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 			return DataResourceLinkToJsonConverter
 					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
 							builderFactory, (DataResourceLink) convertible, recordUrl);
-			// TODO add new method without recordUrl
-
 		}
 
 		if (isDataGroup(convertible)) {
@@ -134,22 +142,37 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 	}
 
 	private boolean isDataRecordLinkAndHasBaseUrl(Convertible convertible) {
-		return baseUrl != null && (convertible instanceof DataRecordLink);
+		return externalUrls.isPresent() && externalUrls.get().hasBaseUrl()
+				&& isRecordLink(convertible);
+	}
+
+	private boolean isRecordLink(Convertible convertible) {
+		return convertible instanceof DataRecordLink;
 	}
 
 	@Override
-	public DataToJsonConverter factorUsingBaseUrlAndConvertible(String baseUrl,
-			Convertible convertible) {
-		this.baseUrl = baseUrl;
+	public DataToJsonConverter factorUsingConvertibleAndExternalUrls(Convertible convertible,
+			ExternalUrls externalUrls) {
+		this.externalUrls = Optional.of(externalUrls);
 		return factorUsingConvertible(convertible);
 	}
 
 	@Override
 	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl,
 			String recordUrl, Convertible convertible) {
-		this.baseUrl = baseUrl;
+		ExternalUrls tmpExternal = new ExternalUrls();
+		tmpExternal.setBaseUrl(baseUrl);
+		externalUrls = Optional.of(tmpExternal);
 		this.recordUrl = Optional.of(recordUrl);
 
 		return factorUsingConvertible(convertible);
+	}
+
+	public Optional<ExternalUrls> onlyForTestGetExternalUrls() {
+		return externalUrls;
+	}
+
+	public Optional<String> onlyForTestGetRecordUrl() {
+		return recordUrl;
 	}
 }

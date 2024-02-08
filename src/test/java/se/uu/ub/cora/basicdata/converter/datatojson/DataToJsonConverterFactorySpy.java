@@ -21,6 +21,7 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.data.converter.ExternalUrls;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataToJsonConverterFactorySpy implements DataToJsonConverterFactory {
@@ -35,9 +36,9 @@ public class DataToJsonConverterFactorySpy implements DataToJsonConverterFactory
 	}
 
 	@Override
-	public DataToJsonConverter factorUsingBaseUrlAndConvertible(String baseUrl,
-			Convertible convertible) {
-		MCR.addCall("baseUrl", baseUrl, "convertible", convertible);
+	public DataToJsonConverter factorUsingConvertibleAndExternalUrls(Convertible convertible,
+			ExternalUrls externalUrls) {
+		MCR.addCall("baseUrl", externalUrls, "convertible", convertible);
 		DataToJsonConverterSpy converter = new DataToJsonConverterSpy();
 		MCR.addReturned(converter);
 		return converter;
