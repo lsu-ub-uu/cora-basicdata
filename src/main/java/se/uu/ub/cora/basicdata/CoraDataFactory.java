@@ -47,8 +47,8 @@ public class CoraDataFactory implements DataFactory {
 	}
 
 	@Override
-	public DataRecord factorRecordUsingDataGroup(DataGroup dataGroup) {
-		return CoraDataRecord.withDataGroup(dataGroup);
+	public DataRecord factorRecordUsingDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		return CoraDataRecord.withDataRecordGroup(dataRecordGroup);
 	}
 
 	@Override

@@ -119,7 +119,15 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test
 	public void testToClassWithRepeatIdAndAttribute() {
-		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"repeatId\":\"0\",\"attributes\":{\"type\":\"someType\"},\"name\":\"someLink\"}";
+		String json = """
+				{"children":[
+					{"name":"linkedRecordType","value":"recordType"},
+				 	{"name":"linkedRecordId","value":"place"}
+				 ],
+				 "repeatId":"0",
+				 "attributes":{"type":"someType"},
+				 "name":"someLink"}
+				""";
 		DataLink dataLink = getConverterdLink(json);
 
 		assertEquals(dataLink.getNameInData(), "someLink");

@@ -93,7 +93,7 @@ public class BasicDataToJsonConverterFactoryTest {
 
 	@Test
 	public void testRecordNoUrl() throws Exception {
-		CoraDataRecord coraDataRecord = CoraDataRecord.withDataGroup(null);
+		CoraDataRecord coraDataRecord = CoraDataRecord.withDataRecordGroup(null);
 
 		DataRecordToJsonConverter dataToJsonConverter = (DataRecordToJsonConverter) converterFactory
 				.factorUsingConvertible(coraDataRecord);
@@ -107,7 +107,7 @@ public class BasicDataToJsonConverterFactoryTest {
 
 	@Test
 	public void testDependenciesOfActionConverterNoUrl() throws Exception {
-		CoraDataRecord coraDataRecord = CoraDataRecord.withDataGroup(null);
+		CoraDataRecord coraDataRecord = CoraDataRecord.withDataRecordGroup(null);
 
 		DataRecordToJsonConverter dataToJsonConverter = (DataRecordToJsonConverter) converterFactory
 				.factorUsingConvertible(coraDataRecord);
@@ -120,7 +120,7 @@ public class BasicDataToJsonConverterFactoryTest {
 
 	@Test
 	public void testRecordWithUrl() throws Exception {
-		CoraDataRecord coraDataRecord = CoraDataRecord.withDataGroup(null);
+		CoraDataRecord coraDataRecord = CoraDataRecord.withDataRecordGroup(null);
 		DataRecordToJsonConverter dataToJsonConverter = (DataRecordToJsonConverter) converterFactory
 				.factorUsingConvertibleAndExternalUrls(coraDataRecord, externalUrls);
 		assertSame(dataToJsonConverter.converterFactory, converterFactory);
@@ -135,7 +135,7 @@ public class BasicDataToJsonConverterFactoryTest {
 
 	@Test
 	public void testDependenciesOfActionConverterWithUrl() throws Exception {
-		CoraDataRecord coraDataRecord = CoraDataRecord.withDataGroup(null);
+		CoraDataRecord coraDataRecord = CoraDataRecord.withDataRecordGroup(null);
 		DataRecordToJsonConverter dataToJsonConverter = (DataRecordToJsonConverter) converterFactory
 				.factorUsingConvertibleAndExternalUrls(coraDataRecord, externalUrls);
 		RecordActionsToJsonConverterImp actionsConverter = (RecordActionsToJsonConverterImp) dataToJsonConverter.actionsConverter;
