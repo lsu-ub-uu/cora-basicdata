@@ -33,6 +33,7 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGroup {
 
+	private static final String IGNORE_OVERWRITE_PROTECTION = "ignoreOverwriteProtection";
 	private static final String UPDATED = "updated";
 	private static final String SYSTEM_RECORD_TYPE = "system";
 	private static final String VALIDATION_TYPE = "validationType";
@@ -234,8 +235,15 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 
 	private boolean ignoreOverwriteProtectionIsSetToTrue() {
 		return containsChildWithNameInData(RECORD_INFO)
-				&& getRecordInfo().containsChildWithNameInData("ignoreOverwriteProtection")
-				&& getRecordInfo().getFirstAtomicValueWithNameInData("ignoreOverwriteProtection")
+				&& getRecordInfo().containsChildWithNameInData(IGNORE_OVERWRITE_PROTECTION)
+				&& getRecordInfo().getFirstAtomicValueWithNameInData(IGNORE_OVERWRITE_PROTECTION)
 						.equals("true");
+	}
+
+	@Override
+	public void removeOverwriteProtection() {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			getRecordInfo().removeAllChildrenWithNameInData(IGNORE_OVERWRITE_PROTECTION);
+		}
 	}
 }

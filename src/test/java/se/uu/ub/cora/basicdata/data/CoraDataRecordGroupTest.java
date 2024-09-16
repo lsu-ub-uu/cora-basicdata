@@ -1290,4 +1290,21 @@ public class CoraDataRecordGroupTest {
 		assertFalse(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
 	}
 
+	@Test
+	public void testRemoveOverwriteProtectionNoRecordInfo() throws Exception {
+		defaultRecordGroup.removeOverwriteProtection();
+
+		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testRemoveOverwriteProtectionRecordInfoIgnorOverwriteTrue() throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic("ignoreOverwriteProtection", "true");
+
+		defaultRecordGroup.removeOverwriteProtection();
+
+		assertEquals(defaultRecordInfo.containsChildWithNameInData("ignoreOverwriteProtection"),
+				false);
+	}
+
 }
