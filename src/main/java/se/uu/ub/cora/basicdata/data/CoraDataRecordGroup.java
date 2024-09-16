@@ -226,4 +226,16 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	public void addUpdatedUsingUserIdAndTsNow(String userId) {
 		addUpdatedUsingUserIdAndTs(userId, getNowAsIso8601());
 	}
+
+	@Override
+	public boolean overwriteProtectionShouldBeEnforced() {
+		return !ignoreOverwriteProtectionIsSetToTrue();
+	}
+
+	private boolean ignoreOverwriteProtectionIsSetToTrue() {
+		return containsChildWithNameInData(RECORD_INFO)
+				&& getRecordInfo().containsChildWithNameInData("ignoreOverwriteProtection")
+				&& getRecordInfo().getFirstAtomicValueWithNameInData("ignoreOverwriteProtection")
+						.equals("true");
+	}
 }

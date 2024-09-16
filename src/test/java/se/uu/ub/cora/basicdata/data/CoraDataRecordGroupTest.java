@@ -1053,6 +1053,7 @@ public class CoraDataRecordGroupTest {
 	public Object[][] testCasesForGetAtomic() {
 		GetAtomic id = new GetAtomic(() -> defaultRecordGroup.getId(), "id");
 		GetAtomic tsCreated = new GetAtomic(() -> defaultRecordGroup.getTsCreated(), "tsCreated");
+
 		return new GetAtomic[][] { { id }, { tsCreated } };
 	}
 
@@ -1264,4 +1265,29 @@ public class CoraDataRecordGroupTest {
 				"someUserId", "11", 3);
 		assertTsTimestampIsInIsoFormatAndCreatedWithinASecond(latestTsUpdated);
 	}
+
+	@Test
+	public void testGetOverwriteProtectionNoRecordInfo() throws Exception {
+		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testGetOverwriteProtectionRecordInfoNoOverwrite() throws Exception {
+		assertTrue(defaultRecordGroupWithRecordInfo.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testGetOverwriteProtectionRecordInfoIgnorOverwriteFalse() throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic("ignoreOverwriteProtection", "false");
+
+		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testGetOverwriteProtectionRecordInfoIgnorOverwriteTrue() throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic("ignoreOverwriteProtection", "true");
+
+		assertFalse(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
 }
