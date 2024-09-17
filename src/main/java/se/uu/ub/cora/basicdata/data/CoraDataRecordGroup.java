@@ -23,11 +23,13 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 
@@ -229,6 +231,47 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	}
 
 	@Override
+	public List<DataChild> getAllUpdated() {
+		DataGroup recordInfo = getRecordInfo();
+		List<DataChild> allUpdated = recordInfo.getAllChildrenWithNameInData("updated");
+		throwErrorIfEmptyList(allUpdated);
+		return allUpdated;
+	}
+
+	private void throwErrorIfEmptyList(List<DataChild> allUpdated) {
+		if (allUpdated.isEmpty()) {
+			throw new DataMissingException(
+					"Child of type: DataGroup and name: updated not found as child.");
+		}
+	}
+
+	@Override
+	public void setAllUpdated(Collection<DataChild> updatedList) {
+		ensureRecordInfoExistsIfUpdatedListNotEmpty(updatedList);
+		replaceExistingUpdatedWithNewOnesIfPossible(updatedList);
+	}
+
+	private void replaceExistingUpdatedWithNewOnesIfPossible(Collection<DataChild> updatedList) {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			replaceExistingUpdatedWithNewOnes(updatedList);
+		}
+	}
+
+	private void replaceExistingUpdatedWithNewOnes(Collection<DataChild> updatedList) {
+		DataGroup recordInfo = getRecordInfo();
+		recordInfo.removeAllChildrenWithNameInData("updated");
+		for (DataChild updatedChild : updatedList) {
+			recordInfo.addChild(updatedChild);
+		}
+	}
+
+	private void ensureRecordInfoExistsIfUpdatedListNotEmpty(Collection<DataChild> updatedList) {
+		if (!updatedList.isEmpty()) {
+			ensureRecordInfoExists();
+		}
+	}
+
+	@Override
 	public boolean overwriteProtectionShouldBeEnforced() {
 		return !ignoreOverwriteProtectionIsSetToTrue();
 	}
@@ -246,4 +289,5 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 			getRecordInfo().removeAllChildrenWithNameInData(IGNORE_OVERWRITE_PROTECTION);
 		}
 	}
+
 }

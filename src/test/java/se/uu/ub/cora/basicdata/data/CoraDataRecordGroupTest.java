@@ -1267,6 +1267,93 @@ public class CoraDataRecordGroupTest {
 	}
 
 	@Test
+	public void testGetAllUpdatedNoRecordInfo() throws Exception {
+		String message = GROUP_NOT_FOUND_FOR_CHILD_NAME_IN_DATA_RECORD_INFO;
+		runMethodAssertThrownErrorMessage(() -> defaultRecordGroup.getAllUpdated(), message);
+	}
+
+	@Test
+	public void testGetAllUpdatedRecordInfoNoUpdated() throws Exception {
+		String message = "Child of type: DataGroup and name: updated" + " not found as child.";
+		runMethodAssertThrownErrorMessage(() -> defaultRecordGroupWithRecordInfo.getAllUpdated(),
+				message);
+	}
+
+	@Test
+	public void testGetAllUpdatedRecordInfoTwoUpdated() throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+		defaultRecordInfo.addChild(updated0);
+		defaultRecordInfo.addChild(updated1);
+
+		List<DataChild> allUpdated = (List<DataChild>) defaultRecordGroupWithRecordInfo
+				.getAllUpdated();
+
+		assertSame(allUpdated.get(0), updated0);
+		assertSame(allUpdated.get(1), updated1);
+	}
+
+	@Test
+	public void testSetUpdatedNoExistsSinceBeforeEmptyListAdded() throws Exception {
+		List<DataChild> list = Collections.emptyList();
+
+		defaultRecordGroup.setAllUpdated(list);
+
+		assertFalse(defaultRecordGroup.containsChildWithNameInData(RECORD_INFO));
+	}
+
+	@Test
+	public void testSetUpdatedExistsSinceBeforeRemovedOnEmptyList() throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+		defaultRecordInfo.addChild(updated0);
+		defaultRecordInfo.addChild(updated1);
+
+		List<DataChild> list = Collections.emptyList();
+
+		defaultRecordGroupWithRecordInfo.setAllUpdated(list);
+
+		assertFalse(defaultRecordInfo.containsChildWithNameInData("updated"));
+	}
+
+	@Test
+	public void testSetUpdatedNoExistsSinceBeforeRemovedOnTwoUpdatedNoRecordInfo()
+			throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+
+		List<DataChild> list = List.of(updated0, updated1);
+
+		defaultRecordGroup.setAllUpdated(list);
+
+		DataGroup createdRecordInfo = defaultRecordGroup.getFirstGroupWithNameInData("recordInfo");
+		List<DataChild> updatedFromRecordInfo = createdRecordInfo
+				.getAllChildrenWithNameInData("updated");
+		assertSame(updatedFromRecordInfo.get(0), list.get(0));
+		assertSame(updatedFromRecordInfo.get(1), list.get(1));
+	}
+
+	@Test
+	public void testSetUpdatedNoExistsSinceBeforeRemovedOnTwoUpdatedList() throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+		DataGroup updatedNew0 = new CoraDataGroup("updated");
+		DataGroup updatedNew1 = new CoraDataGroup("updated");
+		defaultRecordInfo.addChild(updated0);
+		defaultRecordInfo.addChild(updated1);
+
+		List<DataChild> list = List.of(updatedNew0, updatedNew1);
+
+		defaultRecordGroupWithRecordInfo.setAllUpdated(list);
+
+		List<DataChild> updatedFromRecordInfo = defaultRecordInfo
+				.getAllChildrenWithNameInData("updated");
+		assertSame(updatedFromRecordInfo.get(0), list.get(0));
+		assertSame(updatedFromRecordInfo.get(1), list.get(1));
+		assertEquals(updatedFromRecordInfo.size(), 2);
+	}
+
+	@Test
 	public void testGetOverwriteProtectionNoRecordInfo() throws Exception {
 		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
 	}
