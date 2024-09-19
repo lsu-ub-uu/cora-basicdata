@@ -79,12 +79,10 @@ public class RecordActionsToJsonConverterTest {
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
 		assertMainAndInternalLinkBuilder(lowerCaseAction, url, requestMethod, accept, contentType);
-
 	}
 
 	private void assertMainAndInternalLinkBuilder(String action, String url, String requestMethod,
 			String accept, String contentType) {
-
 		JsonObjectBuilderSpy mainLinkBuilder = (JsonObjectBuilderSpy) builderFactory.MCR
 				.getReturnValue("createObjectBuilder", 0);
 		JsonObjectBuilderSpy internalLinkBuilder = (JsonObjectBuilderSpy) builderFactory.MCR
@@ -199,7 +197,7 @@ public class RecordActionsToJsonConverterTest {
 
 	private void assertCreatedWorkOrderBodyDataStructureIsCorrect() {
 		DataGroup workOrder = (DataGroup) converterFactory.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName("factorUsingConvertible", 0,
+				.getParameterForMethodAndCallNumberAndParameter("factorUsingConvertible", 0,
 						"convertible");
 		assertEquals(workOrder.getNameInData(), "workOrder");
 		DataGroup recordTypeGroup = workOrder.getFirstGroupWithNameInData("recordType");
