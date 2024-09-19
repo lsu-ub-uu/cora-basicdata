@@ -36,10 +36,11 @@ import se.uu.ub.cora.data.Data;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 
 public class CoraDataRecordTest {
 	private CoraDataRecord dataRecord;
-	private DataGroupSpy dataRecordGroup;
+	private DataRecordGroupSpy dataRecordGroup;
 	private DataGroupSpy recordInfoGroup;
 	private DataGroupSpy typeLinkedGroup;
 	private DataGroupSpy searchLinkedGroup;
@@ -54,7 +55,7 @@ public class CoraDataRecordTest {
 		recordInfoGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
 				(Supplier<DataGroup>) () -> typeLinkedGroup, "type");
 
-		dataRecordGroup = new DataGroupSpy();
+		dataRecordGroup = new DataRecordGroupSpy();
 		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
 				(Supplier<DataGroup>) () -> recordInfoGroup, "recordInfo");
 
@@ -63,7 +64,7 @@ public class CoraDataRecordTest {
 		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
 				(Supplier<Boolean>) () -> true, "search");
 
-		dataRecord = CoraDataRecord.withDataGroup(dataRecordGroup);
+		dataRecord = CoraDataRecord.withDataRecordGroup(dataRecordGroup);
 
 	}
 
@@ -84,16 +85,14 @@ public class CoraDataRecordTest {
 
 	@Test
 	public void testGetDataGroup() {
-		assertEquals(dataRecord.getDataGroup(), dataRecordGroup);
+		assertEquals(dataRecord.getDataRecordGroup(), dataRecordGroup);
 	}
 
 	@Test
 	public void testSetDataGroup() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("nameInData");
+		dataRecord.setDataRecordGroup(dataRecordGroup);
 
-		dataRecord.setDataGroup(dataGroup);
-
-		assertEquals(dataRecord.getDataGroup(), dataGroup);
+		assertEquals(dataRecord.getDataRecordGroup(), dataRecordGroup);
 	}
 
 	@Test
@@ -172,7 +171,7 @@ public class CoraDataRecordTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record id not known")
 	public void testGetIdNoDataGroup() throws Exception {
-		dataRecord.setDataGroup(null);
+		dataRecord.setDataRecordGroup(null);
 		dataRecord.getId();
 	}
 
@@ -225,7 +224,7 @@ public class CoraDataRecordTest {
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Record type not known")
 	public void testGetTypeNoDataGroup() throws Exception {
-		dataRecord.setDataGroup(null);
+		dataRecord.setDataRecordGroup(null);
 		dataRecord.getType();
 	}
 

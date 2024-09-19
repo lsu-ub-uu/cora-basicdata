@@ -35,11 +35,10 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataGroup;
-//import se.uu.ub.cora.basicdata.data.spy.DataRecordSpy;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.ExternalUrls;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordGroupSpy;
 import se.uu.ub.cora.data.spies.DataRecordSpy;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
@@ -50,7 +49,7 @@ public class DataRecordToJsonConverterTest {
 	private JsonBuilderFactorySpy builderFactory;
 
 	private DataToJsonConverterFactorySpy converterFactory;
-	private DataGroupSpy dataGroup;
+	private DataRecordGroupSpy dataRecordGroup;
 	private RecordActionsToJsonConverterSpy actionsConverterSpy;
 	private String baseUrl = "some/base/url/";
 	private String iiifBaseUrl = "someIiifBaseUrl";
@@ -61,13 +60,11 @@ public class DataRecordToJsonConverterTest {
 		converterFactory = new DataToJsonConverterFactorySpy();
 		actionsConverterSpy = new RecordActionsToJsonConverterSpy();
 		builderFactory = new JsonBuilderFactorySpy();
-		dataGroup = new DataGroupSpy();
+		dataRecordGroup = new DataRecordGroupSpy();
 		dataRecord = new DataRecordSpy();
-		dataRecord.MRV.setDefaultReturnValuesSupplier("getDataGroup",
-				(Supplier<DataGroup>) () -> dataGroup);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getDataRecordGroup", () -> dataRecordGroup);
 
 		externalUrls = createExternalUrls();
-
 	}
 
 	private Optional<ExternalUrls> createExternalUrls() {
@@ -103,7 +100,7 @@ public class DataRecordToJsonConverterTest {
 
 		converterFactory.MCR.assertMethodNotCalled("factorUsingBaseUrlAndRecordUrlAndConvertible");
 		converterFactory.MCR.assertParameters("factorUsingConvertible", 0,
-				dataRecord.getDataGroup());
+				dataRecord.getDataRecordGroup());
 
 		DataToJsonConverterSpy dataGroupConverter = (DataToJsonConverterSpy) converterFactory.MCR
 				.getReturnValue("factorUsingConvertible", 0);
@@ -145,7 +142,7 @@ public class DataRecordToJsonConverterTest {
 		String recordUrl = baseUrl + dataRecord.getType() + "/" + dataRecord.getId();
 
 		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndRecordUrlAndConvertible", 0,
-				baseUrl, recordUrl, dataRecord.getDataGroup());
+				baseUrl, recordUrl, dataRecord.getDataRecordGroup());
 
 		DataToJsonConverterSpy dataGroupConverter = (DataToJsonConverterSpy) converterFactory.MCR
 				.getReturnValue("factorUsingBaseUrlAndRecordUrlAndConvertible", 0);
@@ -193,7 +190,6 @@ public class DataRecordToJsonConverterTest {
 
 	private void assertPermissionsCalledAddString(String type,
 			JsonArrayBuilderSpy typePermissionBuilder) {
-
 		List<Object> values = getAllParameterValuesOnCallAddString(typePermissionBuilder);
 
 		assertTrue(
@@ -334,12 +330,11 @@ public class DataRecordToJsonConverterTest {
 		recordBuilder.MCR.assertNumberOfCallsToMethod("addKeyJsonObjectBuilder", 2);
 		recordBuilder.MCR.assertParameters("addKeyJsonObjectBuilder", 1, "actionLinks",
 				actionLinksBuilder);
-
 	}
 
 	private void assertActionConverterData(DataRecordSpy dataRecordSpy) {
 		ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
+				.getParameterForMethodAndCallNumberAndParameter("toJsonObjectBuilder", 0,
 						"actionsConverterData");
 		assertEquals(actionConverter.recordType, dataRecordSpy.getType());
 		assertEquals(actionConverter.recordId, dataRecordSpy.getId());
@@ -350,35 +345,30 @@ public class DataRecordToJsonConverterTest {
 	private void addActionsToDataRecordSpy(DataRecordSpy dataRecordSpy) {
 		List<Action> actionList = List.of(Action.READ, Action.UPDATE);
 
-		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getActions",
-				(Supplier<List<Action>>) () -> actionList);
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getActions", () -> actionList);
 	}
 
 	@Test
 	public void testConvertSearchActionForRecordTypeAndSearchRecordId() throws Exception {
 		createDataRecordToJsonConverter();
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
-		dataRecord.MRV.setDefaultReturnValuesSupplier("getType",
-				(Supplier<String>) () -> "recordType");
-		dataGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
-				(Supplier<Boolean>) () -> true, "search");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getType", () -> "recordType");
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("containsChildWithNameInData",
+				() -> true, "search");
 		DataGroupSpy searchGroup = new DataGroupSpy();
 		searchGroup.MRV.setSpecificReturnValuesSupplier("getFirstAtomicValueWithNameInData",
-				(Supplier<String>) () -> "someSearchId", "linkedRecordId");
-		dataGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
-				(Supplier<DataGroup>) () -> searchGroup, "search");
+				() -> "someSearchId", "linkedRecordId");
+		dataRecordGroup.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				() -> searchGroup, "search");
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		assertSearchRecordIdIsFromDataGroupRecord(dataRecord);
-
 	}
 
 	private void assertSearchRecordIdIsFromDataGroupRecord(DataRecordSpy dataRecordSpy) {
-		dataRecordSpy.MCR.assertNumberOfCallsToMethod("getDataGroup", 2);
-		DataGroupSpy dataGroup = (DataGroupSpy) dataRecordSpy.MCR.getReturnValue("getDataGroup", 1);
-		dataGroup.MCR.assertParameters("containsChildWithNameInData", 0, "search");
-		DataGroupSpy searchGroup = (DataGroupSpy) dataGroup.MCR
+		dataRecordSpy.MCR.assertNumberOfCallsToMethod("getDataRecordGroup", 2);
+		DataGroupSpy searchGroup = (DataGroupSpy) dataRecordGroup.MCR
 				.getReturnValue("getFirstGroupWithNameInData", 0);
 		searchGroup.MCR.assertParameters("getFirstAtomicValueWithNameInData", 0, "linkedRecordId");
 
@@ -386,7 +376,7 @@ public class DataRecordToJsonConverterTest {
 				.getReturnValue("getFirstAtomicValueWithNameInData", 0);
 
 		ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
+				.getParameterForMethodAndCallNumberAndParameter("toJsonObjectBuilder", 0,
 						"actionsConverterData");
 		assertSame(actionConverter.searchRecordId, searchId);
 	}
@@ -395,9 +385,8 @@ public class DataRecordToJsonConverterTest {
 	public void testConvertSearchActionForRecordTypeAndSearchRecordIdOnlyForRecordType()
 			throws Exception {
 		createDataRecordToJsonConverter();
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
-		dataRecord.MRV.setDefaultReturnValuesSupplier("getType",
-				(Supplier<String>) () -> "otherThanRecordType");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getType", () -> "otherThanRecordType");
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
@@ -406,7 +395,7 @@ public class DataRecordToJsonConverterTest {
 
 	private void assertSearchRecordIdNotSet() {
 		ActionsConverterData actionConverter = (ActionsConverterData) actionsConverterSpy.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName("toJsonObjectBuilder", 0,
+				.getParameterForMethodAndCallNumberAndParameter("toJsonObjectBuilder", 0,
 						"actionsConverterData");
 		assertSame(actionConverter.searchRecordId, null);
 	}
@@ -415,9 +404,8 @@ public class DataRecordToJsonConverterTest {
 	public void testConvertSearchActionForRecordTypeAndSearchRecordIdButNoSearchDefinedInDataGroup()
 			throws Exception {
 		createDataRecordToJsonConverter();
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
-		dataRecord.MRV.setDefaultReturnValuesSupplier("getType",
-				(Supplier<String>) () -> "recordType");
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getType", () -> "recordType");
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
@@ -437,7 +425,6 @@ public class DataRecordToJsonConverterTest {
 		JsonObjectBuilderSpy iiifBody = assertIIIFBodyAndReturnIt();
 		JsonObjectBuilderSpy iiifProtocol = assertIIIFProtocolAndReturnIt(iiifBody);
 		assertOtherProtocols(iiifProtocol);
-
 	}
 
 	private JsonObjectBuilderSpy assertIIIFBodyAndReturnIt() {
@@ -475,7 +462,6 @@ public class DataRecordToJsonConverterTest {
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		builderFactory.MCR.assertNumberOfCallsToMethod("createObjectBuilder", 2);
-
 	}
 
 	@Test
@@ -489,6 +475,5 @@ public class DataRecordToJsonConverterTest {
 
 		JsonObjectBuilderSpy recordJsonObjectBuilder = getRecordJsonObjectBuilder();
 		recordJsonObjectBuilder.MCR.assertNumberOfCallsToMethod("addKeyJsonArrayBuilder", 0);
-
 	}
 }

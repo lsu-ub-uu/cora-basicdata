@@ -71,11 +71,12 @@ public class CoraDataFactoryTest {
 	}
 
 	@Test
-	public void testFactorRecordUsingDataGroup() {
-		DataGroup dataGroup = CoraDataGroup.withNameInData("someNameInData");
-		DataRecord factoredDataRecord = dataFactory.factorRecordUsingDataGroup(dataGroup);
+	public void testFactorRecordUsingDataRecordGroup() {
+		DataRecordGroup dataRecordGroup = CoraDataRecordGroup.withNameInData("someNameInData");
+		DataRecord factoredDataRecord = dataFactory
+				.factorRecordUsingDataRecordGroup(dataRecordGroup);
 		assertTrue(factoredDataRecord instanceof CoraDataRecord);
-		assertSame(factoredDataRecord.getDataGroup(), dataGroup);
+		assertSame(factoredDataRecord.getDataRecordGroup(), dataRecordGroup);
 	}
 
 	@Test

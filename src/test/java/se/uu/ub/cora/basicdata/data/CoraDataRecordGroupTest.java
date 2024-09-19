@@ -1,6 +1,6 @@
 /*
  * Copyright 2015, 2019 Uppsala University Library
- * Copyright 2022 Olov McKie
+ * Copyright 2022, 2024 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -24,13 +24,18 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Data;
@@ -43,14 +48,46 @@ import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroupTest {
+	private static final String TIMESTAMP_FORMAT = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z";
 
+	private static final String GROUP_NOT_FOUND_FOR_CHILD_NAME_IN_DATA_RECORD_INFO = ""
+			+ "Group not found for childNameInData:recordInfo";
 	private static final String RECORD_INFO = "recordInfo";
-	private static final String VALIDATION_TYPE = "validationType";
 	private DataRecordGroup defaultRecordGroup;
+	private DataRecordGroup defaultRecordGroupWithRecordInfo;
+	private CoraDataGroup defaultRecordInfo;
 
 	@BeforeMethod
 	public void setUp() {
+		resetDefaultRecordGroupOnlyGroup();
+
+		defaultRecordGroupWithRecordInfo = CoraDataRecordGroup.withNameInData("someDataGroup");
+		defaultRecordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
+		defaultRecordGroupWithRecordInfo.addChild(defaultRecordInfo);
+	}
+
+	private void resetDefaultRecordGroupOnlyGroup() {
 		defaultRecordGroup = CoraDataRecordGroup.withNameInData("someDataGroup");
+	}
+
+	private void resetDefaultRecordGroupWithRecordInfo() {
+		resetDefaultRecordGroupOnlyGroup();
+		defaultRecordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
+		defaultRecordGroup.addChild(defaultRecordInfo);
+	}
+
+	private void resetDefaultRecordGroupWithRecordInfoAndLink(String nameInData,
+			String linkedRecordType, String linkedRecordId) {
+		resetDefaultRecordGroupWithRecordInfo();
+		var link = CoraDataRecordLink.usingNameInDataAndTypeAndId(nameInData, linkedRecordType,
+				linkedRecordId);
+		defaultRecordInfo.addChild(link);
+	}
+
+	private void resetDefaultRecordGroupWithRecordInfoAndAtomic(String nameInData, String value) {
+		resetDefaultRecordGroupWithRecordInfo();
+		var atomic = CoraDataAtomic.withNameInDataAndValue(nameInData, value);
+		defaultRecordInfo.addChild(atomic);
 	}
 
 	@Test
@@ -584,7 +621,6 @@ public class CoraDataRecordGroupTest {
 		List<DataChild> allChildrenWithNameInData = dataGroup
 				.getAllChildrenWithNameInData("someChildNameInData");
 		assertTrue(allChildrenWithNameInData.isEmpty());
-
 	}
 
 	@Test
@@ -594,7 +630,6 @@ public class CoraDataRecordGroupTest {
 		List<DataChild> allChildrenWithNameInData = dataGroup
 				.getAllChildrenWithNameInData("someOtherChildNameInData");
 		assertTrue(allChildrenWithNameInData.isEmpty());
-
 	}
 
 	@Test
@@ -702,7 +737,6 @@ public class CoraDataRecordGroupTest {
 				.getAllChildrenWithNameInData("childId");
 		assertEquals(allChildrenWithNameInData.size(), 1);
 		assertTrue(allChildrenWithNameInData.get(0) instanceof CoraDataAtomic);
-
 	}
 
 	@Test
@@ -850,7 +884,6 @@ public class CoraDataRecordGroupTest {
 
 		assertEquals(children.size(), 1);
 		assertSame(children.get(0), coraDataAtomic);
-
 	}
 
 	@Test
@@ -904,105 +937,168 @@ public class CoraDataRecordGroupTest {
 		assertSame(childrenWithoutAttributes.get(0), childGroup2);
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Group not found for childNameInData:recordInfo")
-	public void testGetType_NoRecordInfo() throws Exception {
-		defaultRecordGroup.getType();
+	@DataProvider(name = "getLink")
+	public Object[][] testCasesForGetLink() {
+		GetLink type = new GetLink(() -> defaultRecordGroup.getType(), "type", "recordType");
+		GetLink dataDivider = new GetLink(() -> defaultRecordGroup.getDataDivider(), "dataDivider",
+				"system");
+		GetLink validationType = new GetLink(() -> defaultRecordGroup.getValidationType(),
+				"validationType", "validationType");
+		GetLink createdBy = new GetLink(() -> defaultRecordGroup.getCreatedBy(), "createdBy",
+				"user");
+		return new GetLink[][] { { type }, { dataDivider }, { validationType }, { createdBy } };
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Element not found for childNameInData:type")
-	public void testGetType_NoTypeLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
+	record GetLink(Supplier<String> methodToRun, String nameInData, String linkedRecordType) {
+	};
 
-		defaultRecordGroup.getType();
+	@Test(dataProvider = "getLink")
+	public void testGetLinkNoRecordInfo(GetLink testData) throws Exception {
+		resetDefaultRecordGroupOnlyGroup();
+
+		String message = GROUP_NOT_FOUND_FOR_CHILD_NAME_IN_DATA_RECORD_INFO;
+		runMethodAssertThrownErrorMessage(testData.methodToRun, message);
 	}
 
-	@Test
-	public void testGetType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo
-				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("type", "", "someTypeId"));
+	@Test(dataProvider = "getLink")
+	public void testGetLinkRecordInfoNoLink(GetLink testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfo();
 
-		assertEquals(defaultRecordGroup.getType(), "someTypeId");
+		String message = "Child of type: DataRecordLink and name: " + testData.nameInData
+				+ " not found as child.";
+		runMethodAssertThrownErrorMessage(testData.methodToRun, message);
 	}
 
-	@Test
-	public void testSetType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo
-				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("type", "", "someTypeId"));
+	@Test(dataProvider = "getLink")
+	public void testGetLinkWithValue(GetLink testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndLink(testData.nameInData, testData.linkedRecordType,
+				"someValue");
 
-		defaultRecordGroup.setType("someOtherTypeId");
-
-		assertEquals(defaultRecordGroup.getType(), "someOtherTypeId");
+		assertEquals(testData.methodToRun.get(), "someValue");
 	}
 
-	@Test
-	public void testSetType_NoType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-
-		defaultRecordGroup.setType("someOtherTypeId");
-
-		assertEquals(defaultRecordGroup.getType(), "someOtherTypeId");
-		DataRecordLink dataDividerLink = (DataRecordLink) recordInfo
-				.getFirstChildWithNameInData("type");
-		assertEquals(dataDividerLink.getLinkedRecordType(), "recordType");
+	private void runMethodAssertThrownErrorMessage(Supplier<?> methodToRun, String message) {
+		try {
+			methodToRun.get();
+			fail();
+		} catch (Exception e) {
+			assertThrownErrorMessage(e, message);
+		}
 	}
 
-	@Test
-	public void testSetType_NoRecordInfo() throws Exception {
-		defaultRecordGroup.setType("someOtherTypeId");
-
-		assertEquals(defaultRecordGroup.getType(), "someOtherTypeId");
+	private void assertThrownErrorMessage(Exception e, String message) {
+		assertTrue(e instanceof DataMissingException);
+		assertEquals(e.getMessage(), message);
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Group not found for childNameInData:recordInfo")
-	public void testGetId_NoRecordInfo() throws Exception {
-		defaultRecordGroup.getId();
+	@DataProvider(name = "setLink")
+	public Object[][] testCasesForSetLink() {
+		SetLink type = new SetLink(T -> defaultRecordGroup.setType(T), "type", "recordType");
+		SetLink dataDivider = new SetLink(T -> defaultRecordGroup.setDataDivider(T), "dataDivider",
+				"system");
+		SetLink validationType = new SetLink(T -> defaultRecordGroup.setValidationType(T),
+				"validationType", "validationType");
+		SetLink createdBy = new SetLink(T -> defaultRecordGroup.setCreatedBy(T), "createdBy",
+				"user");
+		return new SetLink[][] { { type }, { dataDivider }, { validationType }, { createdBy } };
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Atomic value not found for childNameInData:id")
-	public void testGetId_NoIdLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
+	record SetLink(Consumer<String> methodToRun, String nameInData, String linkedRecordType) {
+	};
 
-		defaultRecordGroup.getId();
+	@Test(dataProvider = "setLink")
+	public void testSetLinkNoRecordInfo(SetLink testData) throws Exception {
+		resetDefaultRecordGroupOnlyGroup();
+
+		testData.methodToRun.accept("someValue");
+
+		assertRecordInfoHasOnlyOneLinkAsSpecifiedInTestData(defaultRecordGroup, testData);
 	}
 
-	@Test
-	public void testGetId() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue("id", "someId"));
+	@Test(dataProvider = "setLink")
+	public void testSetLinkRecordInfoNoLink(SetLink testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfo();
 
-		assertEquals(defaultRecordGroup.getId(), "someId");
+		testData.methodToRun.accept("someValue");
+
+		assertRecordInfoHasOnlyOneLinkAsSpecifiedInTestData(defaultRecordGroup, testData);
+	}
+
+	@Test(dataProvider = "setLink")
+	public void testSetLinkRecordInfoLinkOtherValue(SetLink testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndLink(testData.nameInData, testData.linkedRecordType,
+				"someOtherValue");
+
+		testData.methodToRun.accept("someValue");
+
+		assertRecordInfoHasOnlyOneLinkAsSpecifiedInTestData(defaultRecordGroup, testData);
+	}
+
+	private void assertRecordInfoHasOnlyOneLinkAsSpecifiedInTestData(DataRecordGroup recordGroup,
+			SetLink testData) {
+		DataGroup recordInfo = recordGroup.getFirstGroupWithNameInData("recordInfo");
+
+		String nameInData = testData.nameInData;
+		List<DataChild> allLinkChildren = recordInfo.getAllChildrenWithNameInData(nameInData);
+		assertEquals(allLinkChildren.size(), 1);
+
+		DataRecordLink link = recordInfo.getFirstChildOfTypeAndName(DataRecordLink.class,
+				nameInData);
+		String linkedRecordType = testData.linkedRecordType;
+		assertEquals(link.getLinkedRecordType(), linkedRecordType);
+		assertEquals(link.getLinkedRecordId(), "someValue");
+	}
+
+	@DataProvider(name = "getAtomic")
+	public Object[][] testCasesForGetAtomic() {
+		GetAtomic id = new GetAtomic(() -> defaultRecordGroup.getId(), "id");
+		GetAtomic tsCreated = new GetAtomic(() -> defaultRecordGroup.getTsCreated(), "tsCreated");
+
+		return new GetAtomic[][] { { id }, { tsCreated } };
+	}
+
+	record GetAtomic(Supplier<String> methodToRun, String nameInData) {
+	};
+
+	@Test(dataProvider = "getAtomic")
+	public void testGetAtomicNoRecordInfo(GetAtomic testData) throws Exception {
+		resetDefaultRecordGroupOnlyGroup();
+		String message = GROUP_NOT_FOUND_FOR_CHILD_NAME_IN_DATA_RECORD_INFO;
+
+		runMethodAssertThrownErrorMessage(testData.methodToRun, message);
+	}
+
+	@Test(dataProvider = "getAtomic")
+	public void testGetAtomicRecordInfoNoLink(GetAtomic testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfo();
+		String message = "Atomic value not found for childNameInData:" + testData.nameInData;
+
+		runMethodAssertThrownErrorMessage(testData.methodToRun, message);
+	}
+
+	@Test(dataProvider = "getAtomic")
+	public void testGetLinkAtomicValue(GetAtomic testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic(testData.nameInData, "someValue");
+
+		assertEquals(testData.methodToRun.get(), "someValue");
 	}
 
 	@Test
 	public void testSetId() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("id", "", "someIdId"));
+		defaultRecordInfo
+				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("id", "", "someIdId"));
 
-		defaultRecordGroup.setId("someOtherId");
+		defaultRecordGroupWithRecordInfo.setId("someOtherId");
 
-		assertEquals(defaultRecordGroup.getId(), "someOtherId");
+		assertEquals(defaultRecordGroupWithRecordInfo.getId(), "someOtherId");
 	}
 
 	@Test
 	public void testSetId_NoId() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
+		defaultRecordGroupWithRecordInfo.setId("someOtherId");
 
-		defaultRecordGroup.setId("someOtherId");
-
-		assertEquals(defaultRecordGroup.getId(), "someOtherId");
-		DataAtomic id = (DataAtomic) recordInfo.getFirstChildWithNameInData("id");
+		assertEquals(defaultRecordGroupWithRecordInfo.getId(), "someOtherId");
+		DataAtomic id = (DataAtomic) defaultRecordInfo.getFirstChildWithNameInData("id");
 		assertEquals(id.getValue(), "someOtherId");
 	}
 
@@ -1013,115 +1109,289 @@ public class CoraDataRecordGroupTest {
 		assertEquals(defaultRecordGroup.getId(), "someOtherId");
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Group not found for childNameInData:recordInfo")
-	public void testGetDataDivider_NoRecordInfo() throws Exception {
-		defaultRecordGroup.getDataDivider();
+	@DataProvider(name = "setAtomic")
+	public Object[][] testCasesForSetAtomic() {
+		SetAtomic id = new SetAtomic(T -> defaultRecordGroup.setId(T), "id");
+		SetAtomic tsCreated = new SetAtomic(T -> defaultRecordGroup.setTsCreated(T), "tsCreated");
+		return new SetAtomic[][] { { id }, { tsCreated } };
 	}
 
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Element not found for childNameInData:dataDivider")
-	public void testGetDataDivider_NoDataDividerLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
+	record SetAtomic(Consumer<String> methodToRun, String nameInData) {
+	};
 
-		defaultRecordGroup.getDataDivider();
+	@Test(dataProvider = "setAtomic")
+	public void testSetAtomicNoRecordInfo(SetAtomic testData) throws Exception {
+		resetDefaultRecordGroupOnlyGroup();
+
+		testData.methodToRun.accept("someValue");
+
+		assertRecordInfoHasOnlyOneAtomicAsSpecifiedInTestData(defaultRecordGroup, testData);
 	}
 
-	@Test
-	public void testGetDataDivider() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("dataDivider", "",
-				"someDataDividerId"));
+	@Test(dataProvider = "setAtomic")
+	public void testSetAtomicRecordInfoNoLink(SetAtomic testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfo();
 
-		assertEquals(defaultRecordGroup.getDataDivider(), "someDataDividerId");
+		testData.methodToRun.accept("someValue");
+
+		assertRecordInfoHasOnlyOneAtomicAsSpecifiedInTestData(defaultRecordGroup, testData);
 	}
 
-	@Test
-	public void testSetDataDivider() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("dataDivider", "",
-				"someDataDividerId"));
+	@Test(dataProvider = "setAtomic")
+	public void testSetAtomicRecordInfoLinkOtherValue(SetAtomic testData) throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic(testData.nameInData, "someOtherValue");
 
-		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
+		testData.methodToRun.accept("someValue");
 
-		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
+		assertRecordInfoHasOnlyOneAtomicAsSpecifiedInTestData(defaultRecordGroup, testData);
 	}
 
-	@Test
-	public void testSetDataDivider_NoDataDivider() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
+	private void assertRecordInfoHasOnlyOneAtomicAsSpecifiedInTestData(DataRecordGroup recordGroup,
+			SetAtomic testData) {
+		DataGroup recordInfo = recordGroup.getFirstGroupWithNameInData("recordInfo");
 
-		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
+		String nameInData = testData.nameInData;
+		List<DataChild> allLinkChildren = recordInfo.getAllChildrenWithNameInData(nameInData);
+		assertEquals(allLinkChildren.size(), 1);
 
-		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
-		DataRecordLink dataDividerLink = (DataRecordLink) recordInfo
-				.getFirstChildWithNameInData("dataDivider");
-		assertEquals(dataDividerLink.getLinkedRecordType(), "system");
-	}
-
-	@Test
-	public void testSetDataDivider_NoRecordInfo() throws Exception {
-		defaultRecordGroup.setDataDivider("someOtherDataDividerId");
-
-		assertEquals(defaultRecordGroup.getDataDivider(), "someOtherDataDividerId");
-	}
-
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Group not found for childNameInData:recordInfo")
-	public void testGetValidationType_NoRecordInfo() throws Exception {
-		defaultRecordGroup.getValidationType();
-	}
-
-	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
-			+ "Element not found for childNameInData:validationType")
-	public void testGetValidationType_NoValidationTypeLink() throws Exception {
-		defaultRecordGroup.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
-
-		defaultRecordGroup.getValidationType();
+		DataAtomic atomic = recordInfo.getFirstChildOfTypeAndName(DataAtomic.class, nameInData);
+		assertEquals(atomic.getValue(), "someValue");
 	}
 
 	@Test
-	public void testGetValidationType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE, "",
-				"someValidationTypeId"));
+	public void testSetTsCreatedToNow() throws Exception {
+		defaultRecordGroup.setTsCreatedToNow();
 
-		assertEquals(defaultRecordGroup.getValidationType(), "someValidationTypeId");
+		String tsCreated = defaultRecordGroup.getTsCreated();
+		assertTsTimestampIsInIsoFormatAndCreatedWithinASecond(tsCreated);
+	}
+
+	private void assertTsTimestampIsInIsoFormatAndCreatedWithinASecond(String ts) {
+		assertTrue(ts.matches(TIMESTAMP_FORMAT));
+
+		int oneSecondInNano = 1000000000;
+		Instant parsed = Instant.parse(ts);
+		assertTrue(Instant.now().getNano() - parsed.getNano() < oneSecondInNano);
 	}
 
 	@Test
-	public void testSetValidationType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE, "",
-				"someValidationTypeId"));
+	public void testGetLatestUpdatedBy() throws Exception {
+		addUpdatedToDefaultRecordInfo("someOtherUserId", "someOtherTime", "10");
+		addUpdatedToDefaultRecordInfo("someUserId", "someTime", "1");
 
-		defaultRecordGroup.setValidationType("someOtherValidationTypeId");
+		String userId = defaultRecordGroupWithRecordInfo.getLatestUpdatedBy();
 
-		assertEquals(defaultRecordGroup.getValidationType(), "someOtherValidationTypeId");
+		assertEquals(userId, "someUserId");
 	}
 
 	@Test
-	public void testSetValidationType_NoValidationType() throws Exception {
-		CoraDataGroup recordInfo = CoraDataGroup.withNameInData(RECORD_INFO);
-		defaultRecordGroup.addChild(recordInfo);
+	public void testGetLatestTsUpdated() throws Exception {
+		addUpdatedToDefaultRecordInfo("someOtherUserId", "someOtherTime", "10");
+		addUpdatedToDefaultRecordInfo("someUserId", "someTime", "1");
 
-		defaultRecordGroup.setValidationType("someOtherValidationTypeId");
+		String userId = defaultRecordGroupWithRecordInfo.getLatestTsUpdated();
 
-		assertEquals(defaultRecordGroup.getValidationType(), "someOtherValidationTypeId");
-		DataRecordLink ValidationTypeLink = (DataRecordLink) recordInfo
-				.getFirstChildWithNameInData(VALIDATION_TYPE);
-		assertEquals(ValidationTypeLink.getLinkedRecordType(), VALIDATION_TYPE);
+		assertEquals(userId, "someTime");
+	}
+
+	private void addUpdatedToDefaultRecordInfo(String userId, String updatedTs, String repeatId) {
+		DataGroup updated = CoraDataGroup.withNameInData("updated");
+		updated.setRepeatId(repeatId);
+		defaultRecordInfo.addChild(updated);
+		DataAtomic updatedBy = CoraDataAtomic.withNameInDataAndValue("updatedBy", userId);
+		updated.addChild(updatedBy);
+		DataAtomic tsUpdated = CoraDataAtomic.withNameInDataAndValue("tsUpdated", updatedTs);
+		updated.addChild(tsUpdated);
 	}
 
 	@Test
-	public void testSetValidationType_NoRecordInfo() throws Exception {
-		defaultRecordGroup.setValidationType("someOtherValidationTypeId");
+	public void testAddUpdated() throws Exception {
+		defaultRecordGroup.addUpdatedUsingUserIdAndTs("someUserId", "someTsUpdated");
 
-		assertEquals(defaultRecordGroup.getValidationType(), "someOtherValidationTypeId");
+		assertRecordInfoHasLastUpdated(defaultRecordGroup, "someTsUpdated", "someUserId", "0", 1);
 	}
+
+	private void assertRecordInfoHasLastUpdated(DataRecordGroup recordGroup, String tsUpdated,
+			String updatedBy, String repeatId, int numberOfUpdated) {
+		DataGroup lastUpdated = getLastUpdated(recordGroup, numberOfUpdated);
+
+		assertEquals(lastUpdated.getRepeatId(), repeatId);
+		assertEquals(lastUpdated.getFirstAtomicValueWithNameInData("tsUpdated"), tsUpdated);
+
+		DataRecordLink lastUpdatedBy = lastUpdated.getFirstChildOfTypeAndName(DataRecordLink.class,
+				"updatedBy");
+		assertEquals(lastUpdatedBy.getLinkedRecordType(), "user");
+		assertEquals(lastUpdatedBy.getLinkedRecordId(), updatedBy);
+	}
+
+	private DataGroup getLastUpdated(DataRecordGroup recordGroup, int numberOfUpdated) {
+		DataGroup recordInfo = recordGroup.getFirstGroupWithNameInData("recordInfo");
+		List<DataChild> updateds = recordInfo.getAllChildrenWithNameInData("updated");
+
+		assertEquals(updateds.size(), numberOfUpdated);
+
+		return (DataGroup) updateds.get(updateds.size() - 1);
+	}
+
+	@Test
+	public void testAddUpdatedTwoExistsSinceBefore() throws Exception {
+		addUpdatedToDefaultRecordInfo("someOtherUserId", "someOtherTime", "10");
+		addUpdatedToDefaultRecordInfo("someUserId", "someTime", "strange1");
+
+		defaultRecordGroupWithRecordInfo.addUpdatedUsingUserIdAndTs("someUserId", "someTsUpdated");
+
+		assertRecordInfoHasLastUpdated(defaultRecordGroupWithRecordInfo, "someTsUpdated",
+				"someUserId", "11", 3);
+	}
+
+	@Test
+	public void testAddUpdatedNow() throws Exception {
+		defaultRecordGroup.addUpdatedUsingUserIdAndTsNow("someUserId");
+
+		String latestTsUpdated = defaultRecordGroup.getLatestTsUpdated();
+		assertRecordInfoHasLastUpdated(defaultRecordGroup, latestTsUpdated, "someUserId", "0", 1);
+		assertTsTimestampIsInIsoFormatAndCreatedWithinASecond(latestTsUpdated);
+	}
+
+	@Test
+	public void testAddUpdatedNowTwoExistsSinceBefore() throws Exception {
+		addUpdatedToDefaultRecordInfo("someOtherUserId", "someOtherTime", "10");
+		addUpdatedToDefaultRecordInfo("someUserId", "someTime", "strange1");
+
+		defaultRecordGroupWithRecordInfo.addUpdatedUsingUserIdAndTsNow("someUserId");
+
+		String latestTsUpdated = defaultRecordGroupWithRecordInfo.getLatestTsUpdated();
+		assertRecordInfoHasLastUpdated(defaultRecordGroupWithRecordInfo, latestTsUpdated,
+				"someUserId", "11", 3);
+		assertTsTimestampIsInIsoFormatAndCreatedWithinASecond(latestTsUpdated);
+	}
+
+	@Test
+	public void testGetAllUpdatedNoRecordInfo() throws Exception {
+		String message = GROUP_NOT_FOUND_FOR_CHILD_NAME_IN_DATA_RECORD_INFO;
+		runMethodAssertThrownErrorMessage(() -> defaultRecordGroup.getAllUpdated(), message);
+	}
+
+	@Test
+	public void testGetAllUpdatedRecordInfoNoUpdated() throws Exception {
+		String message = "Child of type: DataGroup and name: updated" + " not found as child.";
+		runMethodAssertThrownErrorMessage(() -> defaultRecordGroupWithRecordInfo.getAllUpdated(),
+				message);
+	}
+
+	@Test
+	public void testGetAllUpdatedRecordInfoTwoUpdated() throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+		defaultRecordInfo.addChild(updated0);
+		defaultRecordInfo.addChild(updated1);
+
+		List<DataChild> allUpdated = (List<DataChild>) defaultRecordGroupWithRecordInfo
+				.getAllUpdated();
+
+		assertSame(allUpdated.get(0), updated0);
+		assertSame(allUpdated.get(1), updated1);
+	}
+
+	@Test
+	public void testSetUpdatedNoExistsSinceBeforeEmptyListAdded() throws Exception {
+		List<DataChild> list = Collections.emptyList();
+
+		defaultRecordGroup.setAllUpdated(list);
+
+		assertFalse(defaultRecordGroup.containsChildWithNameInData(RECORD_INFO));
+	}
+
+	@Test
+	public void testSetUpdatedExistsSinceBeforeRemovedOnEmptyList() throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+		defaultRecordInfo.addChild(updated0);
+		defaultRecordInfo.addChild(updated1);
+
+		List<DataChild> list = Collections.emptyList();
+
+		defaultRecordGroupWithRecordInfo.setAllUpdated(list);
+
+		assertFalse(defaultRecordInfo.containsChildWithNameInData("updated"));
+	}
+
+	@Test
+	public void testSetUpdatedNoExistsSinceBeforeRemovedOnTwoUpdatedNoRecordInfo()
+			throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+
+		List<DataChild> list = List.of(updated0, updated1);
+
+		defaultRecordGroup.setAllUpdated(list);
+
+		DataGroup createdRecordInfo = defaultRecordGroup.getFirstGroupWithNameInData("recordInfo");
+		List<DataChild> updatedFromRecordInfo = createdRecordInfo
+				.getAllChildrenWithNameInData("updated");
+		assertSame(updatedFromRecordInfo.get(0), list.get(0));
+		assertSame(updatedFromRecordInfo.get(1), list.get(1));
+	}
+
+	@Test
+	public void testSetUpdatedNoExistsSinceBeforeRemovedOnTwoUpdatedList() throws Exception {
+		DataGroup updated0 = new CoraDataGroup("updated");
+		DataGroup updated1 = new CoraDataGroup("updated");
+		DataGroup updatedNew0 = new CoraDataGroup("updated");
+		DataGroup updatedNew1 = new CoraDataGroup("updated");
+		defaultRecordInfo.addChild(updated0);
+		defaultRecordInfo.addChild(updated1);
+
+		List<DataChild> list = List.of(updatedNew0, updatedNew1);
+
+		defaultRecordGroupWithRecordInfo.setAllUpdated(list);
+
+		List<DataChild> updatedFromRecordInfo = defaultRecordInfo
+				.getAllChildrenWithNameInData("updated");
+		assertSame(updatedFromRecordInfo.get(0), list.get(0));
+		assertSame(updatedFromRecordInfo.get(1), list.get(1));
+		assertEquals(updatedFromRecordInfo.size(), 2);
+	}
+
+	@Test
+	public void testGetOverwriteProtectionNoRecordInfo() throws Exception {
+		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testGetOverwriteProtectionRecordInfoNoOverwrite() throws Exception {
+		assertTrue(defaultRecordGroupWithRecordInfo.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testGetOverwriteProtectionRecordInfoIgnorOverwriteFalse() throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic("ignoreOverwriteProtection", "false");
+
+		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testGetOverwriteProtectionRecordInfoIgnorOverwriteTrue() throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic("ignoreOverwriteProtection", "true");
+
+		assertFalse(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testRemoveOverwriteProtectionNoRecordInfo() throws Exception {
+		defaultRecordGroup.removeOverwriteProtection();
+
+		assertTrue(defaultRecordGroup.overwriteProtectionShouldBeEnforced());
+	}
+
+	@Test
+	public void testRemoveOverwriteProtectionRecordInfoIgnorOverwriteTrue() throws Exception {
+		resetDefaultRecordGroupWithRecordInfoAndAtomic("ignoreOverwriteProtection", "true");
+
+		defaultRecordGroup.removeOverwriteProtection();
+
+		assertEquals(defaultRecordInfo.containsChildWithNameInData("ignoreOverwriteProtection"),
+				false);
+	}
+
 }

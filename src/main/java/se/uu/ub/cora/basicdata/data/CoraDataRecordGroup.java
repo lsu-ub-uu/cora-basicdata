@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Olov McKie
+ * Copyright 2022, 2024 Olov McKie
  * Copyright 2022 Uppsala University Library
  * 
  * This file is part of Cora.
@@ -19,12 +19,25 @@
  */
 package se.uu.ub.cora.basicdata.data;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 
 public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGroup {
 
+	private static final String IGNORE_OVERWRITE_PROTECTION = "ignoreOverwriteProtection";
+	private static final String UPDATED = "updated";
+	private static final String SYSTEM_RECORD_TYPE = "system";
 	private static final String VALIDATION_TYPE = "validationType";
 	private static final String ID = "id";
 	private static final String DATA_DIVIDER = "dataDivider";
@@ -41,73 +54,240 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 
 	@Override
 	public String getType() {
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		DataRecordLink typeLink = (DataRecordLink) recordInfo.getFirstChildWithNameInData(TYPE);
-		return typeLink.getLinkedRecordId();
+		return getFirstLinkedRecordIdWithNameInDataFromRecordInfo(TYPE);
 	}
 
 	@Override
 	public void setType(String type) {
-		ensureRecordInfoExists();
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		recordInfo.removeAllChildrenMatchingFilter(CoraDataChildFilter.usingNameInData(TYPE));
-		recordInfo
-				.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(TYPE, "recordType", type));
-	}
-
-	private void ensureRecordInfoExists() {
-		if (!this.containsChildWithNameInData(RECORD_INFO)) {
-			this.addChild(CoraDataGroup.withNameInData(RECORD_INFO));
-		}
+		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId(TYPE, "recordType", type);
+		replaceAllChildrenInRecordInfoWithChild(child);
 	}
 
 	@Override
 	public String getId() {
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		return recordInfo.getFirstAtomicValueWithNameInData(ID);
+		return getFirstAtomicValueWithNameInDataFromRecordInfo(ID);
 	}
 
 	@Override
 	public void setId(String id) {
-		ensureRecordInfoExists();
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		recordInfo.removeAllChildrenMatchingFilter(CoraDataChildFilter.usingNameInData(ID));
-		recordInfo.addChild(CoraDataAtomic.withNameInDataAndValue(ID, id));
+		var child = CoraDataAtomic.withNameInDataAndValue(ID, id);
+		replaceAllChildrenInRecordInfoWithChild(child);
 	}
 
 	@Override
 	public String getDataDivider() {
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		DataRecordLink typeLink = (DataRecordLink) recordInfo
-				.getFirstChildWithNameInData(DATA_DIVIDER);
-		return typeLink.getLinkedRecordId();
+		return getFirstLinkedRecordIdWithNameInDataFromRecordInfo(DATA_DIVIDER);
 	}
 
 	@Override
 	public void setDataDivider(String dataDivider) {
-		ensureRecordInfoExists();
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		recordInfo
-				.removeAllChildrenMatchingFilter(CoraDataChildFilter.usingNameInData(DATA_DIVIDER));
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(DATA_DIVIDER, "system",
-				dataDivider));
+		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId(DATA_DIVIDER, SYSTEM_RECORD_TYPE,
+				dataDivider);
+		replaceAllChildrenInRecordInfoWithChild(child);
 	}
 
 	@Override
 	public String getValidationType() {
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		DataRecordLink typeLink = (DataRecordLink) recordInfo
-				.getFirstChildWithNameInData(VALIDATION_TYPE);
-		return typeLink.getLinkedRecordId();
+		return getFirstLinkedRecordIdWithNameInDataFromRecordInfo(VALIDATION_TYPE);
 	}
 
 	@Override
 	public void setValidationType(String validationType) {
-		ensureRecordInfoExists();
-		DataGroup recordInfo = this.getFirstGroupWithNameInData(RECORD_INFO);
-		recordInfo.removeAllChildrenMatchingFilter(
-				CoraDataChildFilter.usingNameInData(VALIDATION_TYPE));
-		recordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE,
-				VALIDATION_TYPE, validationType));
+		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId(VALIDATION_TYPE, VALIDATION_TYPE,
+				validationType);
+		replaceAllChildrenInRecordInfoWithChild(child);
 	}
+
+	private String getFirstAtomicValueWithNameInDataFromRecordInfo(String nameInData) {
+		DataGroup recordInfo = getRecordInfo();
+		return recordInfo.getFirstAtomicValueWithNameInData(nameInData);
+	}
+
+	private String getFirstLinkedRecordIdWithNameInDataFromRecordInfo(String nameInData) {
+		DataGroup recordInfo = getRecordInfo();
+		DataRecordLink typeLink = recordInfo.getFirstChildOfTypeAndName(DataRecordLink.class,
+				nameInData);
+		return typeLink.getLinkedRecordId();
+	}
+
+	private DataGroup getRecordInfo() {
+		return getFirstGroupWithNameInData(RECORD_INFO);
+	}
+
+	private void replaceAllChildrenInRecordInfoWithChild(DataChild child) {
+		ensureRecordInfoExists();
+		DataGroup recordInfo = getRecordInfo();
+		String nameInData = child.getNameInData();
+		CoraDataChildFilter filter = CoraDataChildFilter.usingNameInData(nameInData);
+		recordInfo.removeAllChildrenMatchingFilter(filter);
+		recordInfo.addChild(child);
+	}
+
+	private void ensureRecordInfoExists() {
+		if (!containsChildWithNameInData(RECORD_INFO)) {
+			addChild(CoraDataGroup.withNameInData(RECORD_INFO));
+		}
+	}
+
+	@Override
+	public String getCreatedBy() {
+		return getFirstLinkedRecordIdWithNameInDataFromRecordInfo("createdBy");
+	}
+
+	@Override
+	public void setCreatedBy(String userId) {
+		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId("createdBy", "user", userId);
+		replaceAllChildrenInRecordInfoWithChild(child);
+	}
+
+	@Override
+	public String getTsCreated() {
+		return getFirstAtomicValueWithNameInDataFromRecordInfo("tsCreated");
+	}
+
+	@Override
+	public void setTsCreated(String tsCreated) {
+		var child = CoraDataAtomic.withNameInDataAndValue("tsCreated", tsCreated);
+		replaceAllChildrenInRecordInfoWithChild(child);
+	}
+
+	@Override
+	public void setTsCreatedToNow() {
+		setTsCreated(getNowAsIso8601());
+	}
+
+	private String getNowAsIso8601() {
+		DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendInstant(6).toFormatter();
+		return formatter.format(Instant.now());
+	}
+
+	@Override
+	public String getLatestUpdatedBy() {
+		DataGroup lastUpdated = getLastUpdated();
+		return lastUpdated.getFirstAtomicValueWithNameInData("updatedBy");
+	}
+
+	private DataGroup getLastUpdated() {
+		DataGroup recordInfo = getRecordInfo();
+		List<DataChild> updateds = recordInfo.getAllChildrenWithNameInData(UPDATED);
+		return (DataGroup) updateds.get(updateds.size() - 1);
+	}
+
+	@Override
+	public String getLatestTsUpdated() {
+		DataGroup lastUpdated = getLastUpdated();
+		return lastUpdated.getFirstAtomicValueWithNameInData("tsUpdated");
+	}
+
+	@Override
+	public void addUpdatedUsingUserIdAndTs(String userId, String tsUpdated) {
+		ensureRecordInfoExists();
+		DataGroup recordInfo = getRecordInfo();
+		CoraDataGroup updated = CoraDataGroup.withNameInData(UPDATED);
+		updated.setRepeatId(calcultateRepeatId(recordInfo));
+		recordInfo.addChild(updated);
+
+		var tsUpdatedChild = CoraDataAtomic.withNameInDataAndValue("tsUpdated", tsUpdated);
+		updated.addChild(tsUpdatedChild);
+
+		var updatedBy = CoraDataRecordLink.usingNameInDataAndTypeAndId("updatedBy", "user", userId);
+		updated.addChild(updatedBy);
+	}
+
+	private String calcultateRepeatId(DataGroup recordInfo) {
+		List<DataGroup> updatedList = recordInfo.getAllGroupsWithNameInData(UPDATED);
+		if (updatedList.isEmpty()) {
+			return "0";
+		}
+		return calculateRepeatId(updatedList);
+	}
+
+	private String calculateRepeatId(List<DataGroup> updatedList) {
+		List<Integer> repeatIds = getAllCurrentRepeatIds(updatedList);
+
+		Integer max = Collections.max(repeatIds);
+		return String.valueOf(max + 1);
+	}
+
+	private List<Integer> getAllCurrentRepeatIds(List<DataGroup> updatedList) {
+		List<Integer> repeatIds = new ArrayList<>(updatedList.size());
+		for (DataGroup updated : updatedList) {
+			repeatIds.add(getValueAsString0IfProblem(updated));
+		}
+		return repeatIds;
+	}
+
+	private Integer getValueAsString0IfProblem(DataGroup updated) {
+		try {
+			return Integer.valueOf(updated.getRepeatId());
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	@Override
+	public void addUpdatedUsingUserIdAndTsNow(String userId) {
+		addUpdatedUsingUserIdAndTs(userId, getNowAsIso8601());
+	}
+
+	@Override
+	public List<DataChild> getAllUpdated() {
+		DataGroup recordInfo = getRecordInfo();
+		List<DataChild> allUpdated = recordInfo.getAllChildrenWithNameInData("updated");
+		throwErrorIfEmptyList(allUpdated);
+		return allUpdated;
+	}
+
+	private void throwErrorIfEmptyList(List<DataChild> allUpdated) {
+		if (allUpdated.isEmpty()) {
+			throw new DataMissingException(
+					"Child of type: DataGroup and name: updated not found as child.");
+		}
+	}
+
+	@Override
+	public void setAllUpdated(Collection<DataChild> updatedList) {
+		ensureRecordInfoExistsIfUpdatedListNotEmpty(updatedList);
+		replaceExistingUpdatedWithNewOnesIfPossible(updatedList);
+	}
+
+	private void replaceExistingUpdatedWithNewOnesIfPossible(Collection<DataChild> updatedList) {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			replaceExistingUpdatedWithNewOnes(updatedList);
+		}
+	}
+
+	private void replaceExistingUpdatedWithNewOnes(Collection<DataChild> updatedList) {
+		DataGroup recordInfo = getRecordInfo();
+		recordInfo.removeAllChildrenWithNameInData("updated");
+		for (DataChild updatedChild : updatedList) {
+			recordInfo.addChild(updatedChild);
+		}
+	}
+
+	private void ensureRecordInfoExistsIfUpdatedListNotEmpty(Collection<DataChild> updatedList) {
+		if (!updatedList.isEmpty()) {
+			ensureRecordInfoExists();
+		}
+	}
+
+	@Override
+	public boolean overwriteProtectionShouldBeEnforced() {
+		return !ignoreOverwriteProtectionIsSetToTrue();
+	}
+
+	private boolean ignoreOverwriteProtectionIsSetToTrue() {
+		return containsChildWithNameInData(RECORD_INFO)
+				&& getRecordInfo().containsChildWithNameInData(IGNORE_OVERWRITE_PROTECTION)
+				&& getRecordInfo().getFirstAtomicValueWithNameInData(IGNORE_OVERWRITE_PROTECTION)
+						.equals("true");
+	}
+
+	@Override
+	public void removeOverwriteProtection() {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			getRecordInfo().removeAllChildrenWithNameInData(IGNORE_OVERWRITE_PROTECTION);
+		}
+	}
+
 }

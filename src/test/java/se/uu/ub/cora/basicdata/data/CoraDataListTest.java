@@ -26,7 +26,7 @@ import java.util.List;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Data;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordGroup;
 
 public class CoraDataListTest {
 	@Test
@@ -39,8 +39,8 @@ public class CoraDataListTest {
 	@Test
 	public void testAddRecord() {
 		CoraDataList dataList = CoraDataList.withContainDataOfType("metadata");
-		DataGroup dataGroup = CoraDataGroup.withNameInData("dataGroupId");
-		CoraDataRecord record = CoraDataRecord.withDataGroup(dataGroup);
+		DataRecordGroup dataRecordGroup = CoraDataRecordGroup.withNameInData("dataGroupId");
+		CoraDataRecord record = CoraDataRecord.withDataRecordGroup(dataRecordGroup);
 		dataList.addData(record);
 		List<Data> records = dataList.getDataList();
 		assertEquals(records.get(0), record);

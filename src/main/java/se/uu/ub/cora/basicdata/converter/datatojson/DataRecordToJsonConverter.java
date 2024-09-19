@@ -23,6 +23,7 @@ import java.util.Set;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.ExternalUrls;
@@ -85,9 +86,9 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 			String recordUrl = externalUrls.get().getBaseUrl() + dataRecord.getType() + "/"
 					+ dataRecord.getId();
 			return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(
-					externalUrls.get().getBaseUrl(), recordUrl, dataRecord.getDataGroup());
+					externalUrls.get().getBaseUrl(), recordUrl, dataRecord.getDataRecordGroup());
 		}
-		return converterFactory.factorUsingConvertible(dataRecord.getDataGroup());
+		return converterFactory.factorUsingConvertible(dataRecord.getDataRecordGroup());
 
 	}
 
@@ -115,8 +116,8 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	private void possiblySetSearchIdFromRecordType(ActionsConverterData actionsConverterData) {
 		if (thisRecordIsRecordType()) {
-			DataGroup dataGroup = dataRecord.getDataGroup();
-			possiblySetSearchRecordIdIfDefinedInDataGroup(actionsConverterData, dataGroup);
+			DataRecordGroup dataRecordGroup = dataRecord.getDataRecordGroup();
+			possiblySetSearchRecordIdIfDefinedInDataGroup(actionsConverterData, dataRecordGroup);
 		}
 	}
 
@@ -125,9 +126,9 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 	}
 
 	private void possiblySetSearchRecordIdIfDefinedInDataGroup(
-			ActionsConverterData actionsConverterData, DataGroup dataGroup) {
-		if (dataGroup.containsChildWithNameInData("search")) {
-			DataGroup searchGroup = dataGroup.getFirstGroupWithNameInData("search");
+			ActionsConverterData actionsConverterData, DataRecordGroup dataRecordGroup) {
+		if (dataRecordGroup.containsChildWithNameInData("search")) {
+			DataGroup searchGroup = dataRecordGroup.getFirstGroupWithNameInData("search");
 			actionsConverterData.searchRecordId = searchGroup
 					.getFirstAtomicValueWithNameInData("linkedRecordId");
 		}

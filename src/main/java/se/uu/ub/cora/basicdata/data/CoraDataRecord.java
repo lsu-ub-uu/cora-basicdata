@@ -29,32 +29,32 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 
 public final class CoraDataRecord implements DataRecord {
 	private static final String SEARCH = "search";
-	private DataGroup dataGroup;
+	private DataRecordGroup dataRecordGroup;
 	private List<Action> actions = new ArrayList<>();
 	private Set<String> readPermissions = new LinkedHashSet<>();
 	private Set<String> writePermissions = new LinkedHashSet<>();
 	private Set<String> protocols = new LinkedHashSet<>();
 
-	public static CoraDataRecord withDataGroup(DataGroup dataGroup) {
-		return new CoraDataRecord(dataGroup);
+	public static CoraDataRecord withDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		return new CoraDataRecord(dataRecordGroup);
 	}
 
-	private CoraDataRecord(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
-	}
-
-	@Override
-	public void setDataGroup(DataGroup dataGroup) {
-		this.dataGroup = dataGroup;
-
+	private CoraDataRecord(DataRecordGroup dataRecordGroup) {
+		this.dataRecordGroup = dataRecordGroup;
 	}
 
 	@Override
-	public DataGroup getDataGroup() {
-		return dataGroup;
+	public void setDataRecordGroup(DataRecordGroup dataRecordGroup) {
+		this.dataRecordGroup = dataRecordGroup;
+	}
+
+	@Override
+	public DataRecordGroup getDataRecordGroup() {
+		return dataRecordGroup;
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public final class CoraDataRecord implements DataRecord {
 	}
 
 	private String getTypeFromGroup() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		DataGroup recordInfo = dataRecordGroup.getFirstGroupWithNameInData("recordInfo");
 		DataGroup linkedTypeGroup = recordInfo.getFirstGroupWithNameInData("type");
 		return linkedTypeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
@@ -134,7 +134,7 @@ public final class CoraDataRecord implements DataRecord {
 	}
 
 	private String getIdFromGroup() {
-		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		DataGroup recordInfo = dataRecordGroup.getFirstGroupWithNameInData("recordInfo");
 		return recordInfo.getFirstAtomicValueWithNameInData("id");
 	}
 
@@ -155,11 +155,11 @@ public final class CoraDataRecord implements DataRecord {
 	}
 
 	private boolean isRecordTypeAndHasSearch(String type) {
-		return "recordType".equals(type) && dataGroup.containsChildWithNameInData(SEARCH);
+		return "recordType".equals(type) && dataRecordGroup.containsChildWithNameInData(SEARCH);
 	}
 
 	private String extractSearchId() {
-		DataGroup search = dataGroup.getFirstGroupWithNameInData(SEARCH);
+		DataGroup search = dataRecordGroup.getFirstGroupWithNameInData(SEARCH);
 		return search.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
@@ -172,5 +172,4 @@ public final class CoraDataRecord implements DataRecord {
 	public Set<String> getProtocols() {
 		return protocols;
 	}
-
 }
