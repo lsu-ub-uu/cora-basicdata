@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -1392,6 +1393,47 @@ public class CoraDataRecordGroupTest {
 
 		assertEquals(defaultRecordInfo.containsChildWithNameInData("ignoreOverwriteProtection"),
 				false);
+	}
+
+	@Test
+	public void testGetTsVisibility() {
+		var tsVisibilityAtomic = CoraDataAtomic.withNameInDataAndValue("tsVisibility",
+				"someTimeStamp");
+		defaultRecordInfo.addChild(tsVisibilityAtomic);
+
+		Optional<String> tsVisibility = defaultRecordGroupWithRecordInfo.getTsVisibility();
+		assertTrue(tsVisibility.isPresent());
+		assertEquals(tsVisibility.get(), "someTimeStamp");
+	}
+
+	@Test
+	public void testSetTsVisibilityNow() {
+		defaultRecordGroup.setTsVisibilityNow();
+
+		Optional<String> tsVisibility = defaultRecordGroup.getTsVisibility();
+		assertTsTimestampIsInIsoFormatAndCreatedWithinASecond(tsVisibility.get());
+	}
+
+	@Test
+	public void testGetTsVisibilityDoesNotExist() {
+		Optional<String> tsVisibility = defaultRecordGroupWithRecordInfo.getTsVisibility();
+		assertFalse(tsVisibility.isPresent());
+	}
+
+	@Test
+	public void testGetVisibility() {
+		var visibilityAtomic = CoraDataAtomic.withNameInDataAndValue("visibility", "published");
+		defaultRecordInfo.addChild(visibilityAtomic);
+
+		Optional<String> visibility = defaultRecordGroupWithRecordInfo.getVisibility();
+		assertTrue(visibility.isPresent());
+		assertEquals(visibility.get(), "published");
+	}
+
+	@Test
+	public void testGetVisibilityDoesNotExist() {
+		Optional<String> tsVisibility = defaultRecordGroupWithRecordInfo.getVisibility();
+		assertFalse(tsVisibility.isPresent());
 	}
 
 }

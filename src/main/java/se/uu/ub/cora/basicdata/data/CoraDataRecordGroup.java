@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
@@ -43,6 +44,8 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	private static final String DATA_DIVIDER = "dataDivider";
 	private static final String TYPE = "type";
 	private static final String RECORD_INFO = "recordInfo";
+	private static final String TS_VISIBILITY = "tsVisibility";
+	private static final String VISIBILITY = "visibility";
 
 	public static CoraDataRecordGroup withNameInData(String nameInData) {
 		return new CoraDataRecordGroup(nameInData);
@@ -288,6 +291,44 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 		if (containsChildWithNameInData(RECORD_INFO)) {
 			getRecordInfo().removeAllChildrenWithNameInData(IGNORE_OVERWRITE_PROTECTION);
 		}
+	}
+
+	@Override
+	public void setTsVisibility(String tsVisibility) {
+		var child = CoraDataAtomic.withNameInDataAndValue(TS_VISIBILITY, tsVisibility);
+		replaceAllChildrenInRecordInfoWithChild(child);
+
+	}
+
+	@Override
+	public void setTsVisibilityNow() {
+		setTsVisibility(getNowAsIso8601());
+	}
+
+	@Override
+	public Optional<String> getTsVisibility() {
+		return possiblyGetAtomicValueFromRecordInfo(TS_VISIBILITY);
+	}
+
+	private Optional<String> possiblyGetAtomicValueFromRecordInfo(String nameInData) {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			DataGroup recordInfo = getRecordInfo();
+			if (recordInfo.containsChildWithNameInData(nameInData)) {
+				return Optional.of(recordInfo.getFirstAtomicValueWithNameInData(nameInData));
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public void setVisibility(String visibility) {
+		var child = CoraDataAtomic.withNameInDataAndValue(VISIBILITY, visibility);
+		replaceAllChildrenInRecordInfoWithChild(child);
+	}
+
+	@Override
+	public Optional<String> getVisibility() {
+		return possiblyGetAtomicValueFromRecordInfo(VISIBILITY);
 	}
 
 }
