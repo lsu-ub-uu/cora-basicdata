@@ -297,7 +297,6 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	public void setTsVisibility(String tsVisibility) {
 		var child = CoraDataAtomic.withNameInDataAndValue(TS_VISIBILITY, tsVisibility);
 		replaceAllChildrenInRecordInfoWithChild(child);
-
 	}
 
 	@Override

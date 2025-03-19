@@ -1433,7 +1433,7 @@ public class CoraDataRecordGroupTest {
 	@Test
 	public void testGetVisibilityDoesNotExist() {
 		Optional<String> tsVisibility = defaultRecordGroupWithRecordInfo.getVisibility();
-		assertFalse(tsVisibility.isPresent());
+		assertTrue(tsVisibility.isEmpty());
 	}
 
 }
