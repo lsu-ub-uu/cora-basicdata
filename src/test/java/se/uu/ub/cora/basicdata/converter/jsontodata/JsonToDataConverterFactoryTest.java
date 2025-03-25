@@ -217,7 +217,6 @@ public class JsonToDataConverterFactoryTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 
-		System.err.println(jsonToDataConverter.getClass().getName());
 		assertTrue(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
 	}
 
