@@ -1,6 +1,6 @@
 /*
  * Copyright 2022, 2024 Olov McKie
- * Copyright 2022 Uppsala University Library
+ * Copyright 2022, 2025 Uppsala University Library
  * 
  * This file is part of Cora.
  *
@@ -46,6 +46,7 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	private static final String RECORD_INFO = "recordInfo";
 	private static final String TS_VISIBILITY = "tsVisibility";
 	private static final String VISIBILITY = "visibility";
+	private static final String PERMISSION_UNIT = "permissionUnit";
 
 	public static CoraDataRecordGroup withNameInData(String nameInData) {
 		return new CoraDataRecordGroup(nameInData);
@@ -330,4 +331,15 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 		return possiblyGetAtomicValueFromRecordInfo(VISIBILITY);
 	}
 
+	@Override
+	public String getPermissionUnit() {
+		return getFirstLinkedRecordIdWithNameInDataFromRecordInfo(PERMISSION_UNIT);
+	}
+
+	@Override
+	public void setPermissionUnit(String permissionUnit) {
+		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId(PERMISSION_UNIT, PERMISSION_UNIT,
+				permissionUnit);
+		replaceAllChildrenInRecordInfoWithChild(child);
+	}
 }
