@@ -109,6 +109,10 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 
 	private String getFirstLinkedRecordIdWithNameInDataFromRecordInfo(String nameInData) {
 		DataGroup recordInfo = getRecordInfo();
+		return getLinkedIdInGroupUsingName(recordInfo, nameInData);
+	}
+
+	private String getLinkedIdInGroupUsingName(DataGroup recordInfo, String nameInData) {
 		DataRecordLink typeLink = recordInfo.getFirstChildOfTypeAndName(DataRecordLink.class,
 				nameInData);
 		return typeLink.getLinkedRecordId();
@@ -332,8 +336,15 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	}
 
 	@Override
-	public String getPermissionUnit() {
-		return getFirstLinkedRecordIdWithNameInDataFromRecordInfo(PERMISSION_UNIT);
+	public Optional<String> getPermissionUnit() {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			DataGroup recordInfo = getRecordInfo();
+			if (recordInfo.containsChildWithNameInData(PERMISSION_UNIT)) {
+				String linkedRecordId = getLinkedIdInGroupUsingName(recordInfo, PERMISSION_UNIT);
+				return Optional.of(linkedRecordId);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override

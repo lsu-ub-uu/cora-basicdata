@@ -982,10 +982,7 @@ public class CoraDataRecordGroupTest {
 				"validationType", "validationType");
 		GetLink createdBy = new GetLink(() -> defaultRecordGroup.getCreatedBy(), "createdBy",
 				"user");
-		GetLink permissionUnit = new GetLink(() -> defaultRecordGroup.getPermissionUnit(),
-				"permissionUnit", "permissionUnit");
-		return new GetLink[][] { { type }, { dataDivider }, { validationType }, { createdBy },
-				{ permissionUnit } };
+		return new GetLink[][] { { type }, { dataDivider }, { validationType }, { createdBy } };
 	}
 
 	record GetLink(Supplier<String> methodToRun, String nameInData, String linkedRecordType) {
@@ -1079,6 +1076,36 @@ public class CoraDataRecordGroupTest {
 		testData.methodToRun.accept("someValue");
 
 		assertRecordInfoHasOnlyOneLinkAsSpecifiedInTestData(defaultRecordGroup, testData);
+	}
+
+	@Test
+	public void testGetPermissionUnit_RecordInfoDoesNotExist() {
+		resetDefaultRecordGroupOnlyGroup();
+
+		Optional<String> permissionUnit = defaultRecordGroup.getPermissionUnit();
+
+		assertTrue(permissionUnit.isEmpty());
+	}
+
+	@Test
+	public void testGetPermissionUnit_UnitLinkDoesNotExist() {
+		resetDefaultRecordGroupWithRecordInfo();
+
+		Optional<String> permissionUnit = defaultRecordGroup.getPermissionUnit();
+
+		assertTrue(permissionUnit.isEmpty());
+	}
+
+	@Test
+	public void testGetPermissionUnit() {
+		resetDefaultRecordGroupWithRecordInfo();
+		defaultRecordInfo.addChild(CoraDataRecordLink.usingNameInDataAndTypeAndId("permissionUnit",
+				"permissionUnit", "somePermissionUnitId"));
+
+		Optional<String> permissionUnit = defaultRecordGroup.getPermissionUnit();
+
+		assertTrue(permissionUnit.isPresent());
+		assertEquals(permissionUnit.get(), "somePermissionUnitId");
 	}
 
 	private void assertRecordInfoHasOnlyOneLinkAsSpecifiedInTestData(DataRecordGroup recordGroup,
