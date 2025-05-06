@@ -105,7 +105,7 @@ public class DataRecordLinkToJsonConverterTest {
 				+ dataRecordLink.getLinkedRecordType() + "/" + dataRecordLink.getLinkedRecordId());
 		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 2, "requestMethod", "GET");
 		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 3, "accept",
-				"application/vnd.uub.record+json");
+				"application/vnd.cora.record+json");
 		internalLinkBuilderSpy.MCR.assertNumberOfCallsToMethod("addKeyString", 4);
 	}
 }

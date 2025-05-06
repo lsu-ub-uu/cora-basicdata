@@ -37,13 +37,13 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.uub.record+json"
+				  "mimeType": "application/vnd.cora.record+json"
 				}
 				""";
 		CoraDataResourceLink resourceLink = getConverterdLink(json);
 
 		assertEquals(resourceLink.getNameInData(), "master");
-		assertEquals(resourceLink.getMimeType(), "application/vnd.uub.record+json");
+		assertEquals(resourceLink.getMimeType(), "application/vnd.cora.record+json");
 	}
 
 	private CoraDataResourceLink getConverterdLink(String json) {
@@ -61,7 +61,7 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.uub.record+json",
+				  "mimeType": "application/vnd.cora.record+json",
 				  "repeatId":"0"
 				}
 				""";
@@ -89,7 +89,7 @@ public class JsonToDataResourceLinkConverterTest {
 	public void testExceptionNameNotExist() {
 		String json = """
 				{
-				  "mimeType": "application/vnd.uub.record+json",
+				  "mimeType": "application/vnd.cora.record+json",
 				  "repeatId":"0"
 				}
 				""";
@@ -102,7 +102,7 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.uub.record+json",
+				  "mimeType": "application/vnd.cora.record+json",
 				  "repeatId":"0",
 				  "someOther": "someOther"
 				}
@@ -116,7 +116,7 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.uub.record+json",
+				  "mimeType": "application/vnd.cora.record+json",
 				  "someOther": "someOther"
 				}
 				""";
@@ -129,7 +129,7 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "nameSpecial": "master",
-				  "mimeType": "application/vnd.uub.record+json",
+				  "mimeType": "application/vnd.cora.record+json",
 				  "someOther": "someOther"
 				}
 				""";

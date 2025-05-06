@@ -209,7 +209,7 @@ public class JsonToDataConverterFactoryTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.uub.record+json",
+				  "mimeType": "application/vnd.cora.record+json",
 				  "repeatId":"0"
 				}
 				""";

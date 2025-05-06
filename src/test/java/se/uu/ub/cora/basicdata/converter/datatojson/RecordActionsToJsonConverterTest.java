@@ -34,8 +34,8 @@ public class RecordActionsToJsonConverterTest {
 	private RecordActionsToJsonConverter actionsConverter;
 	private JsonBuilderFactorySpy builderFactory;
 	private String baseUrl = "some/base/url/";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
+	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
 	private DataToJsonConverterFactorySpy converterFactory;
 	private ActionsConverterData actionsConverterData;
 
@@ -344,7 +344,7 @@ public class RecordActionsToJsonConverterTest {
 		String url = baseUrl + "workOrder/";
 		String requestMethod = POST;
 		String accept = APPLICATION_VND_UUB_RECORD_JSON;
-		String contentType = "application/vnd.uub.workorder+json";
+		String contentType = "application/vnd.cora.workorder+json";
 
 		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
