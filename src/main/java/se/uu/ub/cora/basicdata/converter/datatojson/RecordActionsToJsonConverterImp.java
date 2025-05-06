@@ -35,6 +35,7 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 	private static final String CONTENT_TYPE = "contentType";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
 
 	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactory builderFactory;
@@ -106,7 +107,7 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 			currentRequestMethod = "POST";
 			addStandardParametersToCurrentLinkBuilder();
 			currentLinkBuilder.addKeyString(ACCEPT, currentAccept);
-			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_UUB_RECORD_JSON);
+			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_UUB_RECORDGROUP_JSON);
 		} else if (action == Action.READ_INCOMING_LINKS) {
 			currentUrl = currentUrl + "/incomingLinks";
 			addStandardParametersToCurrentLinkBuilder();
@@ -160,7 +161,7 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 			currentUrl = urlForRecordTypeActions;
 			addStandardParametersToCurrentLinkBuilder();
 			currentLinkBuilder.addKeyString(ACCEPT, currentAccept);
-			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_UUB_RECORD_JSON);
+			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_UUB_RECORDGROUP_JSON);
 		} else if (action == Action.LIST) {
 			currentRequestMethod = "GET";
 			String urlForRecordTypeActions = baseUrl + recordId + "/";
