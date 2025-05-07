@@ -120,7 +120,7 @@ public class RecordActionsToJsonConverterImp implements RecordActionsToJsonConve
 			currentUrl = baseUrl + "workOrder/";
 			addStandardParametersToCurrentLinkBuilder();
 			currentLinkBuilder.addKeyString(ACCEPT, currentAccept);
-			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_CORA_RECORD_JSON);
+			currentLinkBuilder.addKeyString(CONTENT_TYPE, APPLICATION_VND_CORA_RECORDGROUP_JSON);
 			createBody();
 		}
 	}

@@ -173,7 +173,7 @@ public class RecordActionsToJsonConverterTest {
 		String url = baseUrl + "workOrder/";
 		String requestMethod = POST;
 		String accept = APPLICATION_VND_CORA_RECORD_JSON;
-		String contentType = APPLICATION_VND_CORA_RECORD_JSON;
+		String contentType = APPLICATION_VND_CORA_RECORDGROUP_JSON;
 
 		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
@@ -441,7 +441,7 @@ public class RecordActionsToJsonConverterTest {
 		String url = baseUrl + "workOrder/";
 		String requestMethod = POST;
 		String accept = APPLICATION_VND_CORA_RECORD_JSON;
-		String contentType = APPLICATION_VND_CORA_RECORD_JSON;
+		String contentType = APPLICATION_VND_CORA_RECORDGROUP_JSON;
 
 		actionsConverter.toJsonObjectBuilder(actionsConverterData);
 
