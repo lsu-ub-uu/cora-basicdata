@@ -42,6 +42,7 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataMissingException;
+import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.data.spies.DataAtomicSpy;
 import se.uu.ub.cora.data.spies.DataChildFilterSpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
@@ -79,18 +80,18 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testHasRepeatIdNotSet() throws Exception {
+	public void testHasRepeatIdNotSet() {
 		assertFalse(defaultDataGroup.hasRepeatId());
 	}
 
 	@Test
-	public void testHasRepeatIdSetToEmpty() throws Exception {
+	public void testHasRepeatIdSetToEmpty() {
 		defaultDataGroup.setRepeatId("");
 		assertFalse(defaultDataGroup.hasRepeatId());
 	}
 
 	@Test
-	public void testHasRepeatIdSet() throws Exception {
+	public void testHasRepeatIdSet() {
 		defaultDataGroup.setRepeatId("3");
 		assertTrue(defaultDataGroup.hasRepeatId());
 	}
@@ -135,14 +136,14 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetAttributeValueNoAttribute() throws Exception {
+	public void testGetAttributeValueNoAttribute() {
 		Optional<String> attributeValue = defaultDataGroup.getAttributeValue("attributeNameInData");
 
 		assertTrue(attributeValue.isEmpty());
 	}
 
 	@Test
-	public void testGetAttributeValueAttributeExists() throws Exception {
+	public void testGetAttributeValueAttributeExists() {
 		defaultDataGroup.addAttributeByIdWithValue("someAttributeName2", "someValue");
 		defaultDataGroup.addAttributeByIdWithValue("someAttributeName3", "someValue");
 		defaultDataGroup.addAttributeByIdWithValue("someAttributeName", "someValue");
@@ -164,7 +165,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testHasChildren() throws Exception {
+	public void testHasChildren() {
 		assertFalse(defaultDataGroup.hasChildren());
 		defaultDataGroup.addChild(CoraDataGroup.withNameInData("child"));
 		assertTrue(defaultDataGroup.hasChildren());
@@ -263,7 +264,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetAllDataAtomicsWithNameInDataNoResult() throws Exception {
+	public void testGetAllDataAtomicsWithNameInDataNoResult() {
 		CoraDataGroup dataGroup = CoraDataGroup.withNameInData("someNameInData");
 		List<DataAtomic> aList = dataGroup.getAllDataAtomicsWithNameInData("someNameInData");
 		assertEquals(aList.size(), 0);
@@ -945,7 +946,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetAllChildrenMatchingFilter_noChildren() throws Exception {
+	public void testGetAllChildrenMatchingFilter_noChildren() {
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
 
 		List<DataChild> matchingChildren = defaultDataGroup
@@ -956,7 +957,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetAllChildrenMatchingFilter_oneChild() throws Exception {
+	public void testGetAllChildrenMatchingFilter_oneChild() {
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
 		DataAtomicSpy atomicChild = new DataAtomicSpy();
 		defaultDataGroup.addChild(atomicChild);
@@ -970,7 +971,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetAllChildrenMatchingFilter_twoChildMatchesOneDoNot() throws Exception {
+	public void testGetAllChildrenMatchingFilter_twoChildMatchesOneDoNot() {
 		DataAtomicSpy atomicChild = new DataAtomicSpy();
 		defaultDataGroup.addChild(atomicChild);
 		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
@@ -993,7 +994,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveAllChildrenMatchingFilter_noChildren() throws Exception {
+	public void testRemoveAllChildrenMatchingFilter_noChildren() {
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
 
 		boolean childRemoved = defaultDataGroup.removeAllChildrenMatchingFilter(childFilter);
@@ -1003,7 +1004,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveAllChildrenMatchingFilter_oneChild() throws Exception {
+	public void testRemoveAllChildrenMatchingFilter_oneChild() {
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
 		DataAtomicSpy atomicChild = new DataAtomicSpy();
 		defaultDataGroup.addChild(atomicChild);
@@ -1016,7 +1017,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveAllChildrenMatchingFilter_twoChildMatchesOneDoNot() throws Exception {
+	public void testRemoveAllChildrenMatchingFilter_twoChildMatchesOneDoNot() {
 		DataAtomicSpy atomicChild = new DataAtomicSpy();
 		defaultDataGroup.addChild(atomicChild);
 		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
@@ -1039,7 +1040,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testContainsChildOfTypeAndName() throws Exception {
+	public void testContainsChildOfTypeAndName() {
 		addTestChildrenToDefaultGroup();
 
 		assertFalse(defaultDataGroup.containsChildOfTypeAndName(DataAtomic.class, ""));
@@ -1076,14 +1077,14 @@ public class CoraDataGroupTest {
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
 			+ "Child of type: DataAtomic and name: someName not found as child.")
-	public void testGetFirstChildOfTypeAndNameThrowsExceptionIfMissing() throws Exception {
+	public void testGetFirstChildOfTypeAndNameThrowsExceptionIfMissing() {
 		addTestChildrenToDefaultGroup();
 
 		defaultDataGroup.getFirstChildOfTypeAndName(DataAtomic.class, "someName");
 	}
 
 	@Test
-	public void testGetFirstChildOfTypeAndName() throws Exception {
+	public void testGetFirstChildOfTypeAndName() {
 		addTestChildrenToDefaultGroup();
 
 		DataAtomic atomic = defaultDataGroup.getFirstChildOfTypeAndName(DataAtomic.class,
@@ -1095,7 +1096,26 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetChildrenOfTypeAndNameNoMatchReturnsEmptyList() throws Exception {
+	public void testGetChildrenOfTypeNoMatchReturnsEmptyList() {
+		addTestChildrenToDefaultGroup();
+
+		List<DataRecordLink> children = defaultDataGroup.getChildrenOfType(DataRecordLink.class);
+		assertTrue(children.isEmpty());
+	}
+
+	@Test
+	public void testGetChildrenOfType() {
+		addTestChildrenToDefaultGroup();
+
+		List<DataAtomic> children = defaultDataGroup.getChildrenOfType(DataAtomic.class);
+		assertEquals(children.size(), 3);
+		assertEquals(children.get(0).getNameInData(), "atomic1");
+		assertEquals(children.get(1).getNameInData(), "atomic2");
+		assertEquals(children.get(2).getNameInData(), "atomic2");
+	}
+
+	@Test
+	public void testGetChildrenOfTypeAndNameNoMatchReturnsEmptyList() {
 		addTestChildrenToDefaultGroup();
 
 		List<DataAtomic> children = defaultDataGroup.getChildrenOfTypeAndName(DataAtomic.class, "");
@@ -1103,7 +1123,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testGetChildrenOfTypeAndName() throws Exception {
+	public void testGetChildrenOfTypeAndName() {
 		addTestChildrenToDefaultGroup();
 
 		List<DataAtomic> children = defaultDataGroup.getChildrenOfTypeAndName(DataAtomic.class,
@@ -1114,7 +1134,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveFirstChildWithTypeAndNameNoRemovedChildReturnsFalse() throws Exception {
+	public void testRemoveFirstChildWithTypeAndNameNoRemovedChildReturnsFalse() {
 		addTestChildrenToDefaultGroup();
 
 		boolean removed = defaultDataGroup.removeFirstChildWithTypeAndName(DataAtomic.class, "");
@@ -1123,7 +1143,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveFirstChildWithTypeAndNameIsRemovedAndReturnsTrue() throws Exception {
+	public void testRemoveFirstChildWithTypeAndNameIsRemovedAndReturnsTrue() {
 		addTestChildrenToDefaultGroup();
 
 		boolean removed = defaultDataGroup.removeFirstChildWithTypeAndName(DataAtomic.class,
@@ -1133,7 +1153,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveChildrenWithTypeAndNameNoRemovedChildReturnsFalse() throws Exception {
+	public void testRemoveChildrenWithTypeAndNameNoRemovedChildReturnsFalse() {
 		addTestChildrenToDefaultGroup();
 
 		boolean removed = defaultDataGroup.removeChildrenWithTypeAndName(DataAtomic.class, "");
@@ -1142,7 +1162,7 @@ public class CoraDataGroupTest {
 	}
 
 	@Test
-	public void testRemoveChildrenWithTypeAndNameIsRemovedAndReturnsTrue() throws Exception {
+	public void testRemoveChildrenWithTypeAndNameIsRemovedAndReturnsTrue() {
 		addTestChildrenToDefaultGroup();
 
 		boolean removed = defaultDataGroup.removeChildrenWithTypeAndName(DataAtomic.class,

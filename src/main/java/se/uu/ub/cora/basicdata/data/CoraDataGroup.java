@@ -422,6 +422,15 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	@Override
+	public <T extends DataChild> List<T> getChildrenOfType(Class<T> type) {
+		return children.stream().filter(filterByType(type)).map(type::cast).toList();
+	}
+
+	private <T> Predicate<DataChild> filterByType(Class<T> type) {
+		return type::isInstance;
+	}
+
+	@Override
 	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
 		return children.stream().filter(filterByNameInData(name)).map(type::cast).toList();
 	}
