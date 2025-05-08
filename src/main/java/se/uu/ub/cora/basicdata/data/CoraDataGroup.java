@@ -432,7 +432,8 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
-		return children.stream().filter(filterByNameInData(name)).map(type::cast).toList();
+		return children.stream().filter(filterByNameInData(name).and(filterByType(type)))
+				.map(type::cast).toList();
 	}
 
 	@Override

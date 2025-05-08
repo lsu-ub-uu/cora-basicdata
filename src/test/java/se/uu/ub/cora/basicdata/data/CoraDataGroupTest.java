@@ -1062,6 +1062,10 @@ public class CoraDataGroupTest {
 		defaultDataGroup.addChild(atomicChild3);
 		atomicChild3.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
 
+		DataGroupSpy groupChildWrongName = new DataGroupSpy();
+		defaultDataGroup.addChild(groupChildWrongName);
+		groupChildWrongName.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
+
 		DataGroupSpy groupChild = new DataGroupSpy();
 		defaultDataGroup.addChild(groupChild);
 		groupChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group1");
@@ -1137,43 +1141,47 @@ public class CoraDataGroupTest {
 	public void testRemoveFirstChildWithTypeAndNameNoRemovedChildReturnsFalse() {
 		addTestChildrenToDefaultGroup();
 
+		assertEquals(defaultDataGroup.getChildren().size(), 7);
 		boolean removed = defaultDataGroup.removeFirstChildWithTypeAndName(DataAtomic.class, "");
 		assertFalse(removed);
-		assertEquals(defaultDataGroup.getChildren().size(), 6);
+		assertEquals(defaultDataGroup.getChildren().size(), 7);
 	}
 
 	@Test
 	public void testRemoveFirstChildWithTypeAndNameIsRemovedAndReturnsTrue() {
 		addTestChildrenToDefaultGroup();
 
+		assertEquals(defaultDataGroup.getChildren().size(), 7);
 		boolean removed = defaultDataGroup.removeFirstChildWithTypeAndName(DataAtomic.class,
 				"atomic1");
 		assertTrue(removed);
-		assertEquals(defaultDataGroup.getChildren().size(), 5);
+		assertEquals(defaultDataGroup.getChildren().size(), 6);
 	}
 
 	@Test
 	public void testRemoveChildrenWithTypeAndNameNoRemovedChildReturnsFalse() {
 		addTestChildrenToDefaultGroup();
 
+		assertEquals(defaultDataGroup.getChildren().size(), 7);
 		boolean removed = defaultDataGroup.removeChildrenWithTypeAndName(DataAtomic.class, "");
 		assertFalse(removed);
-		assertEquals(defaultDataGroup.getChildren().size(), 6);
+		assertEquals(defaultDataGroup.getChildren().size(), 7);
 	}
 
 	@Test
 	public void testRemoveChildrenWithTypeAndNameIsRemovedAndReturnsTrue() {
 		addTestChildrenToDefaultGroup();
 
+		assertEquals(defaultDataGroup.getChildren().size(), 7);
 		boolean removed = defaultDataGroup.removeChildrenWithTypeAndName(DataAtomic.class,
 				"atomic1");
 		assertTrue(removed);
-		assertEquals(defaultDataGroup.getChildren().size(), 5);
+		assertEquals(defaultDataGroup.getChildren().size(), 6);
 
 		boolean removed2 = defaultDataGroup.removeChildrenWithTypeAndName(DataAtomic.class,
 				"atomic2");
 		assertTrue(removed2);
-		assertEquals(defaultDataGroup.getChildren().size(), 3);
+		assertEquals(defaultDataGroup.getChildren().size(), 4);
 
 	}
 }
