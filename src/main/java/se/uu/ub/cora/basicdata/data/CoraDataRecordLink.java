@@ -20,6 +20,7 @@ package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataChild;
@@ -31,6 +32,7 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private List<Action> actions = new ArrayList<>();
+	private Optional<DataGroup> linkedGroup = Optional.empty();
 
 	private CoraDataRecordLink(String nameInData) {
 		super(nameInData);
@@ -57,8 +59,8 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 		return new CoraDataRecordLink(nameInData);
 	}
 
-	public static CoraDataRecordLink usingNameInDataAndTypeAndId(String nameInData,
-			String type, String id) {
+	public static CoraDataRecordLink usingNameInDataAndTypeAndId(String nameInData, String type,
+			String id) {
 		CoraDataRecordLink dataRecordLink = new CoraDataRecordLink(nameInData);
 		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE, type));
 		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID, id));
@@ -83,6 +85,16 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 	@Override
 	public String getLinkedRecordId() {
 		return super.getFirstAtomicValueWithNameInData(LINKED_RECORD_ID);
+	}
+
+	@Override
+	public void setLinkedRecord(DataGroup group) {
+		linkedGroup = Optional.of(group);
+	}
+
+	@Override
+	public Optional<DataGroup> getLinkedRecord() {
+		return linkedGroup;
 	}
 
 }
