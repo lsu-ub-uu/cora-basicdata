@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterFactory;
+import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -76,6 +77,16 @@ public class JsonToDataConverterFactoryTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringRemovesActionLinks() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"validationType\"},{\"name\":\"linkedRecordId\",\"value\":\"coraText\"}],\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"http://localhost:38080/systemone/rest/record/validationType/coraText\",\"accept\":\"application/vnd.cora.record+json\"}},\"name\":\"validationType\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataGroupConverter jsonToDataConverter = (JsonToDataGroupConverter) jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		JsonObject converterJsonObject = jsonToDataConverter.getJsonObjectonlyForTest();
+		assertFalse(converterJsonObject.containsKey("actionLinks"));
 	}
 
 	@Test

@@ -55,11 +55,16 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	}
 
 	private JsonToDataConverter createConverterForGroupOrLink(JsonObject jsonObject) {
+		removeUnwantedActionLinks(jsonObject);
 		List<String> foundNames = extractChildNames(jsonObject);
 		if (isRecordLink(foundNames)) {
 			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataGroupConverter.forJsonObject(jsonObject);
+	}
+
+	private void removeUnwantedActionLinks(JsonObject jsonObject) {
+		jsonObject.removeKey("actionLinks");
 	}
 
 	private boolean isResourceLink(JsonObject jsonObject) {
