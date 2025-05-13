@@ -80,13 +80,23 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
-	public void testFactorOnJsonStringRemovesActionLinks() {
-		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"validationType\"},{\"name\":\"linkedRecordId\",\"value\":\"coraText\"}],\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"http://localhost:38080/systemone/rest/record/validationType/coraText\",\"accept\":\"application/vnd.cora.record+json\"}},\"name\":\"validationType\"}";
+	public void testFactorOnJsonStringRemovesActionLinkFromGroup() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"http://localhost:8080/systemone/rest/record/system/cora\",\"accept\":\"application/vnd.uub.record+json\"}},\"name\":\"dataDivider\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataGroupConverter jsonToDataConverter = (JsonToDataGroupConverter) jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		JsonObject converterJsonObject = jsonToDataConverter.getJsonObjectonlyForTest();
-		assertFalse(converterJsonObject.containsKey("actionLinks"));
+		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
+	}
+
+	@Test
+	public void testFactorOnJsonStringRemovesActionLinksFromResourceLinks() {
+		String json = "{\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"https://cora.epc.ub.uu.se/systemone/rest/record/binary/binary:8294254190660514/thumbnail\",\"accept\":\"image/jpeg\"}},\"name\":\"thumbnail\",\"mimeType\":\"image/jpeg\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataResourceLinkConverter jsonToDataConverter = (JsonToDataResourceLinkConverter) jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		JsonObject converterJsonObject = jsonToDataConverter.getJsonObjectonlyForTest();
+		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
 	}
 
 	@Test

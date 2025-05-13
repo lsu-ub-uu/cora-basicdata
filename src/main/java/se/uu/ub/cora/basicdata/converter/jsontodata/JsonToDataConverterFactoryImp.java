@@ -43,19 +43,20 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		JsonObject jsonObject = (JsonObject) jsonValue;
 
 		if (isGroup(jsonObject)) {
+			removePossibleActionLinks(jsonObject);
 			return createConverterForGroupOrLink(jsonObject);
 		}
 		if (isAtomicData(jsonObject)) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
 		if (isResourceLink(jsonObject)) {
+			removePossibleActionLinks(jsonObject);
 			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
 
 	private JsonToDataConverter createConverterForGroupOrLink(JsonObject jsonObject) {
-		removeUnwantedActionLinks(jsonObject);
 		List<String> foundNames = extractChildNames(jsonObject);
 		if (isRecordLink(foundNames)) {
 			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
@@ -63,7 +64,7 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		return JsonToDataGroupConverter.forJsonObject(jsonObject);
 	}
 
-	private void removeUnwantedActionLinks(JsonObject jsonObject) {
+	private void removePossibleActionLinks(JsonObject jsonObject) {
 		jsonObject.removeKey("actionLinks");
 	}
 
