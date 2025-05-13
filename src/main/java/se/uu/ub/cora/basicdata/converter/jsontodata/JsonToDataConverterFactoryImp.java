@@ -43,12 +43,14 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		JsonObject jsonObject = (JsonObject) jsonValue;
 
 		if (isGroup(jsonObject)) {
+			removePossibleActionLinks(jsonObject);
 			return createConverterForGroupOrLink(jsonObject);
 		}
 		if (isAtomicData(jsonObject)) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
 		if (isResourceLink(jsonObject)) {
+			removePossibleActionLinks(jsonObject);
 			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
@@ -60,6 +62,10 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataGroupConverter.forJsonObject(jsonObject);
+	}
+
+	private void removePossibleActionLinks(JsonObject jsonObject) {
+		jsonObject.removeKey("actionLinks");
 	}
 
 	private boolean isResourceLink(JsonObject jsonObject) {

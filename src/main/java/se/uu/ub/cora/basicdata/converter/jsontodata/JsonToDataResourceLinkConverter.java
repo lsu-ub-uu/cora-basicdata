@@ -98,4 +98,8 @@ public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 	public static JsonToDataResourceLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataResourceLinkConverter(jsonObject);
 	}
+
+	public JsonObject onlyForTestGetJsonObject() {
+		return resourceLinkAsJson;
+	}
 }

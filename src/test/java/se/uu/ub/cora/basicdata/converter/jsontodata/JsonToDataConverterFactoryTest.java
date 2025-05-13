@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterFactory;
+import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -76,6 +77,26 @@ public class JsonToDataConverterFactoryTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringRemovesActionLinkFromGroup() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"http://localhost:8080/systemone/rest/record/system/cora\",\"accept\":\"application/vnd.uub.record+json\"}},\"name\":\"dataDivider\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataGroupConverter jsonToDataConverter = (JsonToDataGroupConverter) jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		JsonObject converterJsonObject = jsonToDataConverter.onlyForTestGetJsonObject();
+		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
+	}
+
+	@Test
+	public void testFactorOnJsonStringRemovesActionLinksFromResourceLinks() {
+		String json = "{\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"https://cora.epc.ub.uu.se/systemone/rest/record/binary/binary:8294254190660514/thumbnail\",\"accept\":\"image/jpeg\"}},\"name\":\"thumbnail\",\"mimeType\":\"image/jpeg\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataResourceLinkConverter jsonToDataConverter = (JsonToDataResourceLinkConverter) jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		JsonObject converterJsonObject = jsonToDataConverter.onlyForTestGetJsonObject();
+		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
 	}
 
 	@Test
