@@ -85,7 +85,7 @@ public class JsonToDataConverterFactoryTest {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataGroupConverter jsonToDataConverter = (JsonToDataGroupConverter) jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
-		JsonObject converterJsonObject = jsonToDataConverter.getJsonObjectonlyForTest();
+		JsonObject converterJsonObject = jsonToDataConverter.onlyForTestGetJsonObject();
 		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
 	}
 
@@ -95,7 +95,7 @@ public class JsonToDataConverterFactoryTest {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataResourceLinkConverter jsonToDataConverter = (JsonToDataResourceLinkConverter) jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
-		JsonObject converterJsonObject = jsonToDataConverter.getJsonObjectonlyForTest();
+		JsonObject converterJsonObject = jsonToDataConverter.onlyForTestGetJsonObject();
 		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
 	}
 

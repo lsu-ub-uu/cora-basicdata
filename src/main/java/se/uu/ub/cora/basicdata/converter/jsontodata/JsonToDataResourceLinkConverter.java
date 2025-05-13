@@ -99,7 +99,7 @@ public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 		return new JsonToDataResourceLinkConverter(jsonObject);
 	}
 
-	public JsonObject getJsonObjectonlyForTest() {
+	public JsonObject onlyForTestGetJsonObject() {
 		return resourceLinkAsJson;
 	}
 }

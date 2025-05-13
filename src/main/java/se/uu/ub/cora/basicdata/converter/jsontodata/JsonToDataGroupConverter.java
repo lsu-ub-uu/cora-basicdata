@@ -170,7 +170,7 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 		dataGroup.addChild((DataChild) childJsonToDataConverter.toInstance());
 	}
 
-	public JsonObject getJsonObjectonlyForTest() {
+	public JsonObject onlyForTestGetJsonObject() {
 		return jsonObject;
 	}
 }
