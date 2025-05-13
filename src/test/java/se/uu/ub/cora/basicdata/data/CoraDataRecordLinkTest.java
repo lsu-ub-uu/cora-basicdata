@@ -25,6 +25,7 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,6 +36,7 @@ import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataLink;
 import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 
 public class CoraDataRecordLinkTest {
 
@@ -142,13 +144,13 @@ public class CoraDataRecordLinkTest {
 	}
 
 	@Test
-	public void testHasReadActionsNoReadAction() throws Exception {
+	public void testHasReadActionsNoReadAction() {
 		assertFalse(recordLink.hasReadAction());
 
 	}
 
 	@Test
-	public void testHasReadActionsReadAction() throws Exception {
+	public void testHasReadActionsReadAction() {
 		recordLink.addAction(Action.READ);
 
 		assertTrue(recordLink.hasReadAction());
@@ -156,25 +158,42 @@ public class CoraDataRecordLinkTest {
 	}
 
 	@Test
-	public void testGetLinkedRecordType() throws Exception {
+	public void testGetLinkedRecordType() {
 		assertEquals(recordLink.getLinkedRecordType(), "myLinkedRecordType");
 	}
 
 	@Test(expectedExceptions = DataMissingException.class)
-	public void testGetLinkedRecordTypeMissing() throws Exception {
+	public void testGetLinkedRecordTypeMissing() {
 		CoraDataRecordLink withNameInData = CoraDataRecordLink.withNameInData("nameInData");
 		withNameInData.getLinkedRecordType();
 	}
 
 	@Test
-	public void testGetLinkedRecordId() throws Exception {
+	public void testGetLinkedRecordId() {
 		assertEquals(recordLink.getLinkedRecordId(), "myLinkedRecordId");
 	}
 
 	@Test(expectedExceptions = DataMissingException.class)
-	public void testGetLinkedRecordIdMissing() throws Exception {
+	public void testGetLinkedRecordIdMissing() {
 		CoraDataRecordLink withNameInData = CoraDataRecordLink.withNameInData("nameInData");
 		withNameInData.getLinkedRecordId();
+	}
+
+	@Test
+	public void testGetLinkedRecordEmpty() {
+		CoraDataRecordLink link = CoraDataRecordLink.withNameInData("nameInData");
+		Optional<DataGroup> linkedRecord = link.getLinkedRecord();
+		assertTrue(linkedRecord.isEmpty());
+	}
+
+	@Test
+	public void testSetAndGetLinkedRecord() {
+		CoraDataRecordLink link = CoraDataRecordLink.withNameInData("nameInData");
+		DataGroup group = new DataGroupSpy();
+		link.setLinkedRecord(group);
+		Optional<DataGroup> linkedRecord = link.getLinkedRecord();
+		assertTrue(linkedRecord.isPresent());
+		assertEquals(linkedRecord.get(), group);
 	}
 
 }

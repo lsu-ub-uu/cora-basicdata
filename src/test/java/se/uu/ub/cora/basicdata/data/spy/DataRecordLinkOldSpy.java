@@ -18,7 +18,10 @@
  */
 package se.uu.ub.cora.basicdata.data.spy;
 
+import java.util.Optional;
+
 import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
@@ -57,6 +60,18 @@ public class DataRecordLinkOldSpy extends DataGroupOldSpy implements DataRecordL
 		String linkedRecordType = "someRecordType";
 		MCR.addReturned(linkedRecordType);
 		return linkedRecordType;
+	}
+
+	@Override
+	public void setLinkedRecord(DataGroup group) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Optional<DataGroup> getLinkedRecord() {
+		// TODO Auto-generated method stub
+		return Optional.empty();
 	}
 
 }
