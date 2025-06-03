@@ -23,6 +23,7 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -194,6 +195,15 @@ public class CoraDataRecordLinkTest {
 		Optional<DataGroup> linkedRecord = link.getLinkedRecord();
 		assertTrue(linkedRecord.isPresent());
 		assertEquals(linkedRecord.get(), group);
+	}
+
+	@Test
+	public void testCreateLinkUsingNameInDataAndTypeAndId() {
+		CoraDataRecordLink link = CoraDataRecordLink.usingNameInDataAndTypeAndId("someNameInData",
+				"someType", "someId");
+
+		fail();
+
 	}
 
 }
