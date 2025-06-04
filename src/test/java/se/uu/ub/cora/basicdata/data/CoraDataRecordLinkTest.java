@@ -23,7 +23,6 @@ import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -202,7 +201,10 @@ public class CoraDataRecordLinkTest {
 		CoraDataRecordLink link = CoraDataRecordLink.usingNameInDataAndTypeAndId("someNameInData",
 				"someType", "someId");
 
-		fail();
+		assertEquals(link.getNameInData(), "someNameInData");
+		assertEquals(link.getLinkedRecordType(), "someType");
+		assertEquals(link.getLinkedRecordId(), "someId");
+		assertEquals(link.getLinkedRecord(), Optional.empty());
 
 	}
 
