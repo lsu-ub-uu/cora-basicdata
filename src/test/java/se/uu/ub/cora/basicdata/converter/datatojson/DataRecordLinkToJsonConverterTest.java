@@ -48,18 +48,18 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testConverterFactorySetInParent() throws Exception {
+	public void testConverterFactorySetInParent() {
 		assertSame(recordLinkToJsonConverter.converterFactory, converterFactory);
 	}
 
 	@Test
-	public void testRecordLinkConverterExtendsGroupConverter() throws Exception {
+	public void testRecordLinkConverterExtendsGroupConverter() {
 		assertTrue(recordLinkToJsonConverter instanceof DataToJsonConverter);
 		assertTrue(recordLinkToJsonConverter instanceof DataGroupToJsonConverter);
 	}
 
 	@Test
-	public void testNoActions() throws Exception {
+	public void testNoActions() {
 		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
 
 		JsonObjectBuilderSpy jsonObjectBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
@@ -69,7 +69,7 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testActionLinksBuilderAddedToMainBuilder() throws Exception {
+	public void testActionLinksBuilderAddedToMainBuilder() {
 		dataRecordLink.hasReadAction = true;
 
 		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
@@ -89,7 +89,7 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testActionAddedToActionBuilder() throws Exception {
+	public void testActionAddedToActionBuilder() {
 		dataRecordLink.hasReadAction = true;
 
 		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
