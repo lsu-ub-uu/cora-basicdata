@@ -23,11 +23,16 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
+import java.util.Collection;
+import java.util.Optional;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataLink;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataResourceLink;
 
 public class CoraDataResourceLinkTest {
@@ -59,63 +64,97 @@ public class CoraDataResourceLinkTest {
 	}
 
 	@Test
-	public void testHasRepeatIdNotSet() throws Exception {
+	public void testHasRepeatIdNotSet() {
 		assertFalse(resourceLink.hasRepeatId());
 	}
 
 	@Test
-	public void testHasRepeatIdSetToEmpty() throws Exception {
+	public void testHasRepeatIdSetToEmpty() {
 		resourceLink.setRepeatId("");
 		assertFalse(resourceLink.hasRepeatId());
 	}
 
 	@Test
-	public void testHasRepeatIdSet() throws Exception {
+	public void testHasRepeatIdSet() {
 		resourceLink.setRepeatId("3");
 		assertTrue(resourceLink.hasRepeatId());
 	}
 
 	@Test
-	public void testHasReadActionsNoReadAction() throws Exception {
+	public void testHasReadActionsNoReadAction() {
 		assertFalse(resourceLink.hasReadAction());
 
 	}
 
 	@Test
-	public void testHasReadActionsReadAction() throws Exception {
+	public void testHasReadActionsReadAction() {
 		resourceLink.addAction(Action.READ);
 
 		assertTrue(resourceLink.hasReadAction());
 	}
 
 	@Test
-	public void testMimeType() throws Exception {
+	public void testMimeType() {
 		resourceLink.setMimeType("someMimeType");
 		assertEquals(resourceLink.getMimeType(), "someMimeType");
 	}
 
 	@Test
-	public void testHasAttributes() throws Exception {
+	public void testAddAttribute() {
+		resourceLink.addAttributeByIdWithValue("someAttributeName", "value");
+		Collection<DataAttribute> attributes = resourceLink.getAttributes();
+		DataAttribute next = attributes.iterator().next();
+		assertEquals(next.getNameInData(), "someAttributeName");
+		assertEquals(next.getValue(), "value");
+	}
+
+	@Test
+	public void testAddAttributeWithSameNameInDataOverwrites() {
+		resourceLink.addAttributeByIdWithValue("someAttributeName", "value");
+		resourceLink.addAttributeByIdWithValue("someAttributeName", "someOtherValue");
+
+		Collection<DataAttribute> attributes = resourceLink.getAttributes();
+		assertEquals(attributes.size(), 1);
+		DataAttribute next = attributes.iterator().next();
+		assertEquals(next.getValue(), "someOtherValue");
+	}
+
+	@Test
+	public void testHasAttributes() {
 		assertFalse(resourceLink.hasAttributes());
+		resourceLink.addAttributeByIdWithValue("attributeId", "attributeValue");
+		assertTrue(resourceLink.hasAttributes());
 	}
 
-	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
+	@Test
 	public void testGetAttribute() {
-		resourceLink.getAttribute("someAttribute");
+		resourceLink.addAttributeByIdWithValue("attributeId", "attributeValue");
+		assertEquals(resourceLink.getAttribute("attributeId").getValue(), "attributeValue");
 	}
 
-	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
-	public void testAddAttributeByIdWithValue() {
-		resourceLink.addAttributeByIdWithValue("someNameInData", "someValue");
+	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
+			+ "Attribute with id someAttributeId not found.")
+	public void testGetAttributeDoesNotExist() {
+		resourceLink.getAttribute("someAttributeId");
 	}
 
-	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
-	public void testAttributes() throws Exception {
-		resourceLink.getAttributes();
+	@Test
+	public void testGetAttributeValueNoAttribute() {
+		Optional<String> attributeValue = resourceLink.getAttributeValue("attributeNameInData");
+
+		assertTrue(attributeValue.isEmpty());
 	}
 
-	@Test(expectedExceptions = UnsupportedOperationException.class, expectedExceptionsMessageRegExp = NOT_YET_IMPLEMENTED)
-	public void testAttributeValue() throws Exception {
-		resourceLink.getAttributeValue("someValue");
+	@Test
+	public void testGetAttributeValueAttributeExists() {
+		resourceLink.addAttributeByIdWithValue("someAttributeName2", "someValue");
+		resourceLink.addAttributeByIdWithValue("someAttributeName3", "someValue");
+		resourceLink.addAttributeByIdWithValue("someAttributeName", "someValue");
+
+		Optional<String> attributeValue = resourceLink.getAttributeValue("someAttributeName");
+
+		assertTrue(attributeValue.isPresent());
+		assertEquals(attributeValue.get(), "someValue");
 	}
+
 }

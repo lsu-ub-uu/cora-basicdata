@@ -20,17 +20,21 @@ package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataMissingException;
 import se.uu.ub.cora.data.DataResourceLink;
 
 public final class CoraDataResourceLink implements DataResourceLink {
 
 	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
 
+	private Set<DataAttribute> attributes = new HashSet<>();
 	private List<Action> actions = new ArrayList<>();
 	private String nameInData;
 	private String mimeType;
@@ -88,27 +92,41 @@ public final class CoraDataResourceLink implements DataResourceLink {
 
 	@Override
 	public void addAttributeByIdWithValue(String nameInData, String value) {
-		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+		possiblyRemovePreviouslyStoredAttribute(nameInData);
+		attributes.add(CoraDataAttribute.withNameInDataAndValue(nameInData, value));
+	}
+
+	private void possiblyRemovePreviouslyStoredAttribute(String nameInData) {
+		attributes.removeIf(attr -> nameInData.equals(attr.getNameInData()));
 	}
 
 	@Override
 	public boolean hasAttributes() {
-		return false;
+		return !attributes.isEmpty();
 	}
 
 	@Override
 	public DataAttribute getAttribute(String attributeId) {
-		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(attributeId)) {
+				return dataAttribute;
+			}
+		}
+		throw new DataMissingException("Attribute with id " + attributeId + " not found.");
 	}
 
 	@Override
 	public Collection<DataAttribute> getAttributes() {
-		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+		return attributes;
 	}
 
 	@Override
 	public Optional<String> getAttributeValue(String nameInData) {
-		throw new UnsupportedOperationException(NOT_YET_IMPLEMENTED);
+		for (DataAttribute dataAttribute : attributes) {
+			if (dataAttribute.getNameInData().equals(nameInData)) {
+				return Optional.of(dataAttribute.getValue());
+			}
+		}
+		return Optional.empty();
 	}
-
 }
