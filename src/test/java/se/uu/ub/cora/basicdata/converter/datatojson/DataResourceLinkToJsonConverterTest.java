@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, 2023 Uppsala University Library
+ * Copyright 2021, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,12 +22,14 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.spy.DataResourceLinkSpy;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.data.spies.DataAttributeSpy;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataResourceLinkToJsonConverterTest {
@@ -87,7 +89,37 @@ public class DataResourceLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testJsonWithRepeatId() throws Exception {
+	public void testToJson_withAttributes() {
+		DataAttributeSpy attr01 = createAttributeUsingNameInDataAndValue("atribute01", "value01");
+		DataAttributeSpy attr02 = createAttributeUsingNameInDataAndValue("atribute02", "value02");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasAttributes", () -> true);
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getAttributes",
+				() -> Set.of(attr01, attr02));
+
+		String json = converter.toJson();
+
+		String expectedJson = """
+				{
+				    "name": "master",
+				    "attributes": {
+				        "atribute01": "value01",
+				        "atribute02": "value02"
+				    },
+				    "mimeType": "application/octet-stream"
+				}""";
+		assertEquals(json, expectedJson);
+	}
+
+	private DataAttributeSpy createAttributeUsingNameInDataAndValue(String nameInData,
+			String value) {
+		DataAttributeSpy attribute = new DataAttributeSpy();
+		attribute.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
+		attribute.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
+		return attribute;
+	}
+
+	@Test
+	public void testJsonWithRepeatId() {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "1");
 
@@ -125,14 +157,14 @@ public class DataResourceLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testConverterFactorySetInParent() throws Exception {
+	public void testConverterFactorySetInParent() {
 		constructWithRecordUrl();
 
 		assertSame(converter.onlyForTestGetConverterFactory(), converterFactory);
 	}
 
 	@Test
-	public void testNoActions() throws Exception {
+	public void testNoActions() {
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
@@ -152,7 +184,7 @@ public class DataResourceLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testActionLinksBuilderAddedToMainBuilder() throws Exception {
+	public void testActionLinksBuilderAddedToMainBuilder() {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
@@ -174,7 +206,7 @@ public class DataResourceLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testActionAddedToActionBuilder() throws Exception {
+	public void testActionAddedToActionBuilder() {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
@@ -204,7 +236,7 @@ public class DataResourceLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testJsonWithActions() throws Exception {
+	public void testJsonWithActions() {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
