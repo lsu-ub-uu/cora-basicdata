@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, 2023 Uppsala University Library
+ * Copyright 2021, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -49,7 +49,12 @@ public class DataRecordLinkToJsonConverter extends DataGroupToJsonConverter
 
 	@Override
 	void hookForSubclassesToImplementExtraConversion() {
+		possiblyAddLinkedRecord();
 		possiblyAddActionLink();
+	}
+
+	private void possiblyAddLinkedRecord() {
+
 	}
 
 	private void possiblyAddActionLink() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,54 +24,50 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class DataRecordLinkOldSpy extends DataGroupOldSpy implements DataRecordLink {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
-	public boolean hasReadAction = false;
+	public MethodReturnValues MRV = new MethodReturnValues();
 
 	public DataRecordLinkOldSpy(String nameInData) {
 		super(nameInData);
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> false);
+		MRV.setDefaultReturnValuesSupplier("getLinkedRecordType", () -> "someRecordType");
+		MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> "someRecordId");
+		MRV.setDefaultReturnValuesSupplier("getLinkedRecord", Optional::empty);
 	}
 
 	@Override
 	public void addAction(Action action) {
-		// TODO Auto-generated method stub
-
+		MCR.addCall("action", action);
 	}
 
 	@Override
 	public boolean hasReadAction() {
-		MCR.addCall();
-		MCR.addReturned(hasReadAction);
-		return hasReadAction;
-	}
-
-	@Override
-	public String getLinkedRecordId() {
-		MCR.addCall();
-		String linkedRecordId = "someRecordId";
-		MCR.addReturned(linkedRecordId);
-		return linkedRecordId;
+		return (boolean) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public String getLinkedRecordType() {
-		MCR.addCall();
-		String linkedRecordType = "someRecordType";
-		MCR.addReturned(linkedRecordType);
-		return linkedRecordType;
+		return (String) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
-	public void setLinkedRecord(DataGroup group) {
-		// TODO Auto-generated method stub
+	public String getLinkedRecordId() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public void setLinkedRecord(DataGroup linkedGroup) {
+		MCR.addCall("linkedGroup", linkedGroup);
 
 	}
 
 	@Override
 	public Optional<DataGroup> getLinkedRecord() {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return (Optional) MCR.addCallAndReturnFromMRV();
 	}
 
 }

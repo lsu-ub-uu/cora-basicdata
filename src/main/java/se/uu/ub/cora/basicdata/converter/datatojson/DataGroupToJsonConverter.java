@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -53,12 +53,8 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		possiblyAddRepeatId();
-		if (dataGroup.hasAttributes()) {
-			addAttributesToGroup();
-		}
-		if (dataGroup.hasChildren()) {
-			addChildrenToGroup();
-		}
+		possiblyAddAttributes();
+		possiblyAddChildren();
 		hookForSubclassesToImplementExtraConversion();
 		dataGroupJsonObjectBuilder.addKeyString("name", dataGroup.getNameInData());
 		return dataGroupJsonObjectBuilder;
@@ -79,12 +75,24 @@ public class DataGroupToJsonConverter implements DataToJsonConverter {
 		}
 	}
 
+	private void possiblyAddAttributes() {
+		if (dataGroup.hasAttributes()) {
+			addAttributesToGroup();
+		}
+	}
+
 	private void addAttributesToGroup() {
 		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
 		for (DataAttribute attribute : dataGroup.getAttributes()) {
 			attributes.addKeyString(attribute.getNameInData(), attribute.getValue());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
+	}
+
+	private void possiblyAddChildren() {
+		if (dataGroup.hasChildren()) {
+			addChildrenToGroup();
+		}
 	}
 
 	void addChildrenToGroup() {
