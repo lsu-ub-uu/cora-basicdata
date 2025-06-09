@@ -20,21 +20,13 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.spy.DataRecordLinkOldSpy;
-import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.spies.DataAttributeSpy;
-import se.uu.ub.cora.data.spies.DataGroupSpy;
-import se.uu.ub.cora.data.spies.DataRecordLinkSpy;
 
 public class DataRecordLinkToJsonConverterTest {
 	DataRecordLinkToJsonConverter recordLinkToJsonConverter;
@@ -116,122 +108,4 @@ public class DataRecordLinkToJsonConverterTest {
 				"application/vnd.cora.record+json");
 		internalLinkBuilderSpy.MCR.assertNumberOfCallsToMethod("addKeyString", 4);
 	}
-
-	@Test
-	public void testLinkedRecord() {
-		DataGroupSpy linkedDataGroup = createDataRecordWithOneLinkWithReadActionAndLinkedRecord();
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecord",
-				() -> Optional.of(linkedDataGroup));
-
-		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
-
-		fail();
-		// TODO: define how it must look like the linkedrecord
-		// {
-		// "children": [
-		// {
-		// "name": "linkedRecordType",
-		// "value": "recordType"
-		// },
-		// {
-		// "name": "linkedRecordId",
-		// "value": "example"
-		// }
-		// ],
-		// "actionLinks": {
-		// "read": {
-		// "requestMethod": "GET",
-		// "rel": "read",
-		// "url": "https://cora.epc.ub.uu.se/systemone/rest/record/recordType/example",
-		// "accept": "application/vnd.cora.record+json"
-		// }
-		// },
-		// "name": "type",
-		// "attributes": {
-		// "_no": "",
-		// "_sv": "Posttyp",
-		// "_en": "RecordType"
-		// }
-		// }
-	}
-
-	private DataGroupSpy createDataRecordWithOneLinkWithReadActionAndLinkedRecord() {
-		DataGroupSpy linkedDataGroup = createGroupWithNameInDataAndChildren("linkedSomeRecord");
-
-		DataRecordLinkSpy dataRecordLink = createRecordLink("someLinkNameInData", "someType",
-				"someId");
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecord",
-				() -> Optional.of(linkedDataGroup));
-
-		return createGroupWithNameInDataAndChildren("recordToRecordLink", dataRecordLink);
-	}
-
-	private DataGroupSpy createDataRecordWithOneLinkWithReadActionAndLinkedRecordWithAttributes() {
-		DataGroupSpy linkedDataGroup = createGroupWithNameInDataAndChildren("linkedSomeRecord");
-
-		DataAttributeSpy attribute01 = createAttribute("attribute01", "value01");
-		DataAttributeSpy attribute02 = createAttribute("attribute02", "value02");
-		addAttributesToDataGroup(linkedDataGroup, attribute01, attribute02);
-
-		DataRecordLinkSpy dataRecordLink = createRecordLink("someLinkNameInData", "someType",
-				"someId");
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecord",
-				() -> Optional.of(linkedDataGroup));
-		return createGroupWithNameInDataAndChildren("recordToRecordLink", dataRecordLink);
-	}
-
-	private DataGroupSpy createDataRecordWithOneLinkWithReadActionAndLinkedRecordWithChildren() {
-		DataGroupSpy groupChild01 = createGroupWithNameInData("groupChild01");
-		DataGroupSpy groupChild02 = createGroupWithNameInData("groupChild02");
-		DataGroupSpy linkedDataGroup = createGroupWithNameInDataAndChildren("linkedSomeRecord",
-				groupChild01, groupChild02);
-
-		DataRecordLinkSpy dataRecordLink = createRecordLink("someLinkNameInData", "someType",
-				"someId");
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecord",
-				() -> Optional.of(linkedDataGroup));
-
-		return createGroupWithNameInDataAndChildren("recordToRecordLink", dataRecordLink);
-	}
-
-	private void addAttributesToDataGroup(DataGroupSpy dataGroup, DataAttributeSpy... attributes) {
-		dataGroup.MRV.setDefaultReturnValuesSupplier("getAttributes",
-				() -> Arrays.asList(attributes));
-		dataGroup.MRV.setDefaultReturnValuesSupplier("hasAttributes", () -> true);
-	}
-
-	private DataAttributeSpy createAttribute(String nameInData, String value) {
-		DataAttributeSpy attribute = new DataAttributeSpy();
-		attribute.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
-		attribute.MRV.setDefaultReturnValuesSupplier("getValue", () -> value);
-		return attribute;
-	}
-
-	private DataGroupSpy createGroupWithNameInData(String nameInData) {
-		DataGroupSpy linkedDataGroup = new DataGroupSpy();
-		linkedDataGroup.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
-		return linkedDataGroup;
-	}
-
-	private DataGroupSpy createGroupWithNameInDataAndChildren(String nameInData,
-			DataChild... dataRecordLink) {
-		DataGroupSpy dataGroup = new DataGroupSpy();
-		dataGroup.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
-		dataGroup.MRV.setDefaultReturnValuesSupplier("getChildren",
-				() -> Arrays.asList(dataRecordLink));
-		return dataGroup;
-	}
-
-	private DataRecordLinkSpy createRecordLink(String linkedName, String linkedType,
-			String linkToId) {
-		DataRecordLinkSpy dataRecordLink = new DataRecordLinkSpy();
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> linkedName);
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordType", () -> linkedType);
-		dataRecordLink.MRV.setDefaultReturnValuesSupplier("getLinkedRecordId", () -> linkToId);
-		return dataRecordLink;
-	}
-
 }

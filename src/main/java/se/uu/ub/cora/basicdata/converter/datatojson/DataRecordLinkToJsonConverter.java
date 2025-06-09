@@ -49,12 +49,7 @@ public class DataRecordLinkToJsonConverter extends DataGroupToJsonConverter
 
 	@Override
 	void hookForSubclassesToImplementExtraConversion() {
-		possiblyAddLinkedRecord();
 		possiblyAddActionLink();
-	}
-
-	private void possiblyAddLinkedRecord() {
-
 	}
 
 	private void possiblyAddActionLink() {
