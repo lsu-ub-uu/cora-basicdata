@@ -29,11 +29,10 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public final class CoraDataRecordLink extends CoraDataGroup implements DataRecordLink {
 
-	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
+	private static final String LINKED_RECORD = "linkedRecord";
 	private List<Action> actions = new ArrayList<>();
-	private Optional<DataGroup> linkedGroup = Optional.empty();
-	private static CoraDataRecordLink dataRecordLink;
 
 	private CoraDataRecordLink(String nameInData) {
 		super(nameInData);
@@ -62,7 +61,7 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 
 	public static CoraDataRecordLink usingNameInDataAndTypeAndId(String nameInData, String type,
 			String id) {
-		dataRecordLink = new CoraDataRecordLink(nameInData);
+		CoraDataRecordLink dataRecordLink = new CoraDataRecordLink(nameInData);
 		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE, type));
 		dataRecordLink.addChild(CoraDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID, id));
 		return dataRecordLink;
@@ -90,19 +89,31 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 
 	@Override
 	public void setLinkedRecord(DataGroup group) {
-		CoraDataGroup linkedRecord = CoraDataGroup.withNameInData("linkedRecord");
-		linkedRecord.addChildren(List.of(group));
+		CoraDataGroup linkedRecord = CoraDataGroup.withNameInData(LINKED_RECORD);
+		linkedRecord.addChild(group);
 		super.addChild(linkedRecord);
 	}
 
 	@Override
 	public Optional<DataGroup> getLinkedRecord() {
-		if (super.containsChildWithNameInData("linkedRecord")) {
-			return Optional.of(
-					(DataGroup) super.getFirstChildOfTypeAndName(DataGroup.class, "linkedRecord")
-							.getChildren().getFirst());
+		if (super.containsChildWithNameInData(LINKED_RECORD)) {
+			return getTheLinkedRecordAsGroup();
 		}
 		return Optional.empty();
+	}
+
+	private Optional<DataGroup> getTheLinkedRecordAsGroup() {
+		DataGroup linkedRecordGroup = getLinkedRecordGroup();
+		DataChild getFirstChild = getFirstChild(linkedRecordGroup);
+		return Optional.of((DataGroup) getFirstChild);
+	}
+
+	private DataGroup getLinkedRecordGroup() {
+		return super.getFirstChildOfTypeAndName(DataGroup.class, LINKED_RECORD);
+	}
+
+	private DataChild getFirstChild(DataGroup linkedRecordGroup) {
+		return linkedRecordGroup.getChildren().getFirst();
 	}
 
 }
