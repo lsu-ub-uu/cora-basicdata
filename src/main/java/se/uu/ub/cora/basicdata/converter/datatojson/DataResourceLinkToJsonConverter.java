@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, 2023 Uppsala University Library
+ * Copyright 2021, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,6 +20,7 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 
 import java.util.Optional;
 
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
@@ -48,9 +49,43 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 	public static DataResourceLinkToJsonConverter usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 			DataToJsonConverterFactory converterFactory, JsonBuilderFactory factory,
 			DataResourceLink convertible, Optional<String> recordUrl) {
-
 		return new DataResourceLinkToJsonConverter(converterFactory, convertible, recordUrl,
 				factory);
+	}
+
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		jsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		addNameInDataAndMimeType();
+		possiblyAddAttributes();
+		possiblyAddRepeatId();
+		possiblyAddActionLink();
+		return jsonObjectBuilder;
+	}
+
+	private void addNameInDataAndMimeType() {
+		jsonObjectBuilder.addKeyString("name", dataResourceLink.getNameInData());
+		jsonObjectBuilder.addKeyString("mimeType", dataResourceLink.getMimeType());
+	}
+
+	private void possiblyAddAttributes() {
+		if (dataResourceLink.hasAttributes()) {
+			addAttributes();
+		}
+	}
+
+	private void addAttributes() {
+		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
+		for (DataAttribute attribute : dataResourceLink.getAttributes()) {
+			attributes.addKeyString(attribute.getNameInData(), attribute.getValue());
+		}
+		jsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
+	}
+
+	private void possiblyAddRepeatId() {
+		if (dataResourceLink.hasRepeatId()) {
+			jsonObjectBuilder.addKeyString("repeatId", dataResourceLink.getRepeatId());
+		}
 	}
 
 	private void possiblyAddActionLink() {
@@ -75,26 +110,6 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 		readAction.addKeyString("requestMethod", GET);
 		readAction.addKeyString("accept", mimeType);
 		return readAction;
-	}
-
-	@Override
-	public JsonObjectBuilder toJsonObjectBuilder() {
-		jsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
-		addNameInDataAndMimeType();
-		possiblyAddRepeatId();
-		possiblyAddActionLink();
-		return jsonObjectBuilder;
-	}
-
-	private void addNameInDataAndMimeType() {
-		jsonObjectBuilder.addKeyString("name", dataResourceLink.getNameInData());
-		jsonObjectBuilder.addKeyString("mimeType", dataResourceLink.getMimeType());
-	}
-
-	private void possiblyAddRepeatId() {
-		if (dataResourceLink.hasRepeatId()) {
-			jsonObjectBuilder.addKeyString("repeatId", dataResourceLink.getRepeatId());
-		}
 	}
 
 	@Override

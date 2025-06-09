@@ -23,7 +23,6 @@ package se.uu.ub.cora.basicdata.data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -177,17 +176,7 @@ public class CoraDataGroup implements DataGroup {
 	}
 
 	private void possiblyRemovePreviouslyStoredAttribute(String nameInData) {
-		Iterator<DataAttribute> iterator = attributes.iterator();
-		while (iterator.hasNext()) {
-			possiblyRemoveAttribute(iterator, nameInData);
-		}
-	}
-
-	private void possiblyRemoveAttribute(Iterator<DataAttribute> iterator, String nameInData) {
-		DataAttribute next = iterator.next();
-		if (next.getNameInData().equals(nameInData)) {
-			iterator.remove();
-		}
+		attributes.removeIf(attr -> nameInData.equals(attr.getNameInData()));
 	}
 
 	@Override

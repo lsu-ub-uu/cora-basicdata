@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2019 Uppsala University Library
+ * Copyright 2015, 2016, 2019, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -29,10 +29,10 @@ import se.uu.ub.cora.data.DataRecordLink;
 
 public final class CoraDataRecordLink extends CoraDataGroup implements DataRecordLink {
 
-	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
+	private static final String LINKED_RECORD = "linkedRecord";
 	private List<Action> actions = new ArrayList<>();
-	private Optional<DataGroup> linkedGroup = Optional.empty();
 
 	private CoraDataRecordLink(String nameInData) {
 		super(nameInData);
@@ -89,12 +89,31 @@ public final class CoraDataRecordLink extends CoraDataGroup implements DataRecor
 
 	@Override
 	public void setLinkedRecord(DataGroup group) {
-		linkedGroup = Optional.of(group);
+		CoraDataGroup linkedRecord = CoraDataGroup.withNameInData(LINKED_RECORD);
+		linkedRecord.addChild(group);
+		super.addChild(linkedRecord);
 	}
 
 	@Override
 	public Optional<DataGroup> getLinkedRecord() {
-		return linkedGroup;
+		if (super.containsChildWithNameInData(LINKED_RECORD)) {
+			return getTheLinkedRecordAsGroup();
+		}
+		return Optional.empty();
+	}
+
+	private Optional<DataGroup> getTheLinkedRecordAsGroup() {
+		DataGroup linkedRecordGroup = getLinkedRecordGroup();
+		DataChild getFirstChild = getFirstChild(linkedRecordGroup);
+		return Optional.of((DataGroup) getFirstChild);
+	}
+
+	private DataGroup getLinkedRecordGroup() {
+		return super.getFirstChildOfTypeAndName(DataGroup.class, LINKED_RECORD);
+	}
+
+	private DataChild getFirstChild(DataGroup linkedRecordGroup) {
+		return linkedRecordGroup.getChildren().getFirst();
 	}
 
 }

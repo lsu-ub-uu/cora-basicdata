@@ -43,8 +43,8 @@ public class DataResourceLinkSpy implements DataResourceLink {
 		MRV.setDefaultReturnValuesSupplier("getRepeatId", String::new);
 		MRV.setDefaultReturnValuesSupplier("hasAttributes", () -> false);
 		MRV.setDefaultReturnValuesSupplier("getAttribute", DataAttributeSpy::new);
-		MRV.setDefaultReturnValuesSupplier("getAttributeValue", () -> Optional.empty());
-		MRV.setDefaultReturnValuesSupplier("getAttributes", () -> Collections.emptySet());
+		MRV.setDefaultReturnValuesSupplier("getAttributeValue", Optional::empty);
+		MRV.setDefaultReturnValuesSupplier("getAttributes", Collections::emptySet);
 	}
 
 	@Override

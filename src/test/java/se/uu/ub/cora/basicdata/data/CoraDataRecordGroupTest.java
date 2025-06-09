@@ -1495,8 +1495,7 @@ public class CoraDataRecordGroupTest {
 
 	@Test
 	public void testGetVisibility() {
-		var visibilityAtomic = CoraDataAtomic.withNameInDataAndValue("visibility", "published");
-		defaultRecordInfo.addChild(visibilityAtomic);
+		defaultRecordGroupWithRecordInfo.setVisibility("published");
 
 		Optional<String> visibility = defaultRecordGroupWithRecordInfo.getVisibility();
 		assertTrue(visibility.isPresent());

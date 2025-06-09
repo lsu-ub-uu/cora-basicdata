@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -48,18 +48,18 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testConverterFactorySetInParent() throws Exception {
+	public void testConverterFactorySetInParent() {
 		assertSame(recordLinkToJsonConverter.converterFactory, converterFactory);
 	}
 
 	@Test
-	public void testRecordLinkConverterExtendsGroupConverter() throws Exception {
+	public void testRecordLinkConverterExtendsGroupConverter() {
 		assertTrue(recordLinkToJsonConverter instanceof DataToJsonConverter);
 		assertTrue(recordLinkToJsonConverter instanceof DataGroupToJsonConverter);
 	}
 
 	@Test
-	public void testNoActions() throws Exception {
+	public void testNoActions() {
 		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
 
 		JsonObjectBuilderSpy jsonObjectBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
@@ -69,8 +69,8 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testActionLinksBuilderAddedToMainBuilder() throws Exception {
-		dataRecordLink.hasReadAction = true;
+	public void testActionLinksBuilderAddedToMainBuilder() {
+		dataRecordLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 
 		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
 
@@ -89,8 +89,8 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
-	public void testActionAddedToActionBuilder() throws Exception {
-		dataRecordLink.hasReadAction = true;
+	public void testActionAddedToActionBuilder() {
+		dataRecordLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 
 		recordLinkToJsonConverter.hookForSubclassesToImplementExtraConversion();
 
