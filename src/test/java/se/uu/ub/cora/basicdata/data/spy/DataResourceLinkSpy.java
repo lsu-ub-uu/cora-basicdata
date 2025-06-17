@@ -38,6 +38,9 @@ public class DataResourceLinkSpy implements DataResourceLink {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "fakeDataResourceNameInData");
 		MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> false);
+		MRV.setDefaultReturnValuesSupplier("getType", () -> "someType");
+		MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
+		MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "someMimeType");
 		MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "someMimeType");
 		MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> false);
 		MRV.setDefaultReturnValuesSupplier("getRepeatId", String::new);
@@ -60,6 +63,16 @@ public class DataResourceLinkSpy implements DataResourceLink {
 	@Override
 	public boolean hasReadAction() {
 		return (boolean) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public String getType() {
+		return (String) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public String getId() {
+		return (String) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
@@ -111,5 +124,4 @@ public class DataResourceLinkSpy implements DataResourceLink {
 	public Optional<String> getAttributeValue(String nameInData) {
 		return (Optional<String>) MCR.addCallAndReturnFromMRV();
 	}
-
 }

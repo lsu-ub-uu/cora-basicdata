@@ -34,8 +34,8 @@ public class CoraDataResourceLinkCopier implements DataCopier {
 
 	@Override
 	public DataChild copy() {
-		resourceLinkCopy = CoraDataResourceLink.withNameInDataAndMimeType(
-				originalResourceLink.getNameInData(), originalResourceLink.getMimeType());
+		resourceLinkCopy = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType(
+				originalResourceLink.getNameInData(), null, null, originalResourceLink.getMimeType());
 		possiblyCopyRepeatId();
 
 		return resourceLinkCopy;

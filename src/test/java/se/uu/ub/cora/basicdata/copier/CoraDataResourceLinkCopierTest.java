@@ -35,8 +35,8 @@ public class CoraDataResourceLinkCopierTest {
 
 	@BeforeMethod
 	public void setUp() {
-		originalResourceLink = CoraDataResourceLink.withNameInDataAndMimeType("master",
-				"someMimeType");
+		originalResourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType("master",
+				null, null, "someMimeType");
 		dataResourceLinkCopier = new CoraDataResourceLinkCopier(originalResourceLink);
 	}
 

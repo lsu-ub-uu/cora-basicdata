@@ -76,8 +76,8 @@ public class BasicDataToJsonConverterFactoryTest {
 		dataAttribute = CoraDataAttribute.withNameInDataAndValue("attributeNameInData",
 				"attributeValue");
 		dataRecordLink = CoraDataRecordLink.withNameInData("recordLinkNameInData");
-		dataResourceLink = CoraDataResourceLink.withNameInDataAndMimeType("recordLinkNameInData",
-				"someMimeType");
+		dataResourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType("recordLinkNameInData",
+				null, null, "someMimeType");
 	}
 
 	@Test

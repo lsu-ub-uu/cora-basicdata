@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,6 +21,7 @@ package se.uu.ub.cora.basicdata.converter.jsontodata;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.basicdata.data.CoraDataResourceLink;
@@ -37,13 +38,19 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.cora.record+json"
+				  "children": [
+				    {"name": "linkedRecordType", "value": "someType"                  },
+				    {"name": "linkedRecordId",   "value": "someId"},
+				    {"name": "mimeType",           "value": "image/png"               }
+				  ]
 				}
 				""";
 		CoraDataResourceLink resourceLink = getConverterdLink(json);
 
 		assertEquals(resourceLink.getNameInData(), "master");
-		assertEquals(resourceLink.getMimeType(), "application/vnd.cora.record+json");
+		assertEquals(resourceLink.getType(), "someType");
+		assertEquals(resourceLink.getId(), "someId");
+		assertEquals(resourceLink.getMimeType(), "image/png");
 	}
 
 	private CoraDataResourceLink getConverterdLink(String json) {
@@ -52,8 +59,7 @@ public class JsonToDataResourceLinkConverterTest {
 		JsonToDataResourceLinkConverter converter = JsonToDataResourceLinkConverter
 				.forJsonObject((JsonObject) jsonValue);
 
-		CoraDataResourceLink dataLink = (CoraDataResourceLink) converter.toInstance();
-		return dataLink;
+		return (CoraDataResourceLink) converter.toInstance();
 	}
 
 	@Test
@@ -61,7 +67,11 @@ public class JsonToDataResourceLinkConverterTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.cora.record+json",
+				  "children": [
+				    {"name": "linkedRecordType", "value": "someType"                  },
+				    {"name": "linkedRecordId",   "value": "someId"},
+				    {"name": "mimeType",           "value": "image/png"               }
+				  ],
 				  "repeatId":"0"
 				}
 				""";
@@ -72,67 +82,132 @@ public class JsonToDataResourceLinkConverterTest {
 		assertEquals(dataLink.getRepeatId(), "0");
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
-	public void testExceptionMimeTypeNotExist() {
-		String json = """
+	@Test(dataProvider = "testValidJson", expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error parsing jsonObject: ResourceLink must contain name,children\\[linkedRecordType,linkedRecordId,mimeType\\] and repeatId\\.")
+	public void testValidJson(String json) {
+		getConverterdLink(json);
+	}
+
+	@DataProvider(name = "testValidJson")
+	public Object[][] testExceptionMimeTypeNotExist2() {
+		String json0 = jsonWithOutNameInData();
+		String json1 = jsonWithOutChildren();
+		String json2 = jsonTooManyFields();
+		String json3 = jsonTooManyFields_repeatIdMissing();
+		String json4 = jsonTooManyFields_NameMissingAndRepeatIdMissing();
+		String json5 = jsonMimeTypeMissing();
+		String json6 = jsonLinkedRecordId();
+		String json7 = jsonExtraChild();
+
+		return new Object[][] { { json0 }, { json1 }, { json2 }, { json3 }, { json4 }, { json5 },
+				{ json6 }, { json7 } };
+	}
+
+	private String jsonWithOutNameInData() {
+		return """
+					{
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "linkedRecordId",   "value": "someId"},
+					             {"name": "mimeType",           "value": "image/png"               }
+					             ],
+					"repeatId":"0"
+						}
+				""";
+	}
+
+	private String jsonWithOutChildren() {
+		return """
 				{
 				  "name": "master",
 				  "repeatId":"0"
 				}
 				""";
-		getConverterdLink(json);
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
-	public void testExceptionNameNotExist() {
-		String json = """
-				{
-				  "mimeType": "application/vnd.cora.record+json",
-				  "repeatId":"0"
-				}
-				""";
-		getConverterdLink(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
-	public void testExceptionIfTooManyFields() {
-		String json = """
+	private String jsonTooManyFields() {
+		return """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.cora.record+json",
-				  "repeatId":"0",
-				  "someOther": "someOther"
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "linkedRecordId",   "value": "someId"},
+					             {"name": "mimeType",           "value": "image/png"               }
+					             ],
+					"repeatId":"0",
+					"someOther": "someOther"
 				}
 				""";
-		getConverterdLink(json);
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
-	public void testExceptionIfTooManyFields2() {
-		String json = """
+	private String jsonTooManyFields_repeatIdMissing() {
+		return """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.cora.record+json",
-				  "someOther": "someOther"
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "linkedRecordId",   "value": "someId"},
+					             {"name": "mimeType",           "value": "image/png"               }
+					             ],
+					 "someOther": "someOther"
 				}
 				""";
-		getConverterdLink(json);
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "Error parsing jsonObject: ResourceLink must contain name, mimeType and repeatId.")
-	public void testExceptionIfTooManyFields3() {
-		String json = """
+	private String jsonTooManyFields_NameMissingAndRepeatIdMissing() {
+		return """
 				{
 				  "nameSpecial": "master",
-				  "mimeType": "application/vnd.cora.record+json",
-				  "someOther": "someOther"
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "linkedRecordId",   "value": "someId"},
+					             {"name": "mimeType",           "value": "image/png"               }
+					             ],
+					 "someOther": "someOther"
 				}
 				""";
-		getConverterdLink(json);
 	}
+
+	private String jsonMimeTypeMissing() {
+		return """
+					{
+					"name": "master",
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "linkedRecordId",   "value": "someId"}
+					             ],
+					"repeatId":"0"
+						}
+				""";
+	}
+
+	private String jsonLinkedRecordId() {
+		return """
+					{
+					"name": "master",
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "someOtherId",   "value": "someId"},
+					              {"name": "mimeType",           "value": "image/png"               }
+					             ],
+					"repeatId":"0"
+						}
+				""";
+	}
+
+	private String jsonExtraChild() {
+		return """
+					{
+					"name": "master",
+					"children": [
+					             {"name": "linkedRecordType", "value": "someType"                  },
+					             {"name": "linkedRecordId",   "value": "someId"},
+					             {"name": "mimeType",           "value": "image/png"               },
+					             {"name": "another",           "value": "anotherValue"               }
+					             ],
+					"repeatId":"0"
+						}
+				""";
+	}
+
 }
