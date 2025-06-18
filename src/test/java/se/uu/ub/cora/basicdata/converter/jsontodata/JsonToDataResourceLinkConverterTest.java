@@ -45,7 +45,7 @@ public class JsonToDataResourceLinkConverterTest {
 				  ]
 				}
 				""";
-		CoraDataResourceLink resourceLink = getConverterdLink(json);
+		CoraDataResourceLink resourceLink = getConvertedLink(json);
 
 		assertEquals(resourceLink.getNameInData(), "master");
 		assertEquals(resourceLink.getType(), "someType");
@@ -53,7 +53,7 @@ public class JsonToDataResourceLinkConverterTest {
 		assertEquals(resourceLink.getMimeType(), "image/png");
 	}
 
-	private CoraDataResourceLink getConverterdLink(String json) {
+	private CoraDataResourceLink getConvertedLink(String json) {
 		OrgJsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataResourceLinkConverter converter = JsonToDataResourceLinkConverter
@@ -76,7 +76,7 @@ public class JsonToDataResourceLinkConverterTest {
 				}
 				""";
 
-		DataLink dataLink = getConverterdLink(json);
+		DataLink dataLink = getConvertedLink(json);
 
 		assertEquals(dataLink.getNameInData(), "master");
 		assertEquals(dataLink.getRepeatId(), "0");
@@ -85,7 +85,7 @@ public class JsonToDataResourceLinkConverterTest {
 	@Test(dataProvider = "testValidJson", expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
 			+ "Error parsing jsonObject: ResourceLink must contain name,children\\[linkedRecordType,linkedRecordId,mimeType\\] and repeatId\\.")
 	public void testValidJson(String json) {
-		getConverterdLink(json);
+		getConvertedLink(json);
 	}
 
 	@DataProvider(name = "testValidJson")

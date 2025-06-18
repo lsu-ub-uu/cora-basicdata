@@ -21,6 +21,7 @@ package se.uu.ub.cora.basicdata.converter.datatojson;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 
+import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,7 +38,7 @@ public class DataResourceLinkToJsonConverterTest {
 	DataResourceLinkToJsonConverter converter;
 	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
-	Optional<String> recordURL;
+	Optional<String> baseURL;
 	DataResourceLinkSpy dataResourceLink;
 
 	@BeforeMethod
@@ -51,26 +52,47 @@ public class DataResourceLinkToJsonConverterTest {
 
 	private void constructWithRecordUrl() {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "master");
-		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getMimeType",
-				() -> "application/octet-stream");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getType", () -> "someType");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
+		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "image/png");
 
-		recordURL = Optional.of("https://somesystem.org/rest/records/someRecordType/someRecordId");
+		baseURL = Optional.of("https://somesystem.org/rest/records");
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 						converterFactory, new OrgJsonBuilderFactoryAdapter(), dataResourceLink,
-						recordURL);
+						baseURL);
 	}
 
 	@Test
 	public void testToJson() {
 		String json = converter.toJson();
+		String jsonCompacted = converter.toJsonCompactFormat();
 
 		String expectedJson = """
 				{
-				    "name": "master",
-				    "mimeType": "application/octet-stream"
+				    "children": [
+				        {
+				            "name": "linkedRecordType",
+				            "value": "someType"
+				        },
+				        {
+				            "name": "linkedRecordId",
+				            "value": "someId"
+				        },
+				        {
+				            "name": "mimeType",
+				            "value": "image/png"
+				        }
+				    ],
+				    "name": "master"
 				}""";
 		assertEquals(json, expectedJson);
+		assertEquals(jsonCompacted, toCompactFormat(expectedJson));
+	}
+
+	private String toCompactFormat(String json) {
+		return json.replaceAll("\\s+", "");
+
 	}
 
 	@Test
@@ -79,13 +101,28 @@ public class DataResourceLinkToJsonConverterTest {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "image/jpeg");
 
 		String json = converter.toJson();
+		String jsonCompacted = converter.toJsonCompactFormat();
 
 		String expectedJson = """
 				{
-				    "name": "thumbnail",
-				    "mimeType": "image/jpeg"
+				    "children": [
+				        {
+				            "name": "linkedRecordType",
+				            "value": "someType"
+				        },
+				        {
+				            "name": "linkedRecordId",
+				            "value": "someId"
+				        },
+				        {
+				            "name": "mimeType",
+				            "value": "image/jpeg"
+				        }
+				    ],
+				    "name": "thumbnail"
 				}""";
 		assertEquals(json, expectedJson);
+		assertEquals(jsonCompacted, toCompactFormat(expectedJson));
 	}
 
 	@Test
@@ -97,17 +134,32 @@ public class DataResourceLinkToJsonConverterTest {
 				() -> Set.of(attr01, attr02));
 
 		String json = converter.toJson();
+		String jsonCompacted = converter.toJsonCompactFormat();
 
 		String expectedJson = """
 				{
+				    "children": [
+				        {
+				            "name": "linkedRecordType",
+				            "value": "someType"
+				        },
+				        {
+				            "name": "linkedRecordId",
+				            "value": "someId"
+				        },
+				        {
+				            "name": "mimeType",
+				            "value": "image/png"
+				        }
+				    ],
 				    "name": "master",
 				    "attributes": {
 				        "atribute01": "value01",
 				        "atribute02": "value02"
-				    },
-				    "mimeType": "application/octet-stream"
+				    }
 				}""";
 		assertEquals(json, expectedJson);
+		assertEquals(jsonCompacted, toCompactFormat(expectedJson));
 	}
 
 	private DataAttributeSpy createAttributeUsingNameInDataAndValue(String nameInData,
@@ -124,36 +176,29 @@ public class DataResourceLinkToJsonConverterTest {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "1");
 
 		String json = converter.toJson();
+		String jsonCompacted = converter.toJsonCompactFormat();
 
 		String expectedJson = """
 				{
 				    "repeatId": "1",
-				    "name": "master",
-				    "mimeType": "application/octet-stream"
+				    "children": [
+				        {
+				            "name": "linkedRecordType",
+				            "value": "someType"
+				        },
+				        {
+				            "name": "linkedRecordId",
+				            "value": "someId"
+				        },
+				        {
+				            "name": "mimeType",
+				            "value": "image/png"
+				        }
+				    ],
+				    "name": "master"
 				}""";
 		assertEquals(json, expectedJson);
-	}
-
-	@Test
-	public void testToJsonCompactFormatWithoutRepeatId() {
-		String json = converter.toJsonCompactFormat();
-
-		String expectedJson = """
-				{"name":"master","mimeType":"application/octet-stream"}""";
-
-		assertEquals(json, expectedJson);
-	}
-
-	@Test
-	public void testToJsonCompactFormatWithRepeatId() {
-		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasRepeatId", () -> true);
-		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getRepeatId", () -> "1");
-
-		String json = converter.toJsonCompactFormat();
-
-		String expectedJson = """
-				{"repeatId":"1","name":"master","mimeType":"application/octet-stream"}""";
-		assertEquals(json, expectedJson);
+		assertEquals(jsonCompacted, toCompactFormat(expectedJson));
 	}
 
 	@Test
@@ -167,7 +212,7 @@ public class DataResourceLinkToJsonConverterTest {
 	public void testNoActions() {
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
-						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
+						converterFactory, jsonBuilderFactorySpy, dataResourceLink, baseURL);
 
 		converter.toJsonObjectBuilder();
 
@@ -188,7 +233,7 @@ public class DataResourceLinkToJsonConverterTest {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
-						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
+						converterFactory, jsonBuilderFactorySpy, dataResourceLink, baseURL);
 
 		converter.toJsonObjectBuilder();
 
@@ -199,7 +244,7 @@ public class DataResourceLinkToJsonConverterTest {
 	private void assertActionLinksBuilderAddedToMainBuilder() {
 		JsonObjectBuilderSpy mainBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
 				.getReturnValue("createObjectBuilder", 0);
-		JsonObjectBuilderSpy actionLinksBuilderSpy = getActionsBuilder();
+		JsonObjectBuilderSpy actionLinksBuilderSpy = getJsonBuilderForActionLinks();
 
 		mainBuilderSpy.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "actionLinks",
 				actionLinksBuilderSpy);
@@ -210,29 +255,42 @@ public class DataResourceLinkToJsonConverterTest {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("hasReadAction", () -> true);
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
-						converterFactory, jsonBuilderFactorySpy, dataResourceLink, recordURL);
+						converterFactory, jsonBuilderFactorySpy, dataResourceLink, baseURL);
 
 		converter.toJsonObjectBuilder();
 
-		JsonObjectBuilderSpy actionLinksBuilderSpy = getActionsBuilder();
-		JsonObjectBuilderSpy internalLinkBuilderSpy = (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
-				.getReturnValue("createObjectBuilder", 2);
-		actionLinksBuilderSpy.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "read",
-				internalLinkBuilderSpy);
-
-		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 0, "rel", "read");
-		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 1, "url",
-				recordURL.get() + "/" + dataResourceLink.getNameInData());
-		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 2, "requestMethod", "GET");
-		String mimeType = (String) dataResourceLink.MCR.getReturnValue("getMimeType", 0);
-		internalLinkBuilderSpy.MCR.assertParameters("addKeyString", 3, "accept", mimeType);
-		internalLinkBuilderSpy.MCR.assertNumberOfCallsToMethod("addKeyString", 4);
+		JsonObjectBuilderSpy jsonBuilderActionLinks = getJsonBuilderForActionLinks();
+		JsonObjectBuilderSpy jsonBuilderActionLinksFields = getJsonBuilderForActionLinksFields();
+		jsonBuilderActionLinks.MCR.assertParameters("addKeyJsonObjectBuilder", 0, "read",
+				jsonBuilderActionLinksFields);
+		assertActionLinkFields(jsonBuilderActionLinksFields);
 
 	}
 
-	private JsonObjectBuilderSpy getActionsBuilder() {
+	private void assertActionLinkFields(JsonObjectBuilderSpy jsonBuilderActionLinksFields) {
+		jsonBuilderActionLinksFields.MCR.assertParameters("addKeyString", 0, "rel", "read");
+		jsonBuilderActionLinksFields.MCR.assertParameters("addKeyString", 1, "url",
+				generateURL("someType", "someId", dataResourceLink.getNameInData()));
+		jsonBuilderActionLinksFields.MCR.assertParameters("addKeyString", 2, "requestMethod",
+				"GET");
+		String mimeType = (String) dataResourceLink.MCR.getReturnValue("getMimeType", 0);
+		jsonBuilderActionLinksFields.MCR.assertParameters("addKeyString", 3, "accept", mimeType);
+		jsonBuilderActionLinksFields.MCR.assertNumberOfCallsToMethod("addKeyString", 4);
+	}
+
+	private String generateURL(String recordType, String recordId, String nameInData) {
+		return MessageFormat.format("{0}/{1}/{2}/{3}", baseURL.get(), recordType, recordId,
+				nameInData);
+	}
+
+	private JsonObjectBuilderSpy getJsonBuilderForActionLinksFields() {
 		return (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
-				.getReturnValue("createObjectBuilder", 1);
+				.getReturnValue("createObjectBuilder", 5);
+	}
+
+	private JsonObjectBuilderSpy getJsonBuilderForActionLinks() {
+		return (JsonObjectBuilderSpy) jsonBuilderFactorySpy.MCR
+				.getReturnValue("createObjectBuilder", 4);
 	}
 
 	@Test
@@ -241,21 +299,36 @@ public class DataResourceLinkToJsonConverterTest {
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 						converterFactory, new OrgJsonBuilderFactoryAdapter(), dataResourceLink,
-						recordURL);
+						baseURL);
 
 		String json = converter.toJson();
+		String jsonCompacted = converter.toJsonCompactFormat();
 
-		String excpectedJson = """
+		String expectedJson = """
 				{
+				    "children": [
+				        {
+				            "name": "linkedRecordType",
+				            "value": "someType"
+				        },
+				        {
+				            "name": "linkedRecordId",
+				            "value": "someId"
+				        },
+				        {
+				            "name": "mimeType",
+				            "value": "image/png"
+				        }
+				    ],
 				    "actionLinks": {"read": {
 				        "requestMethod": "GET",
 				        "rel": "read",
-				        "url": "https://somesystem.org/rest/records/someRecordType/someRecordId/master",
-				        "accept": "application/octet-stream"
+				        "url": "https://somesystem.org/rest/records/someType/someId/master",
+				        "accept": "image/png"
 				    }},
-				    "name": "master",
-				    "mimeType": "application/octet-stream"
+				    "name": "master"
 				}""";
-		assertEquals(json, excpectedJson);
+		assertEquals(json, expectedJson);
+		assertEquals(jsonCompacted, toCompactFormat(expectedJson));
 	}
 }
