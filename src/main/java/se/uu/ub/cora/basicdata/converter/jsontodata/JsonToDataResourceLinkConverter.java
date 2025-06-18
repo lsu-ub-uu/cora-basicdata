@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.basicdata.converter.jsontodata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import se.uu.ub.cora.json.parser.JsonValue;
 
 public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 
+	private static final int MAX_NUMBER_OF_FIELDS = 5;
+	private static final int MIN_NUMBER_OF_FIELDS = 4;
 	private static final String CHILDREN = "children";
 	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
@@ -52,25 +55,24 @@ public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 	@Override
 	public Convertible toInstance() {
 		Map<String, String> fields = validateJsonAndCollectFields();
-		CoraDataResourceLink resourceLink = createResourceLink(fields);
-		// possiblySetRepeatId(resourceLink);
-		return resourceLink;
+		return createResourceLink(fields);
 	}
 
-	private void validateJsonStructure() {
+	private Map<String, String> validateJsonAndCollectFields() {
+		validateMaxNumberOfJsonObjects();
+		Map<String, String> fields = tryCollectResourceLinksFields();
+		validateFields(fields);
+		return fields;
+	}
+
+	private void validateMaxNumberOfJsonObjects() {
 		if (validateJsonKeys()) {
 			throw new JsonParseException(PARSING_ERROR_MSG);
 		}
 	}
 
 	private boolean validateJsonKeys() {
-		return exceedeFieldsRepeatIdExists() || exceedeFieldsRepeatIdNotExists()
-				|| nameAndMimeTypeNotExists();
-	}
-
-	private boolean exceedeFieldsRepeatIdNotExists() {
-		return !repeatIdExists()
-				&& resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITHOUT_REPEAT_ID;
+		return exceedeFieldsRepeatIdExists() || exceedeFieldsRepeatIdNotExists();
 	}
 
 	private boolean exceedeFieldsRepeatIdExists() {
@@ -78,21 +80,31 @@ public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 				&& resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITH_REPEAT_ID;
 	}
 
-	private Map<String, String> validateJsonAndCollectFields() {
-		validateJsonStructure();
-		Map<String, String> fields = collectResourceLinksFields();
-		validateChildren(fields);
-		return fields;
+	private boolean exceedeFieldsRepeatIdNotExists() {
+		return !repeatIdExists()
+				&& resourceLinkAsJson.keySet().size() > MAX_JSON_KEYS_WITHOUT_REPEAT_ID;
+	}
+
+	private Map<String, String> tryCollectResourceLinksFields() {
+		try {
+			return collectResourceLinksFields();
+		} catch (JsonParseException e) {
+			throw new JsonParseException(PARSING_ERROR_MSG);
+		}
 	}
 
 	private Map<String, String> collectResourceLinksFields() {
 		Map<String, String> fields = new HashMap<>();
 		fields.put(NAME, getValueAsStringFromJsonObject(resourceLinkAsJson, NAME));
+		possiblyPutRepeatId(fields);
+		fields.putAll(readChildren());
+		return fields;
+	}
+
+	private void possiblyPutRepeatId(Map<String, String> fields) {
 		if (repeatIdExists()) {
 			fields.put(REPEAT_ID, getValueAsStringFromJsonObject(resourceLinkAsJson, REPEAT_ID));
 		}
-		fields.putAll(readChildren());
-		return fields;
 	}
 
 	private Map<String, String> readChildren() {
@@ -111,36 +123,48 @@ public class JsonToDataResourceLinkConverter implements JsonToDataConverter {
 		var resourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType(
 				fields.get(NAME), fields.get(LINKED_RECORD_TYPE), fields.get(LINKED_RECORD_ID),
 				fields.get(MIME_TYPE));
-		if (fields.containsKey(REPEAT_ID)) {
-			resourceLink.setRepeatId(fields.get(REPEAT_ID));
-		}
+		possiblyAddRepeatIdToResourceLink(fields, resourceLink);
 		return resourceLink;
 	}
 
-	// TODO. Fix that shitty code below
-	private void validateChildren(Map<String, String> fields) {
-		if (fields.size() < 4 || fields.size() > 5) {
+	private void possiblyAddRepeatIdToResourceLink(Map<String, String> fields,
+			CoraDataResourceLink resourceLink) {
+		if (fields.containsKey(REPEAT_ID)) {
+			resourceLink.setRepeatId(fields.get(REPEAT_ID));
+		}
+	}
+
+	private void validateFields(Map<String, String> fields) {
+		if (minOrMaxNumberOfFieldsCollectedNotAsExpected(fields)) {
 			throw new JsonParseException(PARSING_ERROR_MSG);
 		}
-		if (fields.size() == 4) {
-			for (String key : List.of(NAME, LINKED_RECORD_TYPE, LINKED_RECORD_ID, MIME_TYPE)) {
-				if (!fields.containsKey(key)) {
-					throw new JsonParseException(PARSING_ERROR_MSG);
-				}
-			}
-		}
-		if (fields.size() == 5) {
-			for (String key : List.of(NAME, LINKED_RECORD_TYPE, LINKED_RECORD_ID, MIME_TYPE,
-					REPEAT_ID)) {
-				if (!fields.containsKey(key)) {
-					throw new JsonParseException(PARSING_ERROR_MSG);
-				}
+		validateAllExpectedFieldsExists(fields);
+	}
+
+	private void validateAllExpectedFieldsExists(Map<String, String> fields) {
+		List<String> expectedFields = generateExpectedFields(fields);
+		for (String key : expectedFields) {
+			if (!fields.containsKey(key)) {
+				throw new JsonParseException(PARSING_ERROR_MSG);
 			}
 		}
 	}
 
-	private boolean nameAndMimeTypeNotExists() {
-		return !resourceLinkAsJson.containsKey(NAME) || !resourceLinkAsJson.containsKey(CHILDREN);
+	private List<String> generateExpectedFields(Map<String, String> fields) {
+		List<String> expectedFields = new ArrayList<>(
+				List.of(NAME, LINKED_RECORD_TYPE, LINKED_RECORD_ID, MIME_TYPE));
+		if (allFieldsIncludingRepeatId(fields)) {
+			expectedFields.add(REPEAT_ID);
+		}
+		return expectedFields;
+	}
+
+	private boolean allFieldsIncludingRepeatId(Map<String, String> fields) {
+		return fields.size() == MAX_NUMBER_OF_FIELDS;
+	}
+
+	private boolean minOrMaxNumberOfFieldsCollectedNotAsExpected(Map<String, String> fields) {
+		return fields.size() < MIN_NUMBER_OF_FIELDS || fields.size() > MAX_NUMBER_OF_FIELDS;
 	}
 
 	private boolean repeatIdExists() {

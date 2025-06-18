@@ -27,9 +27,9 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.basicdata.data.spy.DataResourceLinkSpy;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.spies.DataAttributeSpy;
+import se.uu.ub.cora.data.spies.DataResourceLinkSpy;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataResourceLinkToJsonConverterTest {
@@ -38,7 +38,7 @@ public class DataResourceLinkToJsonConverterTest {
 	DataToJsonConverterFactory converterFactory;
 	JsonBuilderFactorySpy jsonBuilderFactorySpy;
 	Optional<String> recordURL;
-	private DataResourceLinkSpy dataResourceLink;
+	DataResourceLinkSpy dataResourceLink;
 
 	@BeforeMethod
 	public void beforeMethod() {

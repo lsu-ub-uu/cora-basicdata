@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, 2023 Uppsala University Library
+ * Copyright 2019, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -36,7 +36,7 @@ public class CoraDataResourceLinkCopierTest {
 	@BeforeMethod
 	public void setUp() {
 		originalResourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType("master",
-				null, null, "someMimeType");
+				"someType", "somId", "someMimeType");
 		dataResourceLinkCopier = new CoraDataResourceLinkCopier(originalResourceLink);
 	}
 
@@ -53,6 +53,9 @@ public class CoraDataResourceLinkCopierTest {
 		CoraDataResourceLink resourceLinkCopy = (CoraDataResourceLink) dataResourceLinkCopier
 				.copy();
 		assertEquals(resourceLinkCopy.getNameInData(), originalResourceLink.getNameInData());
+		assertEquals(resourceLinkCopy.getType(), originalResourceLink.getType());
+		assertEquals(resourceLinkCopy.getId(), originalResourceLink.getId());
+		assertEquals(resourceLinkCopy.getMimeType(), originalResourceLink.getMimeType());
 		assertEquals(resourceLinkCopy.getMimeType(), originalResourceLink.getMimeType());
 	}
 
@@ -71,32 +74,4 @@ public class CoraDataResourceLinkCopierTest {
 
 		assertEquals(copiedResourceLink.getRepeatId(), originalResourceLink.getRepeatId());
 	}
-
-	// @Test
-	// public void testCopyDataAssertNoAttributes() {
-	// CoraDataResourceLink dataGroupCopy = (CoraDataResourceLink) dataResourceLinkCopier.copy();
-	// assertEquals(dataGroupCopy.getAttributes().size(), 0);
-	// }
-	//
-	// @Test
-	// public void testCopyDataGroupWithOneAttribute() {
-	// originalResourceLink.addAttributeByIdWithValue("type", "someTypeAttribute");
-	// CoraDataResourceLink dataGroupCopy = (CoraDataResourceLink) dataResourceLinkCopier.copy();
-	// assertEquals(dataGroupCopy.getAttribute("type").getValue(),
-	// originalResourceLink.getAttribute("type").getValue());
-	// assertEquals(dataGroupCopy.getAttributes().size(), 1);
-	// }
-	//
-	// @Test
-	// public void testCopyDataGroupWithTwoAttributes() {
-	// originalResourceLink.addAttributeByIdWithValue("type", "someTypeAttribute");
-	// originalResourceLink.addAttributeByIdWithValue("otherAttribute", "someOtherAttribute");
-	// CoraDataResourceLink dataGroupCopy = (CoraDataResourceLink) dataResourceLinkCopier.copy();
-	// assertEquals(dataGroupCopy.getAttribute("type").getValue(),
-	// originalResourceLink.getAttribute("type").getValue());
-	//
-	// assertEquals(dataGroupCopy.getAttribute("otherAttribute").getValue(),
-	// originalResourceLink.getAttribute("otherAttribute").getValue());
-	// assertEquals(dataGroupCopy.getAttributes().size(), 2);
-	// }
 }
