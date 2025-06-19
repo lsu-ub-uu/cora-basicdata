@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -76,8 +77,8 @@ public class BasicDataToJsonConverterFactoryTest {
 		dataAttribute = CoraDataAttribute.withNameInDataAndValue("attributeNameInData",
 				"attributeValue");
 		dataRecordLink = CoraDataRecordLink.withNameInData("recordLinkNameInData");
-		dataResourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType("recordLinkNameInData",
-				null, null, "someMimeType");
+		dataResourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType(
+				"recordLinkNameInData", null, null, "someMimeType");
 	}
 
 	@Test
@@ -244,6 +245,7 @@ public class BasicDataToJsonConverterFactoryTest {
 
 	@Test
 	public void testDataResourceLinkWithUrl() throws Exception {
+		fail("recordUrl must not have type or id, it must be included in ResourceLink");
 		DataResourceLinkToJsonConverter converter = (DataResourceLinkToJsonConverter) converterFactory
 				.factorUsingBaseUrlAndRecordUrlAndConvertible(BASE_URL, recordUrl,
 						dataResourceLink);

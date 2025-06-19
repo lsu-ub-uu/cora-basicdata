@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2022 Uppsala University Library
+ * Copyright 2015, 2022, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -34,6 +34,7 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	private static final int NUM_OF_RECORDLINK_CHILDREN = 2;
 	private static final int NUM_OF_RECORDLINK_CHILDREN_ONE_OPTIONAL = 3;
 	private static final int MAX_NUM_OF_RECORDLINK_CHILDREN = 4;
+	private static final int NUM_OF_RESOURCELINK_CHILDREN = 3;
 
 	@Override
 	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
@@ -41,44 +42,58 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 			throw new JsonParseException("Json value is not an object, can not convert");
 		}
 		JsonObject jsonObject = (JsonObject) jsonValue;
-
-		if (isGroup(jsonObject)) {
-			removePossibleActionLinks(jsonObject);
-			return createConverterForGroupOrLink(jsonObject);
+		if (hasChildren(jsonObject)) {
+			return determineElementWithChildrenAndReturnConverter(jsonObject);
 		}
-		if (isAtomicData(jsonObject)) {
+		if (isAtomic(jsonObject)) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
-		}
-		if (isResourceLink(jsonObject)) {
-			removePossibleActionLinks(jsonObject);
-			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
 
-	private JsonToDataConverter createConverterForGroupOrLink(JsonObject jsonObject) {
+	private boolean hasChildren(JsonObject jsonObject) {
+		return jsonObject.containsKey("children");
+	}
+
+	private JsonToDataConverter determineElementWithChildrenAndReturnConverter(
+			JsonObject jsonObject) {
 		List<String> foundNames = extractChildNames(jsonObject);
-		if (isRecordLink(foundNames)) {
-			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
+		if (isResourceLink(foundNames)) {
+			return getResourceLinkConverter(jsonObject);
+		} else if (isRecordLink(foundNames)) {
+			return getRecordLinkConverter(jsonObject);
+		} else {
+			return JsonToDataGroupConverter.forJsonObject(jsonObject);
 		}
-		return JsonToDataGroupConverter.forJsonObject(jsonObject);
+	}
+
+	private JsonToDataConverter getRecordLinkConverter(JsonObject jsonObject) {
+		removePossibleActionLinks(jsonObject);
+		return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
+	}
+
+	private JsonToDataConverter getResourceLinkConverter(JsonObject jsonObject) {
+		removePossibleActionLinks(jsonObject);
+		return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
+	}
+
+	private boolean isResourceLink(List<String> foundNames) {
+		return foundNames.size() == NUM_OF_RESOURCELINK_CHILDREN
+				&& foundNames.contains("linkedRecordType") && foundNames.contains("linkedRecordId")
+				&& foundNames.contains("mimeType");
 	}
 
 	private void removePossibleActionLinks(JsonObject jsonObject) {
 		jsonObject.removeKey("actionLinks");
 	}
 
-	private boolean isResourceLink(JsonObject jsonObject) {
-		return jsonObject.containsKey("name") && jsonObject.containsKey("mimeType");
-	}
-
 	private boolean isRecordLink(List<String> foundNames) {
-		return correctChildrenForLink(foundNames)
+		return correctChildrenForRecordLink(foundNames)
 				|| correctChildrenForLinkWithPathAndRepeatId(foundNames)
 				|| correctChildrenForLinkWithPath(foundNames);
 	}
 
-	private boolean correctChildrenForLink(List<String> foundNames) {
+	private boolean correctChildrenForRecordLink(List<String> foundNames) {
 		return foundNames.size() == NUM_OF_RECORDLINK_CHILDREN
 				&& foundNames.contains("linkedRecordType") && foundNames.contains("linkedRecordId");
 	}
@@ -108,12 +123,8 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		return child.getValueAsJsonString("name").getStringValue();
 	}
 
-	private boolean isAtomicData(JsonObject jsonObject) {
+	private boolean isAtomic(JsonObject jsonObject) {
 		return jsonObject.containsKey("value");
-	}
-
-	private boolean isGroup(JsonObject jsonObject) {
-		return jsonObject.containsKey("children");
 	}
 
 }

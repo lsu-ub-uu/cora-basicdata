@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -90,18 +90,9 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
-	public void testFactorOnJsonStringRemovesActionLinksFromResourceLinks() {
-		String json = "{\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"url\":\"https://cora.epc.ub.uu.se/systemone/rest/record/binary/binary:8294254190660514/thumbnail\",\"accept\":\"image/jpeg\"}},\"name\":\"thumbnail\",\"mimeType\":\"image/jpeg\"}";
-		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataResourceLinkConverter jsonToDataConverter = (JsonToDataResourceLinkConverter) jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		JsonObject converterJsonObject = jsonToDataConverter.onlyForTestGetJsonObject();
-		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
-	}
-
-	@Test
 	public void testFactorOnJsonStringNoLinkedPathFactorsDataRecordLink() {
 		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"type\"}";
+
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -186,6 +177,16 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
+	public void testFactorOnJsonToDataResourceLink() {
+		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"soundBinary:18269669168741\"},{\"name\":\"NOTfilename\",\"value\":\"adele.png\"},{\"name\":\"NOTfilesize\",\"value\":\"8\"},{\"name\":\"NOTmimeType\",\"value\":\"application/octet-stream\"}],\"name\":\"master\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+		assertFalse(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
+	}
+
+	@Test
 	public void testFactorOnJsonStringOnlyStreamIdFactorsGroupConverter() {
 		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"soundBinary:18269669168741\"},{\"name\":\"NOTfilename\",\"value\":\"adele.png\"},{\"name\":\"NOTfilesize\",\"value\":\"8\"},{\"name\":\"NOTmimeType\",\"value\":\"application/octet-stream\"}],\"name\":\"master\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
@@ -230,15 +231,78 @@ public class JsonToDataConverterFactoryTest {
 		String json = """
 				{
 				  "name": "master",
-				  "mimeType": "application/vnd.cora.record+json",
-				  "repeatId":"0"
-				}
-				""";
+				  "children": [
+				    {"name": "linkedRecordType", "value": "someType"                  },
+				    {"name": "linkedRecordId",   "value": "someId"},
+				    {"name": "mimeType",           "value": "image/png"               }
+				  ],
+				  "actionLinks": {
+				    "read": {
+				      "requestMethod": "GET",
+				      "rel": "read",
+				      "url": "https://cora.epc.ub.uu.se/systemone/rest/record/someType/someId/master",
+				      "accept": "image/png"
+				    }
+				  }
+				}""";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 
 		assertTrue(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringCompleteSetupFactorsDataResourceLinkAndRepeatId() {
+		String json = """
+				{
+				  "name": "master",
+				  "children": [
+				    {"name": "linkedRecordType", "value": "someType"                  },
+				    {"name": "linkedRecordId",   "value": "someId"},
+				    {"name": "mimeType",           "value": "image/png"               }
+				  ],
+				  "repeatId":"0",
+				  "actionLinks": {
+				    "read": {
+				      "requestMethod": "GET",
+				      "rel": "read",
+				      "url": "https://cora.epc.ub.uu.se/systemone/rest/record/someType/someId/master",
+				      "accept": "image/png"
+				    }
+				  }
+				}""";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+
+		assertTrue(jsonToDataConverter instanceof JsonToDataResourceLinkConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringRemovesActionLinksFromResourceLinks() {
+		String json = """
+				{
+				  "name": "master",
+				  "children": [
+				    {"name": "linkedRecordType", "value": "someType"                  },
+				    {"name": "linkedRecordId",   "value": "someId"},
+				    {"name": "mimeType",           "value": "image/png"               }
+				  ],
+				  "actionLinks": {
+				    "read": {
+				      "requestMethod": "GET",
+				      "rel": "read",
+				      "url": "https://cora.epc.ub.uu.se/systemone/rest/record/someType/someId/master",
+				      "accept": "image/png"
+				    }
+				  }
+				}""";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataResourceLinkConverter jsonToDataConverter = (JsonToDataResourceLinkConverter) jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		JsonObject converterJsonObject = jsonToDataConverter.onlyForTestGetJsonObject();
+		assertFalse(converterJsonObject.toJsonFormattedString().contains("actionLinks"));
 	}
 
 	@Test

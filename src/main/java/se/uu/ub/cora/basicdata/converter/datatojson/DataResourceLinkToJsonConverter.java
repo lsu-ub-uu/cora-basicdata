@@ -79,6 +79,14 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 		jsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
 	}
 
+	private Map<String, String> collectResourceLinkFields() {
+		Map<String, String> childrenToBe = new HashMap<>();
+		childrenToBe.put("linkedRecordType", resourceLink.getType());
+		childrenToBe.put("linkedRecordId", resourceLink.getId());
+		childrenToBe.put("mimeType", resourceLink.getMimeType());
+		return childrenToBe;
+	}
+
 	private JsonArrayBuilder createJsonChildren(Map<String, String> childrenToBe) {
 		JsonArrayBuilder childrenJsonArray = jsonBuilderFactory.createArrayBuilder();
 		for (Entry<String, String> child : childrenToBe.entrySet()) {
@@ -93,14 +101,6 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 		child.addKeyString("name", name);
 		child.addKeyString("value", value);
 		return child;
-	}
-
-	private Map<String, String> collectResourceLinkFields() {
-		Map<String, String> childrenToBe = new HashMap<>();
-		childrenToBe.put("linkedRecordType", resourceLink.getType());
-		childrenToBe.put("linkedRecordId", resourceLink.getId());
-		childrenToBe.put("mimeType", resourceLink.getMimeType());
-		return childrenToBe;
 	}
 
 	private void possiblyAddAttributes() {
