@@ -137,11 +137,11 @@ public class DataRecordToJsonConverterTest {
 
 		converterFactory.MCR.assertMethodNotCalled("factorUsingConvertible");
 
-		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndRecordUrlAndConvertible", 0,
-				baseUrl, dataRecord.getDataRecordGroup());
+		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0, baseUrl,
+				dataRecord.getDataRecordGroup());
 
 		DataToJsonConverterSpy dataGroupConverter = (DataToJsonConverterSpy) converterFactory.MCR
-				.getReturnValue("factorUsingBaseUrlAndRecordUrlAndConvertible", 0);
+				.getReturnValue("factorUsingBaseUrlAndConvertible", 0);
 		assertKeyDataAddedToRecordBuilderIsBuilderFromDataGroupConverter(dataGroupConverter);
 
 		JsonObjectBuilderSpy recordBuilder = getRecordBuilderFromSpy();
