@@ -154,7 +154,7 @@ public class CoraDataFactoryTest {
 	@Test
 	public void testFactorResourceLinkUsingNameInData() {
 		DataResourceLink factoredDataResourceLink = dataFactory
-				.factorResourceLinkUsingNameInDataAndMimeType(nameInData, recordType, recordId,
+				.factorResourceLinkUsingNameInDataAndTypeAndIdAndMimeType(nameInData, recordType, recordId,
 						mimeType);
 		assertTrue(factoredDataResourceLink instanceof CoraDataResourceLink);
 		assertEquals(factoredDataResourceLink.getNameInData(), nameInData);
