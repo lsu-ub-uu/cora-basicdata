@@ -56,7 +56,7 @@ public class DataResourceLinkToJsonConverterTest {
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
 		dataResourceLink.MRV.setDefaultReturnValuesSupplier("getMimeType", () -> "image/png");
 
-		baseURL = Optional.of("https://somesystem.org/rest/records");
+		baseURL = Optional.of("https://somesystem.org/rest/records/");
 		converter = DataResourceLinkToJsonConverter
 				.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 						converterFactory, new OrgJsonBuilderFactoryAdapter(), dataResourceLink,
@@ -279,7 +279,7 @@ public class DataResourceLinkToJsonConverterTest {
 	}
 
 	private String generateURL(String recordType, String recordId, String nameInData) {
-		return MessageFormat.format("{0}/{1}/{2}/{3}", baseURL.get(), recordType, recordId,
+		return MessageFormat.format("{0}{1}/{2}/{3}", baseURL.get(), recordType, recordId,
 				nameInData);
 	}
 

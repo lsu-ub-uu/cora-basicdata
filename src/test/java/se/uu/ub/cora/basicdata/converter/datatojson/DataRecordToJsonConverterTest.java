@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021, 2022 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2022, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -68,10 +68,10 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	private Optional<ExternalUrls> createExternalUrls() {
-		ExternalUrls externalUrls = new ExternalUrls();
-		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(iiifBaseUrl);
-		return Optional.of(externalUrls);
+		ExternalUrls externalUrlsTmp = new ExternalUrls();
+		externalUrlsTmp.setBaseUrl(baseUrl);
+		externalUrlsTmp.setIfffUrl(iiifBaseUrl);
+		return Optional.of(externalUrlsTmp);
 	}
 
 	private void createDataRecordToJsonConverter() {
@@ -82,14 +82,13 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConverterImplementsDataToJsonConverter() throws Exception {
+	public void testConverterImplementsDataToJsonConverter() {
 		createDataRecordToJsonConverter();
 		assertTrue(dataRecordToJsonConverter instanceof DataToJsonConverter);
 	}
 
 	@Test
-	public void testConverterFactoryUsedToCreateConverterForMainDataGroupNoBaseUrl()
-			throws Exception {
+	public void testConverterFactoryUsedToCreateConverterForMainDataGroupNoBaseUrl() {
 		dataRecordToJsonConverter = DataRecordToJsonConverter
 				.usingConverterFactoryAndActionsConverterAndBuilderFactoryAndExternalUrls(
 						dataRecord, converterFactory, actionsConverterSpy, builderFactory,
@@ -131,18 +130,15 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConverterFactoryUsedToCreateConverterForMainDataGroupWithBaseUrl()
-			throws Exception {
+	public void testConverterFactoryUsedToCreateConverterForMainDataGroupWithBaseUrl() {
 		createDataRecordToJsonConverter();
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
 
 		converterFactory.MCR.assertMethodNotCalled("factorUsingConvertible");
 
-		String recordUrl = baseUrl + dataRecord.getType() + "/" + dataRecord.getId();
-
 		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndRecordUrlAndConvertible", 0,
-				baseUrl, recordUrl, dataRecord.getDataRecordGroup());
+				baseUrl, dataRecord.getDataRecordGroup());
 
 		DataToJsonConverterSpy dataGroupConverter = (DataToJsonConverterSpy) converterFactory.MCR
 				.getReturnValue("factorUsingBaseUrlAndRecordUrlAndConvertible", 0);
@@ -156,12 +152,10 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithListOfReadPermissions() {
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasReadPermissions",
-				(Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasReadPermissions", () -> true);
 
 		Set<String> readPermissions = Set.of("readPermissionOne", "readPermissionTwo");
-		dataRecord.MRV.setDefaultReturnValuesSupplier("getReadPermissions",
-				(Supplier<Set<String>>) () -> readPermissions);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("getReadPermissions", () -> readPermissions);
 
 		createDataRecordToJsonConverter();
 
@@ -209,8 +203,7 @@ public class DataRecordToJsonConverterTest {
 	private Object getValueFromAParameter(JsonArrayBuilderSpy typePermissionBuilder, int i) {
 		Map<String, Object> parameters = typePermissionBuilder.MCR
 				.getParametersForMethodAndCallNumber("addString", i);
-		Object value = parameters.get("value");
-		return value;
+		return parameters.get("value");
 	}
 
 	private JsonArrayBuilderSpy getTypePermissionArrayBuilderFromSpy(int postitionOfTypes) {
@@ -224,12 +217,11 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithWritePermissions() {
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasWritePermissions",
-				(Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasWritePermissions", () -> true);
 
 		Set<String> writePermissions = Set.of("writePermissionOne", "writePermissionTwo");
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getWritePermissions",
-				(Supplier<Set<String>>) () -> writePermissions);
+				() -> writePermissions);
 
 		createDataRecordToJsonConverter();
 
@@ -239,10 +231,8 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithReadAndWritePermissions() {
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasReadPermissions",
-				(Supplier<Boolean>) () -> true);
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasWritePermissions",
-				(Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasReadPermissions", () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasWritePermissions", () -> true);
 
 		Set<String> readPermissions = Set.of("readPermissionOne", "readPermissionTwo");
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getReadPermissions",
@@ -303,7 +293,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConvertActionsNoActions() throws Exception {
+	public void testConvertActionsNoActions() {
 		createDataRecordToJsonConverter();
 
 		dataRecordToJsonConverter.toJsonObjectBuilder();
@@ -312,9 +302,9 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConvertActionsAllTypes() throws Exception {
+	public void testConvertActionsAllTypes() {
 		createDataRecordToJsonConverter();
-		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", (Supplier<Boolean>) () -> true);
+		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
 
 		addActionsToDataRecordSpy(dataRecord);
 
@@ -349,7 +339,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConvertSearchActionForRecordTypeAndSearchRecordId() throws Exception {
+	public void testConvertSearchActionForRecordTypeAndSearchRecordId() {
 		createDataRecordToJsonConverter();
 		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getType", () -> "recordType");
@@ -382,8 +372,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConvertSearchActionForRecordTypeAndSearchRecordIdOnlyForRecordType()
-			throws Exception {
+	public void testConvertSearchActionForRecordTypeAndSearchRecordIdOnlyForRecordType() {
 		createDataRecordToJsonConverter();
 		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getType", () -> "otherThanRecordType");
@@ -401,8 +390,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testConvertSearchActionForRecordTypeAndSearchRecordIdButNoSearchDefinedInDataGroup()
-			throws Exception {
+	public void testConvertSearchActionForRecordTypeAndSearchRecordIdButNoSearchDefinedInDataGroup() {
 		createDataRecordToJsonConverter();
 		dataRecord.MRV.setDefaultReturnValuesSupplier("hasActions", () -> true);
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getType", () -> "recordType");
@@ -413,7 +401,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testHasProtocolsIIIF() throws Exception {
+	public void testHasProtocolsIIIF() {
 		createDataRecordToJsonConverter();
 
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
@@ -454,7 +442,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testDoNotAddprotocolsIfDoNotExist() throws Exception {
+	public void testDoNotAddprotocolsIfDoNotExist() {
 		createDataRecordToJsonConverter();
 
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");
@@ -465,7 +453,7 @@ public class DataRecordToJsonConverterTest {
 	}
 
 	@Test
-	public void testProtocolsDifferentThanIIIFOtherProtocolsNotAdded() throws Exception {
+	public void testProtocolsDifferentThanIIIFOtherProtocolsNotAdded() {
 		createDataRecordToJsonConverter();
 
 		dataRecord.MRV.setDefaultReturnValuesSupplier("getId", () -> "someId");

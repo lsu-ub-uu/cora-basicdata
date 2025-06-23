@@ -45,9 +45,9 @@ public class DataToJsonConverterFactorySpy implements DataToJsonConverterFactory
 	}
 
 	@Override
-	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl, String recordUrl,
+	public DataToJsonConverter factorUsingBaseUrlAndConvertible(String baseUrl,
 			Convertible convertible) {
-		MCR.addCall("baseUrl", baseUrl, "recordUrl", recordUrl, "convertible", convertible);
+		MCR.addCall("baseUrl", baseUrl, "convertible", convertible);
 		DataToJsonConverterSpy converter = new DataToJsonConverterSpy();
 		MCR.addReturned(converter);
 		return converter;

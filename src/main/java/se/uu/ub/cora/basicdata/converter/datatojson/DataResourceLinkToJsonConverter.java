@@ -53,8 +53,8 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 
 	public static DataResourceLinkToJsonConverter usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 			DataToJsonConverterFactory converterFactory, JsonBuilderFactory factory,
-			DataResourceLink convertible, Optional<String> recordUrl) {
-		return new DataResourceLinkToJsonConverter(converterFactory, convertible, recordUrl,
+			DataResourceLink convertible, Optional<String> baseUrl) {
+		return new DataResourceLinkToJsonConverter(converterFactory, convertible, baseUrl,
 				factory);
 	}
 
@@ -149,7 +149,7 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 	}
 
 	private String generateURL(String recordType, String recordId, String nameInData) {
-		return MessageFormat.format("{0}/{1}/{2}/{3}", baseURL.get(), recordType, recordId,
+		return MessageFormat.format("{0}{1}/{2}/{3}", baseURL.get(), recordType, recordId,
 				nameInData);
 	}
 
@@ -171,7 +171,7 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 		return jsonBuilderFactory;
 	}
 
-	Optional<String> onlyForTestGetRecordUrl() {
+	Optional<String> onlyForTestGetBaseUrl() {
 		return baseURL;
 	}
 
