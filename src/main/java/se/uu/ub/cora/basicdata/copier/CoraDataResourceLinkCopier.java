@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, 2023 Uppsala University Library
+ * Copyright 2020, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -34,8 +34,9 @@ public class CoraDataResourceLinkCopier implements DataCopier {
 
 	@Override
 	public DataChild copy() {
-		resourceLinkCopy = CoraDataResourceLink.withNameInDataAndMimeType(
-				originalResourceLink.getNameInData(), originalResourceLink.getMimeType());
+		resourceLinkCopy = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType(
+				originalResourceLink.getNameInData(), originalResourceLink.getType(),
+				originalResourceLink.getId(), originalResourceLink.getMimeType());
 		possiblyCopyRepeatId();
 
 		return resourceLinkCopy;

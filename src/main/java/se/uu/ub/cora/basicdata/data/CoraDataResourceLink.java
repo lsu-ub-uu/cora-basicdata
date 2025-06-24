@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, 2016, 2023 Uppsala University Library
+ * Copyright 2015, 2016, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -32,32 +32,34 @@ import se.uu.ub.cora.data.DataResourceLink;
 
 public final class CoraDataResourceLink implements DataResourceLink {
 
-	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
-
 	private Set<DataAttribute> attributes = new HashSet<>();
 	private List<Action> actions = new ArrayList<>();
 	private String nameInData;
 	private String mimeType;
 	private String repeatId;
+	private String type;
+	private String id;
 
-	public static CoraDataResourceLink withNameInDataAndMimeType(String nameInData,
-			String mimeType) {
-		return new CoraDataResourceLink(nameInData, mimeType);
+	public static CoraDataResourceLink withNameInDataAndTypeAndIdAndMimeType(String nameInData,
+			String type, String id, String mimeType) {
+		return new CoraDataResourceLink(nameInData, type, id, mimeType);
 	}
 
-	private CoraDataResourceLink(String nameInData, String mimeType) {
+	private CoraDataResourceLink(String nameInData, String type, String id, String mimeType) {
 		this.nameInData = nameInData;
+		this.type = type;
+		this.id = id;
 		this.mimeType = mimeType;
 	}
 
 	@Override
-	public void addAction(Action action) {
-		actions.add(action);
+	public String getType() {
+		return type;
 	}
 
 	@Override
-	public boolean hasReadAction() {
-		return actions.contains(Action.READ);
+	public String getId() {
+		return id;
 	}
 
 	@Override
@@ -68,6 +70,16 @@ public final class CoraDataResourceLink implements DataResourceLink {
 	@Override
 	public String getMimeType() {
 		return mimeType;
+	}
+
+	@Override
+	public void addAction(Action action) {
+		actions.add(action);
+	}
+
+	@Override
+	public boolean hasReadAction() {
+		return actions.contains(Action.READ);
 	}
 
 	@Override
@@ -129,4 +141,5 @@ public final class CoraDataResourceLink implements DataResourceLink {
 		}
 		return Optional.empty();
 	}
+
 }

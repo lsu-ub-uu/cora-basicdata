@@ -67,7 +67,7 @@ public class CoraDataCopierFactoryTest {
 	@Test
 	public void testFactorDataResourceLinkCopier() {
 		CoraDataResourceLink resourceLink = CoraDataResourceLink
-				.withNameInDataAndMimeType("thumbnail", "image/jpeg");
+				.withNameInDataAndTypeAndIdAndMimeType("thumbnail", null, null, "image/jpeg");
 
 		DataCopierFactory dataCopierFactoryImp = new CoraDataCopierFactoryImp();
 		DataCopier dataCopier = dataCopierFactoryImp.factorForDataElement(resourceLink);

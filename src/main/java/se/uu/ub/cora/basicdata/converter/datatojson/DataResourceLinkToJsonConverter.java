@@ -18,12 +18,17 @@
  */
 package se.uu.ub.cora.basicdata.converter.datatojson;
 
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
@@ -31,65 +36,95 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 
 	private static final String GET = "GET";
 	private static final String READ = "read";
-	private DataResourceLink dataResourceLink;
-	private Optional<String> recordURL;
+	private DataResourceLink resourceLink;
+	private Optional<String> baseURL;
 	private DataToJsonConverterFactory converterFactory;
 	protected JsonBuilderFactory jsonBuilderFactory;
 	private JsonObjectBuilder jsonObjectBuilder;
 
 	private DataResourceLinkToJsonConverter(DataToJsonConverterFactory converterFactory,
-			DataResourceLink dataResourceLink, Optional<String> recordURL,
+			DataResourceLink dataResourceLink, Optional<String> baseURL,
 			JsonBuilderFactory jsonBuilderFactory) {
 		this.converterFactory = converterFactory;
-		this.dataResourceLink = dataResourceLink;
-		this.recordURL = recordURL;
+		this.resourceLink = dataResourceLink;
+		this.baseURL = baseURL;
 		this.jsonBuilderFactory = jsonBuilderFactory;
 	}
 
 	public static DataResourceLinkToJsonConverter usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(
 			DataToJsonConverterFactory converterFactory, JsonBuilderFactory factory,
-			DataResourceLink convertible, Optional<String> recordUrl) {
-		return new DataResourceLinkToJsonConverter(converterFactory, convertible, recordUrl,
+			DataResourceLink convertible, Optional<String> baseUrl) {
+		return new DataResourceLinkToJsonConverter(converterFactory, convertible, baseUrl,
 				factory);
 	}
 
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		jsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
-		addNameInDataAndMimeType();
+		addNameInData();
+		addChildren();
 		possiblyAddAttributes();
 		possiblyAddRepeatId();
 		possiblyAddActionLink();
 		return jsonObjectBuilder;
 	}
 
-	private void addNameInDataAndMimeType() {
-		jsonObjectBuilder.addKeyString("name", dataResourceLink.getNameInData());
-		jsonObjectBuilder.addKeyString("mimeType", dataResourceLink.getMimeType());
+	private void addNameInData() {
+		jsonObjectBuilder.addKeyString("name", resourceLink.getNameInData());
+	}
+
+	void addChildren() {
+		Map<String, String> childrenToBe = collectResourceLinkFields();
+		JsonArrayBuilder childrenArray = createJsonChildren(childrenToBe);
+		jsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
+	}
+
+	private Map<String, String> collectResourceLinkFields() {
+		Map<String, String> childrenToBe = new HashMap<>();
+		childrenToBe.put("linkedRecordType", resourceLink.getType());
+		childrenToBe.put("linkedRecordId", resourceLink.getId());
+		childrenToBe.put("mimeType", resourceLink.getMimeType());
+		return childrenToBe;
+	}
+
+	private JsonArrayBuilder createJsonChildren(Map<String, String> childrenToBe) {
+		JsonArrayBuilder childrenJsonArray = jsonBuilderFactory.createArrayBuilder();
+		for (Entry<String, String> child : childrenToBe.entrySet()) {
+			JsonObjectBuilder jsonChild = createChild(child.getKey(), child.getValue());
+			childrenJsonArray.addJsonObjectBuilder(jsonChild);
+		}
+		return childrenJsonArray;
+	}
+
+	private JsonObjectBuilder createChild(String name, String value) {
+		JsonObjectBuilder child = jsonBuilderFactory.createObjectBuilder();
+		child.addKeyString("name", name);
+		child.addKeyString("value", value);
+		return child;
 	}
 
 	private void possiblyAddAttributes() {
-		if (dataResourceLink.hasAttributes()) {
+		if (resourceLink.hasAttributes()) {
 			addAttributes();
 		}
 	}
 
 	private void addAttributes() {
 		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
-		for (DataAttribute attribute : dataResourceLink.getAttributes()) {
+		for (DataAttribute attribute : resourceLink.getAttributes()) {
 			attributes.addKeyString(attribute.getNameInData(), attribute.getValue());
 		}
 		jsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
 	}
 
 	private void possiblyAddRepeatId() {
-		if (dataResourceLink.hasRepeatId()) {
-			jsonObjectBuilder.addKeyString("repeatId", dataResourceLink.getRepeatId());
+		if (resourceLink.hasRepeatId()) {
+			jsonObjectBuilder.addKeyString("repeatId", resourceLink.getRepeatId());
 		}
 	}
 
 	private void possiblyAddActionLink() {
-		if (dataResourceLink.hasReadAction()) {
+		if (resourceLink.hasReadAction()) {
 			createReadActionLink();
 		}
 	}
@@ -102,14 +137,20 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 	}
 
 	private JsonObjectBuilder buildReadAction() {
-		String url = recordURL.get() + "/" + dataResourceLink.getNameInData();
-		String mimeType = dataResourceLink.getMimeType();
+		String url = generateURL(resourceLink.getType(), resourceLink.getId(),
+				resourceLink.getNameInData());
+		String mimeType = resourceLink.getMimeType();
 		JsonObjectBuilder readAction = jsonBuilderFactory.createObjectBuilder();
 		readAction.addKeyString("rel", READ);
 		readAction.addKeyString("url", url);
 		readAction.addKeyString("requestMethod", GET);
 		readAction.addKeyString("accept", mimeType);
 		return readAction;
+	}
+
+	private String generateURL(String recordType, String recordId, String nameInData) {
+		return MessageFormat.format("{0}{1}/{2}/{3}", baseURL.get(), recordType, recordId,
+				nameInData);
 	}
 
 	@Override
@@ -130,8 +171,8 @@ public class DataResourceLinkToJsonConverter implements DataToJsonConverter {
 		return jsonBuilderFactory;
 	}
 
-	Optional<String> onlyForTestGetRecordUrl() {
-		return recordURL;
+	Optional<String> onlyForTestGetBaseUrl() {
+		return baseURL;
 	}
 
 }

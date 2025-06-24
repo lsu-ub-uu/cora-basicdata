@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021, 2022, 2024 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2022, 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -83,10 +83,8 @@ public class DataRecordToJsonConverter implements DataToJsonConverter {
 
 	private DataToJsonConverter createConverterForMainDataGroup() {
 		if (actionLinksShouldBeCreated()) {
-			String recordUrl = externalUrls.get().getBaseUrl() + dataRecord.getType() + "/"
-					+ dataRecord.getId();
-			return converterFactory.factorUsingBaseUrlAndRecordUrlAndConvertible(
-					externalUrls.get().getBaseUrl(), recordUrl, dataRecord.getDataRecordGroup());
+			return converterFactory.factorUsingBaseUrlAndConvertible(
+					externalUrls.get().getBaseUrl(), dataRecord.getDataRecordGroup());
 		}
 		return converterFactory.factorUsingConvertible(dataRecord.getDataRecordGroup());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2021, 2023 Uppsala University Library
+ * Copyright 2015, 2019, 2021, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -37,7 +37,6 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 public class BasicDataToJsonConverterFactory implements DataToJsonConverterFactory {
 	JsonBuilderFactory builderFactory;
 	private Optional<ExternalUrls> externalUrls;
-	private Optional<String> recordUrl;
 
 	/**
 	 * withoutActionLinksUsingBuilderFactory will factor {@link DataToJsonConverter}s that does not
@@ -55,7 +54,6 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 	BasicDataToJsonConverterFactory(JsonBuilderFactory factory) {
 		this.builderFactory = factory;
 		externalUrls = Optional.empty();
-		recordUrl = Optional.empty();
 	}
 
 	@Override
@@ -91,18 +89,10 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 							externalUrls.get().getBaseUrl());
 		}
 
-		if (isDataResourceLinkAndHasRecordUrl(convertible)) {
-
+		if (isDataResourceLink(convertible)) {
 			return DataResourceLinkToJsonConverter
 					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
-							builderFactory, (DataResourceLink) convertible, recordUrl);
-		}
-
-		if (isDataResourceLinkAndHasNoRecordUrl(convertible)) {
-
-			return DataResourceLinkToJsonConverter
-					.usingConverterFactoryJsonBuilderFactoryAndDataResourceLinkAndRecordUrl(this,
-							builderFactory, (DataResourceLink) convertible, recordUrl);
+							builderFactory, (DataResourceLink) convertible, getBaseUrl());
 		}
 
 		if (isDataGroup(convertible)) {
@@ -115,6 +105,13 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 		}
 		return DataAttributeToJsonConverter.usingJsonBuilderFactoryAndDataAttribute(builderFactory,
 				(DataAttribute) convertible);
+	}
+
+	private Optional<String> getBaseUrl() {
+		if (existsBaseUrl()) {
+			return Optional.of(externalUrls.get().getBaseUrl());
+		}
+		return Optional.empty();
 	}
 
 	private boolean isDataList(Convertible convertible) {
@@ -133,17 +130,16 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 		return convertible instanceof DataGroup;
 	}
 
-	private boolean isDataResourceLinkAndHasRecordUrl(Convertible convertible) {
-		return (convertible instanceof DataResourceLink) && (recordUrl.isPresent());
-	}
-
-	private boolean isDataResourceLinkAndHasNoRecordUrl(Convertible convertible) {
-		return (convertible instanceof DataResourceLink) && (recordUrl.isEmpty());
+	private boolean isDataResourceLink(Convertible convertible) {
+		return (convertible instanceof DataResourceLink);
 	}
 
 	private boolean isDataRecordLinkAndHasBaseUrl(Convertible convertible) {
-		return externalUrls.isPresent() && externalUrls.get().hasBaseUrl()
-				&& isRecordLink(convertible);
+		return existsBaseUrl() && isRecordLink(convertible);
+	}
+
+	private boolean existsBaseUrl() {
+		return externalUrls.isPresent() && externalUrls.get().hasBaseUrl();
 	}
 
 	private boolean isRecordLink(Convertible convertible) {
@@ -158,12 +154,11 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 	}
 
 	@Override
-	public DataToJsonConverter factorUsingBaseUrlAndRecordUrlAndConvertible(String baseUrl,
-			String recordUrl, Convertible convertible) {
+	public DataToJsonConverter factorUsingBaseUrlAndConvertible(String baseUrl,
+			Convertible convertible) {
 		ExternalUrls tmpExternal = new ExternalUrls();
 		tmpExternal.setBaseUrl(baseUrl);
 		externalUrls = Optional.of(tmpExternal);
-		this.recordUrl = Optional.of(recordUrl);
 
 		return factorUsingConvertible(convertible);
 	}
@@ -172,7 +167,4 @@ public class BasicDataToJsonConverterFactory implements DataToJsonConverterFacto
 		return externalUrls;
 	}
 
-	public Optional<String> onlyForTestGetRecordUrl() {
-		return recordUrl;
-	}
 }

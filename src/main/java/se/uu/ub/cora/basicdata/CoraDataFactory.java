@@ -94,9 +94,10 @@ public class CoraDataFactory implements DataFactory {
 	}
 
 	@Override
-	public DataResourceLink factorResourceLinkUsingNameInDataAndMimeType(String nameInData,
-			String mimeType) {
-		return CoraDataResourceLink.withNameInDataAndMimeType(nameInData, mimeType);
+	public DataResourceLink factorResourceLinkUsingNameInDataAndTypeAndIdAndMimeType(String nameInData,
+			String recordType, String recordId, String mimeType) {
+		return CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType(nameInData, recordType,
+				recordId, mimeType);
 	}
 
 	@Override

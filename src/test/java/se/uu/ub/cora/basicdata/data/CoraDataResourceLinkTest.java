@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, 2016, 2023 Uppsala University Library
+ * Copyright 2015, 2016, 2023, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -37,15 +37,14 @@ import se.uu.ub.cora.data.DataResourceLink;
 
 public class CoraDataResourceLinkTest {
 
-	private static final String NOT_YET_IMPLEMENTED = "Not yet implemented.";
 	private static final String SOME_NAME_IN_DATA = "someNameInData";
 	private static final String SOME_MIME_TYPE = "someMimeType";
-	CoraDataResourceLink resourceLink;
+	DataResourceLink resourceLink;
 
 	@BeforeMethod
 	public void setUp() {
-		resourceLink = CoraDataResourceLink.withNameInDataAndMimeType(SOME_NAME_IN_DATA,
-				SOME_MIME_TYPE);
+		resourceLink = CoraDataResourceLink.withNameInDataAndTypeAndIdAndMimeType(SOME_NAME_IN_DATA,
+				"someType", "someId", SOME_MIME_TYPE);
 
 	}
 
@@ -55,6 +54,16 @@ public class CoraDataResourceLinkTest {
 		assertTrue(resourceLink instanceof DataResourceLink);
 		assertEquals(resourceLink.getNameInData(), SOME_NAME_IN_DATA);
 		assertEquals(resourceLink.getMimeType(), SOME_MIME_TYPE);
+	}
+
+	@Test
+	public void testGetType() {
+		assertEquals(resourceLink.getType(), "someType");
+	}
+
+	@Test
+	public void testGetId() {
+		assertEquals(resourceLink.getId(), "someId");
 	}
 
 	@Test
