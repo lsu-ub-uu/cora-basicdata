@@ -1507,4 +1507,33 @@ public class CoraDataRecordGroupTest {
 		Optional<String> tsVisibility = defaultRecordGroupWithRecordInfo.getVisibility();
 		assertTrue(tsVisibility.isEmpty());
 	}
+
+	@Test
+	public void testIsInTrashBinDoesNotExist() {
+		Optional<Boolean> value = defaultRecordGroupWithRecordInfo.isInTrashBin();
+		assertTrue(value.isEmpty());
+	}
+
+	@Test
+	public void testIsInTrashBin() {
+		var inTrashBin = CoraDataAtomic.withNameInDataAndValue("inTrashBin", "false");
+		defaultRecordInfo.addChild(inTrashBin);
+
+		Optional<Boolean> value = defaultRecordGroupWithRecordInfo.isInTrashBin();
+
+		assertTrue(value.isPresent());
+		assertEquals(value.get(), false);
+	}
+
+	@Test
+	public void testIsInTrashBinCanBeSet_setToTrue() {
+		defaultRecordGroupWithRecordInfo.setInTrashBin(true);
+
+		Optional<Boolean> value = defaultRecordGroupWithRecordInfo.isInTrashBin();
+
+		assertTrue(value.isPresent());
+		assertEquals(value.get(), true);
+		assertEquals(defaultRecordInfo.getFirstAtomicValueWithNameInData("inTrashBin"), "true");
+	}
+
 }

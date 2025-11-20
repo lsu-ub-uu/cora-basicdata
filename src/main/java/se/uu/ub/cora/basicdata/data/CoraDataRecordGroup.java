@@ -1,6 +1,6 @@
 /*
- * Copyright 2022, 2024 Olov McKie
  * Copyright 2022, 2025 Uppsala University Library
+ * Copyright 2022, 2024 Olov McKie
  * 
  * This file is part of Cora.
  *
@@ -333,6 +333,30 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	@Override
 	public Optional<String> getVisibility() {
 		return possiblyGetAtomicValueFromRecordInfo(VISIBILITY);
+	}
+
+	@Override
+	public void setInTrashBin(boolean inTrashBin) {
+		var child = CoraDataAtomic.withNameInDataAndValue("inTrashBin",
+				Boolean.toString(inTrashBin));
+		replaceAllChildrenInRecordInfoWithChild(child);
+	}
+
+	@Override
+	public Optional<Boolean> isInTrashBin() {
+		return possiblyGetAtomicBooleanValueFromRecordInfo("inTrashBin");
+	}
+
+	private Optional<Boolean> possiblyGetAtomicBooleanValueFromRecordInfo(String nameInData) {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			DataGroup recordInfo = getRecordInfo();
+			if (recordInfo.containsChildWithNameInData(nameInData)) {
+				String value = recordInfo.getFirstAtomicValueWithNameInData(nameInData);
+				boolean valueAsBoolean = Boolean.parseBoolean(value);
+				return Optional.of(valueAsBoolean);
+			}
+		}
+		return Optional.empty();
 	}
 
 	@Override
