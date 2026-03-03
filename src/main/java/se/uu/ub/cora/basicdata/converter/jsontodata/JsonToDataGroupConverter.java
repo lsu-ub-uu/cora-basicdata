@@ -53,7 +53,6 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 		try {
 			return tryToInstanciate();
 		} catch (Exception e) {
-			System.err.println(jsonObject.toJsonFormattedString());
 			throw new JsonParseException("Error parsing jsonObject: " + e.getMessage(), e);
 		}
 	}
