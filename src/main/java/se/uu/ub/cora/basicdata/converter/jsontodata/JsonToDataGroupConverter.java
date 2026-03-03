@@ -53,6 +53,7 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 		try {
 			return tryToInstanciate();
 		} catch (Exception e) {
+			System.err.println(jsonObject.toJsonFormattedString());
 			throw new JsonParseException("Error parsing jsonObject: " + e.getMessage(), e);
 		}
 	}
@@ -158,8 +159,14 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private void addChildrenToGroup() {
 		JsonArray children = jsonObject.getValueAsJsonArray(CHILDREN);
+		boolean noChildrenAdded = true;
 		for (JsonValue child : children) {
 			addChildToGroup((JsonObject) child);
+			noChildrenAdded = false;
+		}
+		if (noChildrenAdded) {
+			throw new JsonParseException("Group data with nameInData: " + dataGroup.getNameInData()
+					+ " has no children. " + "Groups must have at least one child.");
 		}
 	}
 

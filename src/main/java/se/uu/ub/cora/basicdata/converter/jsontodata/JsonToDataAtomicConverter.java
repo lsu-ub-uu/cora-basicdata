@@ -122,6 +122,10 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private CoraDataAtomic createFromJsonWithNameInDataAndValue() {
 		String nameInData = getStringFromJson(NAME);
 		String value = getStringFromJson(VALUE);
+		if (value.isEmpty() || value.isBlank()) {
+			throw new JsonParseException("Atomic data with nameInData: " + nameInData
+					+ " has no value. " + "Empty values are not allowed.");
+		}
 		return CoraDataAtomic.withNameInDataAndValue(nameInData, value);
 	}
 
