@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -296,6 +295,7 @@ public class CoraDataGroupTest {
 	public void testGetFirstDataAtomicWithNameInDataNotFound() {
 		defaultDataGroup.addChild(
 				CoraDataAtomic.withNameInDataAndValue("someChildNameInData", "atomicValue"));
+
 		defaultDataGroup.getFirstDataAtomicWithNameInData("childNameInData_NOT_FOUND");
 	}
 
@@ -721,8 +721,10 @@ public class CoraDataGroupTest {
 		DataGroup childDataGroup = CoraDataGroup.withNameInData("childId");
 		childDataGroup.addAttributeByIdWithValue("someName", "someValue");
 		defaultDataGroup.addChild(childDataGroup);
+
 		boolean childWasRemoved = defaultDataGroup.removeAllChildrenWithNameInDataAndAttributes(
 				"childId", CoraDataAttribute.withNameInDataAndValue("someName", "someValue"));
+
 		assertTrue(childWasRemoved);
 		assertFalse(defaultDataGroup.containsChildWithNameInData("childId"));
 	}
@@ -959,7 +961,8 @@ public class CoraDataGroupTest {
 	@Test
 	public void testGetAllChildrenMatchingFilter_oneChild() {
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
-		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		childFilter.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic");
+		DataAtomicSpy atomicChild = createAtomic("atomic");
 		defaultDataGroup.addChild(atomicChild);
 
 		List<DataChild> matchingChildren = defaultDataGroup
@@ -970,17 +973,30 @@ public class CoraDataGroupTest {
 		assertSame(matchingChildren.get(0), atomicChild);
 	}
 
+	DataAtomicSpy createAtomic(String nameInData) {
+		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		atomicChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
+		return atomicChild;
+	}
+
+	DataGroupSpy createGroup(String nameInData) {
+		DataGroupSpy group = new DataGroupSpy();
+		group.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
+		return group;
+	}
+
 	@Test
 	public void testGetAllChildrenMatchingFilter_twoChildMatchesOneDoNot() {
-		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		String nameInData = "someNameInData";
+		DataAtomicSpy atomicChild = createAtomic(nameInData);
 		defaultDataGroup.addChild(atomicChild);
-		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
+		DataAtomicSpy atomicChild2 = createAtomic(nameInData);
 		defaultDataGroup.addChild(atomicChild2);
-		DataGroupSpy groupChild = new DataGroupSpy();
+		DataGroupSpy groupChild = createGroup(nameInData);
 		defaultDataGroup.addChild(groupChild);
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
-		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches",
-				(Supplier<Boolean>) () -> false, atomicChild);
+		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches", () -> false, atomicChild);
+		childFilter.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
 
 		List<DataChild> matchingChildren = defaultDataGroup
 				.getAllChildrenMatchingFilter(childFilter);
@@ -1006,7 +1022,8 @@ public class CoraDataGroupTest {
 	@Test
 	public void testRemoveAllChildrenMatchingFilter_oneChild() {
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
-		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		childFilter.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic");
+		DataAtomicSpy atomicChild = createAtomic("atomic");
 		defaultDataGroup.addChild(atomicChild);
 
 		boolean childRemoved = defaultDataGroup.removeAllChildrenMatchingFilter(childFilter);
@@ -1018,15 +1035,16 @@ public class CoraDataGroupTest {
 
 	@Test
 	public void testRemoveAllChildrenMatchingFilter_twoChildMatchesOneDoNot() {
-		DataAtomicSpy atomicChild = new DataAtomicSpy();
+		String nameInData = "someNameInData";
+		DataAtomicSpy atomicChild = createAtomic(nameInData);
 		defaultDataGroup.addChild(atomicChild);
-		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
+		DataAtomicSpy atomicChild2 = createAtomic(nameInData);
 		defaultDataGroup.addChild(atomicChild2);
-		DataGroupSpy groupChild = new DataGroupSpy();
+		DataGroupSpy groupChild = createGroup(nameInData);
 		defaultDataGroup.addChild(groupChild);
 		DataChildFilterSpy childFilter = new DataChildFilterSpy();
-		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches",
-				(Supplier<Boolean>) () -> false, atomicChild);
+		childFilter.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> nameInData);
+		childFilter.MRV.setSpecificReturnValuesSupplier("childMatches", () -> false, atomicChild);
 
 		boolean childRemoved = defaultDataGroup.removeAllChildrenMatchingFilter(childFilter);
 
@@ -1050,33 +1068,33 @@ public class CoraDataGroupTest {
 	}
 
 	private void addTestChildrenToDefaultGroup() {
-		DataAtomicSpy atomicChild = new DataAtomicSpy();
-		defaultDataGroup.addChild(atomicChild);
+		DataAtomicSpy atomicChild = createAtomic("atomic1");
 		atomicChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic1");
+		defaultDataGroup.addChild(atomicChild);
 
-		DataAtomicSpy atomicChild2 = new DataAtomicSpy();
-		defaultDataGroup.addChild(atomicChild2);
+		DataAtomicSpy atomicChild2 = createAtomic("atomic2");
 		atomicChild2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
+		defaultDataGroup.addChild(atomicChild2);
 
-		DataAtomicSpy atomicChild3 = new DataAtomicSpy();
-		defaultDataGroup.addChild(atomicChild3);
+		DataAtomicSpy atomicChild3 = createAtomic("atomic2");
 		atomicChild3.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
+		defaultDataGroup.addChild(atomicChild3);
 
 		DataGroupSpy groupChildWrongName = new DataGroupSpy();
-		defaultDataGroup.addChild(groupChildWrongName);
 		groupChildWrongName.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "atomic2");
+		defaultDataGroup.addChild(groupChildWrongName);
 
 		DataGroupSpy groupChild = new DataGroupSpy();
-		defaultDataGroup.addChild(groupChild);
 		groupChild.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group1");
+		defaultDataGroup.addChild(groupChild);
 
 		DataGroupSpy groupChild2 = new DataGroupSpy();
-		defaultDataGroup.addChild(groupChild2);
 		groupChild2.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group2");
+		defaultDataGroup.addChild(groupChild2);
 
 		DataGroupSpy groupChild3 = new DataGroupSpy();
-		defaultDataGroup.addChild(groupChild3);
 		groupChild3.MRV.setDefaultReturnValuesSupplier("getNameInData", () -> "group2");
+		defaultDataGroup.addChild(groupChild3);
 	}
 
 	@Test(expectedExceptions = DataMissingException.class, expectedExceptionsMessageRegExp = ""
@@ -1156,6 +1174,7 @@ public class CoraDataGroupTest {
 				"atomic1");
 		assertTrue(removed);
 		assertEquals(defaultDataGroup.getChildren().size(), 6);
+		assertFalse(defaultDataGroup.containsChildOfTypeAndName(DataAtomic.class, "atomic1"));
 	}
 
 	@Test

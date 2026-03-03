@@ -22,8 +22,11 @@ package se.uu.ub.cora.basicdata.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -41,6 +44,7 @@ public class CoraDataGroup implements DataGroup {
 	private String nameInData;
 	private Set<DataAttribute> attributes = new HashSet<>();
 	private List<DataChild> children = new ArrayList<>();
+	private Map<String, List<DataChild>> childrenByNameInDataMap = new HashMap<>();
 	private String repeatId;
 	private Predicate<DataChild> isDataAtomic = CoraDataAtomic.class::isInstance;
 	private Predicate<DataChild> isDataGroup = CoraDataGroup.class::isInstance;
@@ -69,78 +73,71 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
-		return children.stream().anyMatch(filterByNameInData(nameInData));
-	}
-
-	private Predicate<DataChild> filterByNameInData(String childNameInData) {
-		return dataElement -> dataElementsNameInDataIs(dataElement, childNameInData);
-	}
-
-	private boolean dataElementsNameInDataIs(DataChild dataElement, String childNameInData) {
-		return dataElement.getNameInData().equals(childNameInData);
+		return childrenByNameInDataMap.containsKey(nameInData);
 	}
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String childNameInData) {
-		Optional<CoraDataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
-				.findFirst();
-		return possiblyReturnAtomicChildWithNameInData(childNameInData, optionalFirst);
-	}
-
-	private String possiblyReturnAtomicChildWithNameInData(String childNameInData,
-			Optional<CoraDataAtomic> optionalFirst) {
-		if (optionalFirst.isPresent()) {
-			return optionalFirst.get().getValue();
+		if (containsChildWithNameInData(childNameInData)) {
+			Optional<DataAtomic> optionalFirst = getAtomicChildrenWithNameInData(childNameInData)
+					.findFirst();
+			if (optionalFirst.isPresent()) {
+				return optionalFirst.get().getValue();
+			}
 		}
 		throw new DataMissingException(
 				"Atomic value not found for childNameInData:" + childNameInData);
 	}
 
-	private Stream<CoraDataAtomic> getAtomicChildrenWithNameInData(String childNameInData) {
-		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
-				.map(CoraDataAtomic.class::cast);
+	private Stream<DataAtomic> getAtomicChildrenWithNameInData(String childNameInData) {
+		return getChildrenWithNameInData(childNameInData, isDataAtomic, DataAtomic.class);
 	}
 
-	private Stream<DataChild> getAtomicChildrenStream() {
-		return children.stream().filter(isDataAtomic);
+	private <T extends DataChild> Stream<T> getChildrenWithNameInData(String childNameInData,
+			Predicate<DataChild> filter, Class<T> classType) {
+		return getGenericChildrenStream(childNameInData, filter).map(classType::cast);
+	}
+
+	private Stream<DataChild> getGenericChildrenStream(String childNameInData,
+			Predicate<DataChild> filter) {
+		return childrenByNameInDataMap.get(childNameInData).stream().filter(filter);
 	}
 
 	@Override
 	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
-		return getDataAtomicChildrenWithNameInData(childNameInData).toList();
-	}
-
-	private Stream<DataAtomic> getDataAtomicChildrenWithNameInData(String childNameInData) {
-		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
-				.map(CoraDataAtomic.class::cast);
+		if (containsChildWithNameInData(childNameInData)) {
+			return getAtomicChildrenWithNameInData(childNameInData).toList();
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
-		Optional<DataGroup> findFirst = getGroupChildrenWithNameInDataStream(childNameInData)
-				.findFirst();
-		if (findFirst.isPresent()) {
-			return findFirst.get();
+		if (containsChildWithNameInData(childNameInData)) {
+			Optional<DataGroup> findFirst = getFirstGroupWithNameInDataFromMap(childNameInData);
+			if (findFirst.isPresent()) {
+				return findFirst.get();
+			}
 		}
 		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
 	}
 
-	private Stream<DataGroup> getGroupChildrenWithNameInDataStream(String childNameInData) {
-		return getGroupChildrenStream().filter(filterByNameInData(childNameInData))
-				.map(CoraDataGroup.class::cast);
+	private Optional<DataGroup> getFirstGroupWithNameInDataFromMap(String childNameInData) {
+		return getGroupChildrenWithNameInDataStream(childNameInData).findFirst();
 	}
 
-	private Stream<DataChild> getGroupChildrenStream() {
-		return children.stream().filter(isDataGroup);
+	private Stream<DataGroup> getGroupChildrenWithNameInDataStream(String childNameInData) {
+		return getChildrenWithNameInData(childNameInData, isDataGroup, DataGroup.class);
 	}
 
 	@Override
 	public DataAtomic getFirstDataAtomicWithNameInData(String childNameInData) {
-		Optional<DataAtomic> findFirst = getDataAtomicChildrenWithNameInData(childNameInData)
-				.findFirst();
-
-		if (findFirst.isPresent()) {
-			return findFirst.get();
+		if (containsChildWithNameInData(childNameInData)) {
+			Optional<DataAtomic> findFirst = getAtomicChildrenWithNameInData(childNameInData)
+					.findFirst();
+			if (findFirst.isPresent()) {
+				return findFirst.get();
+			}
 		}
 		throw new DataMissingException(
 				"DataAtomic not found for childNameInData:" + childNameInData);
@@ -148,20 +145,26 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public DataChild getFirstChildWithNameInData(String childNameInData) {
-		Optional<DataChild> optionalFirst = possiblyFindFirstChildWithNameInData(childNameInData);
-		if (optionalFirst.isPresent()) {
-			return optionalFirst.get();
+		if (containsChildWithNameInData(childNameInData)) {
+			Optional<DataChild> optionalFirst = possiblyFindFirstChildWithNameInData(
+					childNameInData);
+			if (optionalFirst.isPresent()) {
+				return optionalFirst.get();
+			}
 		}
 		throw new DataMissingException("Element not found for childNameInData:" + childNameInData);
 	}
 
 	private Optional<DataChild> possiblyFindFirstChildWithNameInData(String childNameInData) {
-		return children.stream().filter(filterByNameInData(childNameInData)).findFirst();
+		return childrenByNameInDataMap.get(childNameInData).stream().findFirst();
 	}
 
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String childNameInData) {
-		return getGroupChildrenWithNameInDataStream(childNameInData).toList();
+		if (containsChildWithNameInData(childNameInData)) {
+			return getGroupChildrenWithNameInDataStream(childNameInData).toList();
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -181,22 +184,21 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public boolean removeFirstChildWithNameInData(String childNameInData) {
-		return tryToRemoveChild(childNameInData);
-	}
-
-	private boolean tryToRemoveChild(String childNameInData) {
-		for (DataChild dataElement : children) {
-			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
-				children.remove(dataElement);
-				return true;
-			}
+		if (containsChildWithNameInData(childNameInData)) {
+			DataChild removeFirst = childrenByNameInDataMap.get(childNameInData).removeFirst();
+			makeSureMapHasNoEmptyListForName(childNameInData);
+			return children.remove(removeFirst);
 		}
 		return false;
 	}
 
 	@Override
 	public boolean removeAllChildrenWithNameInData(String childNameInData) {
-		return getChildren().removeIf(filterByNameInData(childNameInData));
+		if (containsChildWithNameInData(childNameInData)) {
+			List<DataChild> removeChildren = childrenByNameInDataMap.remove(childNameInData);
+			return children.removeAll(removeChildren);
+		}
+		return false;
 	}
 
 	@Override
@@ -216,6 +218,8 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public void addChild(DataChild dataElement) {
+		childrenByNameInDataMap.computeIfAbsent(dataElement.getNameInData(), _ -> new ArrayList<>())
+				.add(dataElement);
 		children.add(dataElement);
 	}
 
@@ -316,83 +320,92 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public void addChildren(Collection<DataChild> dataElements) {
-		children.addAll(dataElements);
+		dataElements.stream().forEach(this::addChild);
 	}
 
 	@Override
 	public List<DataChild> getAllChildrenWithNameInData(String childNameInData) {
-		return getChildrenWithNameInData(childNameInData).toList();
+		if (containsChildWithNameInData(childNameInData)) {
+			return childrenByNameInDataMap.get(childNameInData);
+		}
+		return Collections.emptyList();
 
-	}
-
-	private Stream<DataChild> getChildrenWithNameInData(String childNameInData) {
-		return children.stream().filter(filterByNameInData(childNameInData))
-				.map(DataChild.class::cast);
 	}
 
 	@Override
 	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
 
-		Predicate<? super DataChild> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
-				element, childNameInData, childAttributes);
-		return removeMatchingChildren(childNameInDataMatches);
+		Predicate<? super DataChild> childNameInDataMatches = element -> attributesMatch(element,
+				childAttributes);
+		return removeMatchingChildren(childNameInData, childNameInDataMatches);
 
 	}
 
-	private boolean dataElementsNameInDataAndAttributesMatch(DataChild element,
-			String childNameInData, DataAttribute... childAttributes) {
-		return dataElementsNameInDataIs(element, childNameInData)
-				&& dataElementsHasAttributes(element, childAttributes);
+	private boolean attributesMatch(DataChild element, DataAttribute... childAttributes) {
+		return dataElementsHasAttributes(element, childAttributes);
 	}
 
 	@Override
 	public List<DataChild> getAllChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
-		Predicate<? super DataChild> childNameInDataMatches = element -> dataElementsNameInDataAndAttributesMatch(
-				element, childNameInData, childAttributes);
-		return filterChildren(childNameInDataMatches);
+		Predicate<? super DataChild> childNameInDataMatches = element -> attributesMatch(element,
+				childAttributes);
+		return filterChildren(childNameInData, childNameInDataMatches);
 	}
 
 	@Override
 	public Collection<DataAtomic> getAllDataAtomicsWithNameInDataAndAttributes(
 			String childNameInData, DataAttribute... childAttributes) {
-		return getAtomicChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
-				.toList();
+		if (containsChildWithNameInData(childNameInData)) {
+			return getAtomicChildrenWithNameInDataAndAttributes(childNameInData, childAttributes)
+					.toList();
+		}
+		return Collections.emptyList();
 	}
 
 	private Stream<DataAtomic> getAtomicChildrenWithNameInDataAndAttributes(String childNameInData,
 			DataAttribute... childAttributes) {
-		return getAtomicChildrenWithNameInDataStream(childNameInData)
+		return getAtomicChildrenWithNameInData(childNameInData)
 				.filter(filterByAttributes(childAttributes));
-	}
-
-	private Stream<DataAtomic> getAtomicChildrenWithNameInDataStream(String childNameInData) {
-		return getAtomicChildrenStream().filter(filterByNameInData(childNameInData))
-				.map(CoraDataAtomic.class::cast);
 	}
 
 	@Override
 	public List<DataChild> getAllChildrenMatchingFilter(DataChildFilter childFilter) {
-		return filterChildren(childFilter::childMatches);
+		String childNameInData = childFilter.getNameInData();
+		return filterChildren(childNameInData, childFilter::childMatches);
 	}
 
-	private List<DataChild> filterChildren(Predicate<? super DataChild> predicate) {
-		return children.stream().filter(predicate).toList();
+	private List<DataChild> filterChildren(String childNameInData,
+			Predicate<? super DataChild> predicate) {
+		if (containsChildWithNameInData(childNameInData)) {
+			return childrenByNameInDataMap.get(childNameInData).stream().filter(predicate).toList();
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
 	public boolean removeAllChildrenMatchingFilter(DataChildFilter childFilter) {
-		return removeMatchingChildren(childFilter::childMatches);
+		return removeMatchingChildren(childFilter.getNameInData(), childFilter::childMatches);
 	}
 
-	private boolean removeMatchingChildren(Predicate<? super DataChild> filter) {
-		return children.removeIf(filter);
+	private boolean removeMatchingChildren(String childNameInData,
+			Predicate<? super DataChild> filter) {
+		if (containsChildWithNameInData(childNameInData)) {
+			childrenByNameInDataMap.get(childNameInData).removeIf(filter);
+			makeSureMapHasNoEmptyListForName(childNameInData);
+			return children.removeIf(filter);
+		}
+		return false;
 	}
 
 	@Override
 	public <T> boolean containsChildOfTypeAndName(Class<T> type, String name) {
-		return children.stream().filter(filterByNameInData(name)).anyMatch(type::isInstance);
+		if (childrenByNameInDataMap.containsKey(name)) {
+			List<DataChild> childWithNameInData = childrenByNameInDataMap.get(name);
+			return childWithNameInData.stream().anyMatch(type::isInstance);
+		}
+		return false;
 	}
 
 	@Override
@@ -407,7 +420,10 @@ public class CoraDataGroup implements DataGroup {
 
 	private <T extends DataChild> Optional<T> getOptionalFirstChildOfTypeAndName(Class<T> type,
 			String name) {
-		return children.stream().filter(filterByNameInData(name)).map(type::cast).findFirst();
+		if (childrenByNameInDataMap.containsKey(name)) {
+			return childrenByNameInDataMap.get(name).stream().map(type::cast).findFirst();
+		}
+		return Optional.empty();
 	}
 
 	@Override
@@ -421,8 +437,16 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public <T extends DataChild> List<T> getChildrenOfTypeAndName(Class<T> type, String name) {
-		return children.stream().filter(filterByNameInData(name).and(filterByType(type)))
-				.map(type::cast).toList();
+		if (childrenByNameInDataMap.containsKey(name)) {
+			return getChildrenOfTypeAndNameFromMap(type, name);
+		}
+		return Collections.emptyList();
+	}
+
+	private <T extends DataChild> List<T> getChildrenOfTypeAndNameFromMap(Class<T> type,
+			String name) {
+		return childrenByNameInDataMap.get(name).stream().filter(filterByType(type)).map(type::cast)
+				.toList();
 	}
 
 	@Override
@@ -430,6 +454,8 @@ public class CoraDataGroup implements DataGroup {
 			String name) {
 		Optional<T> optionalFirst = getOptionalFirstChildOfTypeAndName(type, name);
 		if (optionalFirst.isPresent()) {
+			childrenByNameInDataMap.get(name).remove(optionalFirst.get());
+			makeSureMapHasNoEmptyListForName(name);
 			return children.remove(optionalFirst.get());
 		}
 		return false;
@@ -437,7 +463,19 @@ public class CoraDataGroup implements DataGroup {
 
 	@Override
 	public <T extends DataChild> boolean removeChildrenWithTypeAndName(Class<T> type, String name) {
-		return children.removeAll(getChildrenOfTypeAndName(type, name));
+		if (childrenByNameInDataMap.containsKey(name)) {
+			List<T> childrenToRemove = getChildrenOfTypeAndNameFromMap(type, name);
+			childrenByNameInDataMap.get(name).removeAll(childrenToRemove);
+			makeSureMapHasNoEmptyListForName(name);
+			return children.removeAll(childrenToRemove);
+		}
+		return false;
+	}
+
+	private void makeSureMapHasNoEmptyListForName(String name) {
+		if (childrenByNameInDataMap.get(name).isEmpty()) {
+			childrenByNameInDataMap.remove(name);
+		}
 	}
 
 	@Override
@@ -449,5 +487,4 @@ public class CoraDataGroup implements DataGroup {
 		}
 		return Optional.empty();
 	}
-
 }

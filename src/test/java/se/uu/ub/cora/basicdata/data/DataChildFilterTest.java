@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.basicdata.data;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -65,7 +66,12 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childDoesNotMatchNameInData() throws Exception {
+	public void testName() {
+		assertEquals(filterOnlyNameInData.getNameInData(), nameInData);
+	}
+
+	@Test
+	public void childDoesNotMatchNameInData() {
 		boolean childMatches = filterOnlyNameInData.childMatches(childEmptyNameInData);
 
 		assertFalse(childMatches);
@@ -74,7 +80,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childMatchesNameInDataNoAttributes() throws Exception {
+	public void childMatchesNameInDataNoAttributes() {
 		childEmptyNameInData.MRV.setDefaultReturnValuesSupplier("getNameInData",
 				(Supplier<String>) () -> nameInData);
 
@@ -85,7 +91,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoesNot() throws Exception {
+	public void childHasAttributesFilterDoesNot() {
 		boolean childMatches = filterOnlyNameInData.childMatches(childOneAttribute);
 
 		assertFalse(childMatches);
@@ -94,7 +100,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasNoAttributesFilterDoes() throws Exception {
+	public void childHasNoAttributesFilterDoes() {
 		childEmptyNameInData.MRV.setDefaultReturnValuesSupplier("getNameInData",
 				(Supplier<String>) () -> nameInData);
 
@@ -111,7 +117,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoesAndMatchEachOther() throws Exception {
+	public void childHasAttributesFilterDoesAndMatchEachOther() {
 		filterOnlyNameInData.addAttributeUsingNameInDataAndPossibleValues("attributeOne",
 				Set.of("attributeOneValue"));
 
@@ -129,7 +135,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_DifferentNameOfAttributes() throws Exception {
+	public void childHasAttributesFilterDoes_DifferentNameOfAttributes() {
 		filterOnlyNameInData.addAttributeUsingNameInDataAndPossibleValues("NOTattributeOne",
 				Set.of("attributeOneValue"));
 
@@ -140,7 +146,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_NotInValuesOfAttributes() throws Exception {
+	public void childHasAttributesFilterDoes_NotInValuesOfAttributes() {
 		filterOnlyNameInData.addAttributeUsingNameInDataAndPossibleValues("attributeOne",
 				Set.of("NOTattributeOneValue"));
 
@@ -151,7 +157,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_InSetOfValuesOfAttributes() throws Exception {
+	public void childHasAttributesFilterDoes_InSetOfValuesOfAttributes() {
 		filterOnlyNameInData.addAttributeUsingNameInDataAndPossibleValues("attributeOne",
 				Set.of("NOTattributeOneValue", "attributeOneValue"));
 
@@ -162,7 +168,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_childHasOneMoreAttributes() throws Exception {
+	public void childHasAttributesFilterDoes_childHasOneMoreAttributes() {
 		DataAttributeSpy attributeOne = createAttribute("attributeOne", "attributeOneValue");
 		DataAttributeSpy attributeTwo = createAttribute("attributeTwo", "attributeTwoValue");
 		List<DataAttribute> attributes = List.of(attributeOne, attributeTwo);
@@ -178,7 +184,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_filterHasOneMoreAttributes() throws Exception {
+	public void childHasAttributesFilterDoes_filterHasOneMoreAttributes() {
 		filterOnlyNameInData.addAttributeUsingNameInDataAndPossibleValues("attributeOne",
 				Set.of("attributeOneValue"));
 		filterOnlyNameInData.addAttributeUsingNameInDataAndPossibleValues("attributeTwo",
@@ -191,7 +197,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_twoMatchingAttributes() throws Exception {
+	public void childHasAttributesFilterDoes_twoMatchingAttributes() {
 		DataAttributeSpy attributeOne = createAttribute("attributeOne", "attributeOneValue");
 		DataAttributeSpy attributeTwo = createAttribute("attributeTwo", "attributeTwoValue");
 		List<DataAttribute> attributes = List.of(attributeOne, attributeTwo);
@@ -209,7 +215,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_twoAttributesDifferentNameOnOne() throws Exception {
+	public void childHasAttributesFilterDoes_twoAttributesDifferentNameOnOne() {
 		DataAttributeSpy attributeOne = createAttribute("attributeOne", "attributeOneValue");
 		DataAttributeSpy attributeTwo = createAttribute("NOTattributeTwo", "attributeTwoValue");
 		List<DataAttribute> attributes = List.of(attributeOne, attributeTwo);
@@ -227,7 +233,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_twoAttributesDifferentValueOnOne() throws Exception {
+	public void childHasAttributesFilterDoes_twoAttributesDifferentValueOnOne() {
 		DataAttributeSpy attributeOne = createAttribute("attributeOne", "attributeOneValue");
 		DataAttributeSpy attributeTwo = createAttribute("attributeTwo", "NOTattributeTwoValue");
 		List<DataAttribute> attributes = List.of(attributeOne, attributeTwo);
@@ -245,8 +251,7 @@ public class DataChildFilterTest {
 	}
 
 	@Test
-	public void childHasAttributesFilterDoes_twoAttributesWithValueInPossibleValues()
-			throws Exception {
+	public void childHasAttributesFilterDoes_twoAttributesWithValueInPossibleValues() {
 		DataAttributeSpy attributeOne = createAttribute("attributeOne", "attributeOneValue");
 		DataAttributeSpy attributeTwo = createAttribute("attributeTwo", "AnotherAttributeTwoValue");
 		List<DataAttribute> attributes = List.of(attributeOne, attributeTwo);

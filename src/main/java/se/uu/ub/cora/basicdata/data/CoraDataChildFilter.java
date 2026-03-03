@@ -90,4 +90,9 @@ public class CoraDataChildFilter implements DataChildFilter {
 	public String onlyForTestGetChildNameInData() {
 		return childNameInData;
 	}
+
+	@Override
+	public String getNameInData() {
+		return childNameInData;
+	}
 }
