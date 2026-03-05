@@ -34,7 +34,10 @@ public class JsonToDataAtomicConverterTest {
 
 	@Test
 	public void testToClass() {
-		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}";
+		String json = """
+					{"name":"atomicNameInData",
+					"value":"atomicValue"}
+				""";
 		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
 		assertEquals(dataAtomic.getNameInData(), "atomicNameInData");
 		assertEquals(dataAtomic.getValue(), "atomicValue");
@@ -46,94 +49,125 @@ public class JsonToDataAtomicConverterTest {
 		JsonToDataAtomicConverter jsonToDataConverter = JsonToDataAtomicConverter
 				.forJsonObject((JsonObject) jsonValue);
 		Convertible dataPart = jsonToDataConverter.toInstance();
-
-		CoraDataAtomic dataAtomic = (CoraDataAtomic) dataPart;
-		return dataAtomic;
+		return (CoraDataAtomic) dataPart;
 	}
 
 	@Test
 	public void testToClassWithRepeatId() {
-		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\",\"repeatId\":\"5\"}";
+		String json = """
+					{"name":"atomicNameInData","value":"atomicValue","repeatId":"5"}
+				""";
 		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
 		assertEquals(dataAtomic.getNameInData(), "atomicNameInData");
 		assertEquals(dataAtomic.getValue(), "atomicValue");
 		assertEquals(dataAtomic.getRepeatId(), "5");
 	}
 
-	@Test
-	public void testToClassEmptyValue() {
-		String json = "{\"name\":\"atomicNameInData\",\"value\":\"\"}";
-		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
-		assertEquals(dataAtomic.getNameInData(), "atomicNameInData");
-		assertEquals(dataAtomic.getValue(), "");
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error parsing jsonObject: Atomic data with nameInData: id has no value. "
+			+ "Empty values are not allowed.")
+	public void testToClassWrongJsonValue_EmptyValue() {
+		String json = """
+					{"name":"id","value":""}
+				""";
+		createDataAtomicForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "Error parsing jsonObject: Atomic data with nameInData: id has no value. "
+			+ "Empty values are not allowed.")
+	public void testToClassWrongJsonValue_BlankValue() {
+		String json = """
+				{"name":"id","value":"   "}
+				""";
+		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonValueIsNotString() {
-		String json = "{\"name\":\"id\",\"value\":[]}";
+		String json = """
+					{"name":"id","value":[]}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonNameIsNotString() {
-		String json = "{\"name\":{},\"value\":\"atomicValue\"}";
+		String json = """
+					{"name":{},"value":"atomicValue"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonNotName() {
-		String json = "{\"nameNOT\":\"id\",\"value\":\"atomicValue\"}";
+		String json = """
+					{"nameNOT":"id","value":"atomicValue"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonMissingValue() {
-		String json = "{\"name\":\"id\",\"valueNOT\":\"atomicValue\"}";
+		String json = """
+					{"name":"id","valueNOT":"atomicValue"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKey() {
-		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"repeatId\":\"5\""
-				+ ",\"extra\":\"extra\", \"extra2\":\"extra\"}";
+		String json = """
+					{"name":"id","value":"atomicValue","repeatId":"5","extra":"extra", "extra2":"extra"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonOneExtraKeyMissingRepeatIdAndMissingAttributes() {
-		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"NOTrepeatId\":\"5\"}";
+		String json = """
+					{"name":"id","value":"atomicValue","NOTrepeatId":"5"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonTwoExtraKeyMissingRepeatIdAndMissingAttributes() {
-		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"NOTrepeatId\":\"5\",\"NOTattributes\":\"5\"}";
+		String json = """
+					{"name":"id","value":"atomicValue","NOTrepeatId":"5","NOTattributes":"5"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonMaxKeysMissingAttributes() {
-		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"repeatId\":\"5\",\"NOTattributes\":\"5\"}";
+		String json = """
+					{"name":"id","value":"atomicValue","repeatId":"5","NOTattributes":"5"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
-		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\","
-				+ "\"name\":\"id2\",\"value\":\"value2\"}";
+		String json = """
+					{"name":"atomicNameInData","value":"atomicValue","name":"id2","value":"value2"}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraArray() {
-		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\","
-				+ "\"name\":\"id2\",\"value\":[]}";
+		String json = """
+					{"name":"atomicNameInData","value":"atomicValue","name":"id2","value":[]}
+				""";
 		createDataAtomicForJsonString(json);
 	}
 
 	@Test
 	public void testWithOneAttribute() {
-		String json = "{\"name\":\"mode\",\"value\":\"output\",\"attributes\":{\"type\":\"container\"}}";
+		String json = """
+					{"name":"mode","value":"output","attributes":{"type":"container"}}
+				""";
 		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
 		assertEquals(dataAtomic.getNameInData(), "mode");
 		assertEquals(dataAtomic.getValue(), "output");
@@ -143,7 +177,9 @@ public class JsonToDataAtomicConverterTest {
 
 	@Test
 	public void testWithTwoAttributesAndRepeatId() {
-		String json = "{\"name\":\"mode\",\"value\":\"output\",\"attributes\":{\"type\":\"container\",\"repeat\":\"children\"},\"repeatId\":\"0\"}";
+		String json = """
+					{"name":"mode","value":"output","attributes":{"type":"container","repeat":"children"},"repeatId":"0"}
+				""";
 		CoraDataAtomic dataAtomic = createDataAtomicForJsonString(json);
 		assertEquals(dataAtomic.getNameInData(), "mode");
 		assertEquals(dataAtomic.getValue(), "output");
