@@ -1,5 +1,5 @@
 /*
- * Copyright 2022, 2025 Uppsala University Library
+ * Copyright 2022, 2025, 2026 Uppsala University Library
  * Copyright 2022, 2024 Olov McKie
  * 
  * This file is part of Cora.
@@ -375,6 +375,26 @@ public class CoraDataRecordGroup extends CoraDataGroup implements DataRecordGrou
 	public void setPermissionUnit(String permissionUnit) {
 		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId(PERMISSION_UNIT, PERMISSION_UNIT,
 				permissionUnit);
+		replaceAllChildrenInRecordInfoWithChild(child);
+	}
+
+	@Override
+	public Optional<DataRecordLink> getHostRecord() {
+		if (containsChildWithNameInData(RECORD_INFO)) {
+			DataGroup recordInfo = getRecordInfo();
+			if (recordInfo.containsChildWithNameInData("hostRecord")) {
+				DataRecordLink hostRecordLink = recordInfo
+						.getFirstChildOfTypeAndName(CoraDataRecordLink.class, "hostRecord");
+				return Optional.of(hostRecordLink);
+			}
+		}
+		return Optional.empty();
+	}
+
+	@Override
+	public void setHostRecord(String linkedRecordType, String linkedRecordId) {
+		var child = CoraDataRecordLink.usingNameInDataAndTypeAndId("hostRecord", linkedRecordType,
+				linkedRecordId);
 		replaceAllChildrenInRecordInfoWithChild(child);
 	}
 }

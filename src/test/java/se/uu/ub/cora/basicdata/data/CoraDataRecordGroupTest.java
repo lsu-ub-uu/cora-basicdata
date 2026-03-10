@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2019, 2025 Uppsala University Library
+ * Copyright 2015, 2019, 2025, 2026 Uppsala University Library
  * Copyright 2022, 2024 Olov McKie
  *
  * This file is part of Cora.
@@ -1018,13 +1018,9 @@ public class CoraDataRecordGroupTest {
 			methodToRun.get();
 			fail();
 		} catch (Exception e) {
-			assertThrownErrorMessage(e, message);
+			assertTrue(e instanceof DataMissingException);
+			assertEquals(e.getMessage(), message);
 		}
-	}
-
-	private void assertThrownErrorMessage(Exception e, String message) {
-		assertTrue(e instanceof DataMissingException);
-		assertEquals(e.getMessage(), message);
 	}
 
 	@DataProvider(name = "setLink")
@@ -1534,6 +1530,39 @@ public class CoraDataRecordGroupTest {
 		assertTrue(value.isPresent());
 		assertEquals(value.get(), true);
 		assertEquals(defaultRecordInfo.getFirstAtomicValueWithNameInData("inTrashBin"), "true");
+	}
+
+	@Test
+	public void testGetHostRecord_DoNotExists() {
+		var hostRecord = defaultRecordGroupWithRecordInfo.getHostRecord();
+
+		assertEquals(hostRecord, Optional.empty());
+	}
+
+	@Test
+	public void testGetHostRecord() {
+		var hostRecordLink = CoraDataRecordLink.usingNameInDataAndTypeAndId("hostRecord",
+				"someHostRecordType", "someHostRecordId");
+		defaultRecordInfo.addChild(hostRecordLink);
+
+		var hostRecordOptional = defaultRecordGroupWithRecordInfo.getHostRecord();
+
+		assertTrue(hostRecordOptional.isPresent());
+		DataRecordLink returnedHostRecord = hostRecordOptional.get();
+		assertEquals(returnedHostRecord, hostRecordLink);
+	}
+
+	@Test
+	public void testSetHostRecord() {
+		var hostRecord1 = defaultRecordGroupWithRecordInfo.getHostRecord();
+		assertTrue(hostRecord1.isEmpty());
+
+		defaultRecordGroupWithRecordInfo.setHostRecord("anotherRecordtype", "anotherRecordId");
+
+		var hostRecord2 = defaultRecordGroupWithRecordInfo.getHostRecord();
+
+		DataRecordLink hostRecordLink = hostRecord2.get();
+		assertEquals(hostRecordLink.getLinkedRecordId(), "anotherRecordId");
 	}
 
 }
